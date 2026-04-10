@@ -38,7 +38,7 @@ import { chat, gapAnalysis, literatureReview } from "./rag.js";
 import { importVault } from "./export.js";
 
 const app = express();
-app.use(express.json({ limit: "1mb" }));
+app.use(express.json({ limit: "200mb" }));
 
 // ---------------------------------------------------------------------------
 // Background job tracker
