@@ -223,6 +223,11 @@ export async function buildContentIndex({ repoIds = null, force = false } = {}) 
 
     const stat = await fs.stat(packedPath);
     const sourceMtime = stat.mtimeMs;
+    const MAX_CONTENT_SIZE = 100 * 1024 * 1024; // 100 MB cap
+    if (stat.size > MAX_CONTENT_SIZE) {
+      summary.push({ repo: repo.id, skipped: `too large (${(stat.size / 1024 / 1024).toFixed(0)} MB)` });
+      continue;
+    }
 
     const existing = await loadRepoContent(repo.slug);
     if (!force && existing && existing.sourceMtime === sourceMtime) {
