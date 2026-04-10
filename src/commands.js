@@ -321,6 +321,14 @@ export async function ingestPapersBatch(pdfInputPaths, { onProgress } = {}) {
   return results;
 }
 
+function normalizeRepoInput(input) {
+  // Accept "org/repo" shorthand → full GitHub URL
+  if (/^[a-zA-Z0-9_.-]+\/[a-zA-Z0-9_.-]+$/.test(input)) {
+    return `https://github.com/${input}.git`;
+  }
+  return input;
+}
+
 function isGitUrl(input) {
   return /^https?:\/\/|^git@/i.test(input);
 }
@@ -349,7 +357,7 @@ function summarizeRepo(packResult) {
 export async function ingestRepo(repoInput, options = {}) {
   await ensureVaultLayout();
 
-  let sourcePath = repoInput;
+  let sourcePath = normalizeRepoInput(repoInput);
   let sourceUrl = "";
   let origin = "local";
 

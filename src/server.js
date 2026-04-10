@@ -225,11 +225,28 @@ app.post("/api/ingest-papers", (req, res) => {
 });
 
 app.post("/api/ingest-repo", (req, res) => {
-  const { path: repoPath } = req.body;
-  if (!repoPath) return res.status(400).json({ error: "Missing path" });
-  const job = createJob(`ingest-repo ${repoPath}`, async () => {
-    const record = await ingestRepo(repoPath);
+  const { path: repoPath, source } = req.body;
+  const input = source ?? repoPath;
+  if (!input) return res.status(400).json({ error: "Missing source (path or GitHub URL or org/repo)" });
+  const job = createJob(`ingest-repo ${input}`, async () => {
+    const record = await ingestRepo(input);
     return { id: record.id, title: record.title };
+  });
+  res.json({ jobId: job.id, status: job.status });
+});
+
+app.post("/api/ingest-repos", (req, res) => {
+  const { sources = [] } = req.body;
+  if (!sources.length) return res.status(400).json({ error: "Missing sources array" });
+  const job = createJob(`ingest-repos (${sources.length})`, async () => {
+    const results = await ingestReposBatch(sources, {
+      onProgress: (info) => {
+        job.progress = info.record
+          ? { index: info.index, total: info.total, repoId: info.record.id, elapsedSec: info.elapsedSec, etaSec: info.etaSec }
+          : { index: info.index, total: info.total, error: info.error };
+      },
+    });
+    return { ingested: results.length };
   });
   res.json({ jobId: job.id, status: job.status });
 });
@@ -270,32 +287,38 @@ app.post("/api/gap-analysis", (req, res) => {
 });
 
 // ---------------------------------------------------------------------------
-// Import vault archive
+// Import index + embeddings (lightweight seed — ~55 MB)
 // ---------------------------------------------------------------------------
-app.post("/api/import", async (req, res) => {
+app.post("/api/import-index", express.json({ limit: "200mb" }), async (req, res) => {
   try {
-    const chunks = [];
-    for await (const chunk of req) {
-      chunks.push(chunk);
+    const { index: indexData, embeddings } = req.body;
+    if (!indexData) return res.status(400).json({ error: "Missing index field" });
+
+    const { ensureDir } = await import("./fs-utils.js");
+    const { vaultRoot } = await import("./config.js");
+    const fsp = await import("node:fs/promises");
+
+    await ensureDir(vaultRoot);
+    await fsp.writeFile(
+      path.join(vaultRoot, "kb_index.json"),
+      JSON.stringify(indexData, null, 2),
+      "utf8",
+    );
+
+    if (embeddings) {
+      await fsp.writeFile(
+        path.join(vaultRoot, "kb_embeddings.json"),
+        JSON.stringify(embeddings, null, 2),
+        "utf8",
+      );
     }
-    const buf = Buffer.concat(chunks);
-    if (!buf.length) {
-      return res.status(400).json({ error: "Empty body. POST the tar.gz file as the raw request body." });
-    }
 
-    const tmpPath = path.join(path.dirname(fileURLToPath(import.meta.url)), "..", ".vault-import.tar.gz");
-    fs.writeFileSync(tmpPath, buf);
-
-    const result = await importVault(tmpPath);
-    fs.unlinkSync(tmpPath);
-
-    const index = await loadIndex();
     res.json({
       ok: true,
-      vaultRoot: result.vaultRoot,
-      papers: index.papers.length,
-      repos: index.repos.length,
-      relations: index.relations.length,
+      papers: indexData.papers?.length ?? 0,
+      repos: indexData.repos?.length ?? 0,
+      relations: indexData.relations?.length ?? 0,
+      embeddingsImported: !!embeddings,
     });
   } catch (err) {
     res.status(500).json({ error: err.message });
