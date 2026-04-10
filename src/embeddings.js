@@ -63,24 +63,32 @@ function repoSummaryText(repo) {
     .join("\n\n");
 }
 
-async function callEmbeddings(inputs) {
+async function callEmbeddings(inputs, retries = 5) {
   if (!process.env.OPENAI_API_KEY) {
     throw new Error("OPENAI_API_KEY not set.");
   }
-  const res = await fetch(EMBEDDING_URL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
-    },
-    body: JSON.stringify({ model: EMBEDDING_MODEL, input: inputs }),
-  });
-  if (!res.ok) {
-    const errText = await res.text();
-    throw new Error(`OpenAI embeddings ${res.status}: ${errText.slice(0, 500)}`);
+  for (let attempt = 0; attempt <= retries; attempt += 1) {
+    const res = await fetch(EMBEDDING_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+      },
+      body: JSON.stringify({ model: EMBEDDING_MODEL, input: inputs }),
+    });
+    if (res.status === 429 && attempt < retries) {
+      const wait = Math.min(2 ** attempt * 2000, 30000);
+      process.stderr.write(`Embeddings rate limited, retrying in ${wait / 1000}s...\n`);
+      await new Promise((resolve) => setTimeout(resolve, wait));
+      continue;
+    }
+    if (!res.ok) {
+      const errText = await res.text();
+      throw new Error(`OpenAI embeddings ${res.status}: ${errText.slice(0, 500)}`);
+    }
+    const json = await res.json();
+    return json.data.map((row) => row.embedding);
   }
-  const json = await res.json();
-  return json.data.map((row) => row.embedding);
 }
 
 export async function loadEmbeddings() {
