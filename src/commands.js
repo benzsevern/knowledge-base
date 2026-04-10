@@ -357,11 +357,12 @@ function summarizeRepo(packResult) {
 export async function ingestRepo(repoInput, options = {}) {
   await ensureVaultLayout();
 
-  let sourcePath = normalizeRepoInput(repoInput);
+  const normalizedInput = normalizeRepoInput(repoInput);
+  let sourcePath = normalizedInput;
   let sourceUrl = "";
   let origin = "local";
 
-  if (isGitUrl(repoInput)) {
+  if (isGitUrl(normalizedInput)) {
     const repoName = inferRepoName(repoInput);
     sourcePath = path.join(repoCloneRoot, repoName);
     sourceUrl = repoInput;
