@@ -223,7 +223,7 @@ export async function buildContentIndex({ repoIds = null, force = false } = {}) 
 
     const stat = await fs.stat(packedPath);
     const sourceMtime = stat.mtimeMs;
-    const MAX_CONTENT_SIZE = 100 * 1024 * 1024; // 100 MB cap
+    const MAX_CONTENT_SIZE = 30 * 1024 * 1024; // 30 MB cap
     if (stat.size > MAX_CONTENT_SIZE) {
       summary.push({ repo: repo.id, skipped: `too large (${(stat.size / 1024 / 1024).toFixed(0)} MB)` });
       continue;
@@ -235,39 +235,43 @@ export async function buildContentIndex({ repoIds = null, force = false } = {}) 
       continue;
     }
 
-    const content = await fs.readFile(packedPath, "utf8");
-    const chunks = chunkText(content);
-    if (!chunks.length) {
-      summary.push({ repo: repo.id, skipped: "no chunks" });
-      continue;
-    }
+    try {
+      const content = await fs.readFile(packedPath, "utf8");
+      const chunks = chunkText(content);
+      if (!chunks.length) {
+        summary.push({ repo: repo.id, skipped: "no chunks" });
+        continue;
+      }
 
-    const entries = [];
-    for (let i = 0; i < chunks.length; i += BATCH_SIZE) {
-      const batch = chunks.slice(i, i + BATCH_SIZE);
-      const vectors = await callEmbeddings(batch);
-      batch.forEach((text, j) => {
-        entries.push({
-          id: `${repo.id}#content-${i + j}`,
-          entityId: repo.id,
-          entityTitle: repo.title,
-          type: "repo",
-          kind: "content",
-          chunkIndex: i + j,
-          text,
-          hash: sha1(text),
-          vector: vectors[j],
+      const entries = [];
+      for (let i = 0; i < chunks.length; i += BATCH_SIZE) {
+        const batch = chunks.slice(i, i + BATCH_SIZE);
+        const vectors = await callEmbeddings(batch);
+        batch.forEach((text, j) => {
+          entries.push({
+            id: `${repo.id}#content-${i + j}`,
+            entityId: repo.id,
+            entityTitle: repo.title,
+            type: "repo",
+            kind: "content",
+            chunkIndex: i + j,
+            text,
+            hash: sha1(text),
+            vector: vectors[j],
+          });
         });
-      });
-    }
+      }
 
-    await saveRepoContent(repo.slug, {
-      model: EMBEDDING_MODEL,
-      generatedAt: new Date().toISOString(),
-      sourceMtime,
-      entries,
-    });
-    summary.push({ repo: repo.id, chunks: entries.length, reused: false });
+      await saveRepoContent(repo.slug, {
+        model: EMBEDDING_MODEL,
+        generatedAt: new Date().toISOString(),
+        sourceMtime,
+        entries,
+      });
+      summary.push({ repo: repo.id, chunks: entries.length, reused: false });
+    } catch (err) {
+      summary.push({ repo: repo.id, skipped: `error: ${err.message ?? err}`.slice(0, 200) });
+    }
   }
 
   return summary;
