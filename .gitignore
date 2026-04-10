@@ -9,3 +9,4 @@ vault/
 .venv-marker/
 inbox/
 vendor/
+vault-export.tar.gz

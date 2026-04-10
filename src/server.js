@@ -35,6 +35,7 @@ import {
 import { buildContentIndex, buildEmbeddingIndex, semanticSearch } from "./embeddings.js";
 import { loadIndex } from "./indexer.js";
 import { chat, gapAnalysis, literatureReview } from "./rag.js";
+import { importVault } from "./export.js";
 
 const app = express();
 app.use(express.json({ limit: "1mb" }));
@@ -266,6 +267,39 @@ app.post("/api/gap-analysis", (req, res) => {
   if (!repoId) return res.status(400).json({ error: "Missing repoId" });
   const job = createJob(`gap-analysis ${repoId}`, async () => gapAnalysis(repoId));
   res.json({ jobId: job.id, status: job.status });
+});
+
+// ---------------------------------------------------------------------------
+// Import vault archive
+// ---------------------------------------------------------------------------
+app.post("/api/import", async (req, res) => {
+  try {
+    const chunks = [];
+    for await (const chunk of req) {
+      chunks.push(chunk);
+    }
+    const buf = Buffer.concat(chunks);
+    if (!buf.length) {
+      return res.status(400).json({ error: "Empty body. POST the tar.gz file as the raw request body." });
+    }
+
+    const tmpPath = path.join(path.dirname(fileURLToPath(import.meta.url)), "..", ".vault-import.tar.gz");
+    fs.writeFileSync(tmpPath, buf);
+
+    const result = await importVault(tmpPath);
+    fs.unlinkSync(tmpPath);
+
+    const index = await loadIndex();
+    res.json({
+      ok: true,
+      vaultRoot: result.vaultRoot,
+      papers: index.papers.length,
+      repos: index.repos.length,
+      relations: index.relations.length,
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // ---------------------------------------------------------------------------

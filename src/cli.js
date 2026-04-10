@@ -37,6 +37,7 @@ Usage:
   kb chat "<question>" [--top K] [--scope id,id,...] [--deep]
   kb lit-review <entity_id_or_slug> [--out path]
   kb gap-analysis <repo_id_or_slug> [--out path]
+  kb export [--out path]
   kb query-context <entity_id_or_slug>
 `.trim();
 }
@@ -231,6 +232,15 @@ export async function main(args) {
       const outPath = outFlag !== -1 ? rest[outFlag + 1] : undefined;
       const result = await gapAnalysis(entity, { outPath });
       console.log(`Wrote gap analysis covering ${result.paperCount} papers to: ${result.outPath}`);
+      return;
+    }
+    case "export": {
+      const { exportVault } = await import("./export.js");
+      const outFlag = rest.indexOf("--out");
+      const outPath = outFlag !== -1 ? rest[outFlag + 1] : undefined;
+      const slim = rest.includes("--slim");
+      const result = await exportVault({ outPath, slim });
+      console.log(`Exported ${result.fileCount} files (${(result.bytes / 1024 / 1024).toFixed(1)} MB) to: ${result.outPath}`);
       return;
     }
     case "query-context": {
