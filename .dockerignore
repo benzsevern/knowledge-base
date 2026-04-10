@@ -1,0 +1,9 @@
+node_modules
+.venv-marker
+vendor
+inbox
+sources
+vault/repos/*/packed-context.md
+.env
+.env.*
+*.log
