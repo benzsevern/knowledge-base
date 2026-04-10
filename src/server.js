@@ -31,6 +31,8 @@ import {
   queryContext,
   rebuildLinks,
   searchArxiv,
+  searchGithubRepos,
+  fetchRepoCandidates,
 } from "./commands.js";
 import { buildContentIndex, buildEmbeddingIndex, semanticSearch } from "./embeddings.js";
 import { loadIndex } from "./indexer.js";
@@ -166,6 +168,32 @@ app.post("/api/search-arxiv", async (req, res) => {
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
+});
+
+app.post("/api/search-github", async (req, res) => {
+  try {
+    const { query, limit = 20, sort = "stars" } = req.body;
+    if (!query) return res.status(400).json({ error: "Missing query" });
+    const result = await searchGithubRepos(query, { limit, sort });
+    res.json({ count: result.candidates.length, candidates: result.candidates });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post("/api/fetch-repo-candidates", (req, res) => {
+  const { top = 10 } = req.body;
+  const job = createJob(`fetch-repo-candidates --top ${top}`, async () => {
+    const result = await fetchRepoCandidates(top, {
+      onProgress: (info) => {
+        job.progress = info.record
+          ? { index: info.index, total: info.total, repoId: info.record.id, elapsedSec: info.elapsedSec }
+          : { index: info.index, total: info.total, error: info.error };
+      },
+    });
+    return { ingested: result.ingested.length };
+  });
+  res.json({ jobId: job.id, status: job.status });
 });
 
 // ---------------------------------------------------------------------------

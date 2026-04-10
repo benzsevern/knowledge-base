@@ -778,6 +778,72 @@ export async function searchArxiv(query, { limit = 20 } = {}) {
   return { outPath, candidates };
 }
 
+export async function searchGithubRepos(query, { limit = 20, sort = "stars" } = {}) {
+  const index = await loadIndex();
+  const ingested = new Set(index.repos.map((r) => r.slug));
+
+  const encoded = encodeURIComponent(query);
+  const url = `https://api.github.com/search/repositories?q=${encoded}&sort=${sort}&order=desc&per_page=${limit * 2}`;
+  const headers = { "User-Agent": "kb-discover/0.1", Accept: "application/vnd.github+json" };
+  if (process.env.GITHUB_TOKEN) {
+    headers.Authorization = `Bearer ${process.env.GITHUB_TOKEN}`;
+  }
+
+  const res = await fetch(url, { headers });
+  if (!res.ok) {
+    throw new Error(`GitHub API ${res.status}: ${await res.text().then((t) => t.slice(0, 300))}`);
+  }
+
+  const json = await res.json();
+  const candidates = [];
+  for (const item of json.items ?? []) {
+    const slug = slugify(item.name);
+    if (ingested.has(slug)) continue;
+
+    candidates.push({
+      fullName: item.full_name,
+      name: item.name,
+      description: item.description ?? "",
+      stars: item.stargazers_count,
+      language: item.language,
+      url: item.html_url,
+      cloneUrl: item.clone_url,
+      updatedAt: item.updated_at,
+      sources: ["github-search"],
+    });
+
+    if (candidates.length >= limit) break;
+  }
+
+  const discoveryDir = path.join(vaultRoot, "discovery");
+  await ensureDir(discoveryDir);
+  const outPath = path.join(discoveryDir, "github-candidates.json");
+  await fs.writeFile(
+    outPath,
+    `${JSON.stringify({ generatedAt: now(), query, count: candidates.length, candidates }, null, 2)}\n`,
+    "utf8",
+  );
+
+  return { outPath, candidates };
+}
+
+export async function fetchRepoCandidates(limit = 10, { onProgress } = {}) {
+  const discoveryPath = path.join(vaultRoot, "discovery", "github-candidates.json");
+  if (!(await fileExists(discoveryPath))) {
+    throw new Error("No candidates file. Run `kb search-github` first.");
+  }
+
+  const payload = JSON.parse(await fs.readFile(discoveryPath, "utf8"));
+  const top = (payload.candidates ?? []).slice(0, limit);
+  if (!top.length) {
+    return { ingested: [] };
+  }
+
+  const sources = top.map((c) => c.cloneUrl);
+  const results = await ingestReposBatch(sources, { onProgress });
+  return { ingested: results };
+}
+
 export async function queryContext(identifier) {
   const index = await loadIndex();
   if (!(await fileExists(indexPath))) {

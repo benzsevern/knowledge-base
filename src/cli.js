@@ -1,6 +1,7 @@
 import {
   discoverArxivCandidates,
   fetchArxivCandidates,
+  fetchRepoCandidates,
   ingestPaper,
   ingestRepo,
   ingestPapersBatch,
@@ -8,6 +9,7 @@ import {
   queryContext,
   rebuildLinks,
   searchArxiv,
+  searchGithubRepos,
 } from "./commands.js";
 import { buildContentIndex, buildEmbeddingIndex, semanticSearch } from "./embeddings.js";
 import { chat, gapAnalysis, literatureReview } from "./rag.js";
@@ -31,6 +33,8 @@ Usage:
   kb discover-arxiv
   kb search-arxiv "<query>" [--top N]
   kb fetch-candidates [--top N]
+  kb search-github "<query>" [--top N] [--sort stars|updated]
+  kb fetch-repo-candidates [--top N]
   kb embed [--force]
   kb embed-content [--repos id,id,...] [--all] [--force]
   kb search "<query>" [--top N] [--scope id,id,...] [--deep]
@@ -145,6 +149,44 @@ export async function main(args) {
         },
       });
       console.log(`\nDownloaded ${result.downloaded.length} PDFs, ingested ${result.ingested.length}.`);
+      return;
+    }
+    case "search-github": {
+      const query = rest.find((arg) => !arg.startsWith("--"));
+      if (!query) throw new Error("Missing search query.");
+      const topFlag = rest.indexOf("--top");
+      const limit = topFlag !== -1 ? Number(rest[topFlag + 1]) : 20;
+      const sortFlag = rest.indexOf("--sort");
+      const sort = sortFlag !== -1 ? rest[sortFlag + 1] : "stars";
+      const result = await searchGithubRepos(query, { limit, sort });
+      console.log(`Found ${result.candidates.length} repos (already-ingested excluded).`);
+      console.log(`Written to: ${result.outPath}`);
+      if (result.candidates.length) {
+        console.log("\nCandidates:");
+        for (const c of result.candidates) {
+          const desc = c.description ? ` — ${c.description.slice(0, 80)}` : "";
+          console.log(`  ${c.fullName}  ★${c.stars}  ${c.language ?? ""}${desc}`);
+        }
+        console.log(`\nRun \`kb fetch-repo-candidates --top N\` to clone and ingest.`);
+      }
+      return;
+    }
+    case "fetch-repo-candidates": {
+      const topFlag = rest.indexOf("--top");
+      const limit = topFlag !== -1 ? Number(rest[topFlag + 1]) : 10;
+      const result = await fetchRepoCandidates(limit, {
+        onProgress: ({ record, error, input, index, total, elapsedSec, etaSec }) => {
+          if (error) {
+            console.log(`[${index}/${total}] FAILED ${input}: ${error}`);
+            return;
+          }
+          const eta = etaSec > 0 ? `, ETA ${formatDuration(etaSec)}` : "";
+          console.log(
+            `[${index}/${total}] Ingested repo: ${record.id} (${formatDuration(elapsedSec)}${eta})`,
+          );
+        },
+      });
+      console.log(`\nIngested ${result.ingested.length} repos.`);
       return;
     }
     case "embed": {
