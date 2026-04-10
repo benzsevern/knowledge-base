@@ -363,13 +363,13 @@ export async function ingestRepo(repoInput, options = {}) {
   let origin = "local";
 
   if (isGitUrl(normalizedInput)) {
-    const repoName = inferRepoName(repoInput);
+    const repoName = inferRepoName(normalizedInput);
     sourcePath = path.join(repoCloneRoot, repoName);
-    sourceUrl = repoInput;
+    sourceUrl = normalizedInput;
     origin = "git";
 
     if (!(await fileExists(sourcePath))) {
-      cloneRepository(repoInput, sourcePath);
+      cloneRepository(normalizedInput, sourcePath);
     }
   }
 
