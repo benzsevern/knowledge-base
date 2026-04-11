@@ -141,6 +141,31 @@ export async function buildEmbeddingIndex({ force = false } = {}) {
     });
   }
 
+  for (const doc of index.docs ?? []) {
+    // Read all page files and chunk each one
+    const pageFiles = await fs.readdir(doc.pagesDir).catch(() => []);
+    let chunkIndex = 0;
+    for (const file of pageFiles.filter((f) => f.endsWith(".md"))) {
+      const content = await fs.readFile(path.join(doc.pagesDir, file), "utf8").catch(() => "");
+      if (!content) continue;
+      const chunks = chunkText(content);
+      for (const text of chunks) {
+        desired.push({
+          id: `${doc.id}#chunk-${chunkIndex}`,
+          entityId: doc.id,
+          entityTitle: doc.title,
+          type: "docs",
+          kind: "chunk",
+          chunkIndex,
+          text,
+          hash: sha1(text),
+          sourceFile: file,
+        });
+        chunkIndex += 1;
+      }
+    }
+  }
+
   // Decide which entries need (re)embedding.
   const toEmbed = [];
   const finalEntries = [];

@@ -8,6 +8,7 @@ import { findEntity, loadIndex, saveIndex, upsertEntity } from "./indexer.js";
 import { renderPaperNote, renderRelationNote, renderRepoNote, renderRepoRepoRelationNote } from "./markdown.js";
 import { extractPaper } from "./marker-adapter.js";
 import { packRepository } from "./repo-packer.js";
+import { ingestDocs as _ingestDocs } from "./docs-ingester.js";
 
 function now() {
   return new Date().toISOString();
@@ -638,6 +639,27 @@ export async function discoverArxivCandidates() {
   );
 
   return { outPath, candidates: sorted };
+}
+
+export async function ingestDocsSite(url, options = {}) {
+  await ensureVaultLayout();
+  const docsDir = path.join(vaultRoot, "docs");
+  await ensureDir(docsDir);
+
+  const record = await _ingestDocs(url, options);
+
+  let index = options.index ?? (await loadIndex());
+  const previous = (index.docs ?? []).find((d) => d.id === record.id);
+  if (previous) {
+    record.createdAt = previous.createdAt;
+  }
+
+  index.docs = upsertEntity(index.docs ?? [], record);
+  if (options.skipRebuild) {
+    return { record, index };
+  }
+  index = await rebuildLinks(index);
+  return record;
 }
 
 export async function ingestReposBatch(repoInputs, { onProgress } = {}) {

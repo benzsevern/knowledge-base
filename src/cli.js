@@ -2,6 +2,7 @@ import {
   discoverArxivCandidates,
   fetchArxivCandidates,
   fetchRepoCandidates,
+  ingestDocsSite,
   ingestPaper,
   ingestRepo,
   ingestPapersBatch,
@@ -29,6 +30,7 @@ Usage:
   kb ingest-papers <pdf_path> [pdf_path...]
   kb ingest-repo <repo_path_or_git_url>
   kb ingest-repos <repo_path> [repo_path...]
+  kb ingest-docs <url> [--max-pages N] [--include path,path] [--exclude path,path]
   kb rebuild-links
   kb discover-arxiv
   kb search-arxiv "<query>" [--top N]
@@ -98,6 +100,22 @@ export async function main(args) {
           );
         },
       });
+      return;
+    }
+    case "ingest-docs": {
+      const url = rest.find((arg) => !arg.startsWith("--"));
+      if (!url) throw new Error("Missing URL.");
+      const maxFlag = rest.indexOf("--max-pages");
+      const maxPages = maxFlag !== -1 ? Number(rest[maxFlag + 1]) : 100;
+      const includeFlag = rest.indexOf("--include");
+      const excludeFlag = rest.indexOf("--exclude");
+      const includePaths = includeFlag !== -1 ? rest[includeFlag + 1].split(",") : undefined;
+      const excludePaths = excludeFlag !== -1 ? rest[excludeFlag + 1].split(",") : undefined;
+      const titleFlag = rest.indexOf("--title");
+      const title = titleFlag !== -1 ? rest[titleFlag + 1] : undefined;
+      console.log(`Crawling ${url} (max ${maxPages} pages)...`);
+      const record = await ingestDocsSite(url, { maxPages, includePaths, excludePaths, title });
+      console.log(`Ingested docs: ${record.id} (${record.pageCount} pages, ${(record.totalBytes / 1024).toFixed(0)} KB)`);
       return;
     }
     case "rebuild-links": {

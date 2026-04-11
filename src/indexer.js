@@ -5,11 +5,15 @@ const emptyIndex = () => ({
   generatedAt: new Date(0).toISOString(),
   papers: [],
   repos: [],
+  docs: [],
   relations: [],
 });
 
 export async function loadIndex() {
-  return readJson(indexPath, emptyIndex());
+  const idx = await readJson(indexPath, emptyIndex());
+  // Backfill missing fields for older indexes.
+  if (!Array.isArray(idx.docs)) idx.docs = [];
+  return idx;
 }
 
 export async function saveIndex(index) {
@@ -17,6 +21,7 @@ export async function saveIndex(index) {
     generatedAt: new Date().toISOString(),
     papers: [...index.papers].sort((a, b) => a.id.localeCompare(b.id)),
     repos: [...index.repos].sort((a, b) => a.id.localeCompare(b.id)),
+    docs: [...(index.docs ?? [])].sort((a, b) => a.id.localeCompare(b.id)),
     relations: [...index.relations].sort((a, b) => a.id.localeCompare(b.id)),
   };
 
@@ -31,7 +36,7 @@ export function upsertEntity(collection, entity) {
 }
 
 export function findEntity(index, identifier) {
-  const match = [...index.papers, ...index.repos].find((item) => {
+  const match = [...index.papers, ...index.repos, ...(index.docs ?? [])].find((item) => {
     return item.id === identifier || item.slug === identifier || item.title === identifier || item.repoName === identifier;
   });
 

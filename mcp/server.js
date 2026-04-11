@@ -106,6 +106,22 @@ const TOOLS = [
     },
   },
   {
+    name: "kb_ingest_docs",
+    description: "Crawl and ingest a documentation website. Uses Firecrawl to scrape pages to markdown. Returns a job ID. Requires FIRECRAWL_API_KEY on the server.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        url: { type: "string", description: "Root URL of the documentation site to crawl" },
+        maxPages: { type: "number", description: "Max pages to crawl (default 100)" },
+        includePaths: { type: "array", items: { type: "string" }, description: "URL path patterns to include" },
+        excludePaths: { type: "array", items: { type: "string" }, description: "URL path patterns to exclude" },
+        title: { type: "string", description: "Optional display title (auto-inferred from page if omitted)" },
+      },
+      required: ["url"],
+      additionalProperties: false,
+    },
+  },
+  {
     name: "kb_ingest_repo",
     description: "Ingest a single GitHub repo. Accepts full URL or org/repo shorthand. Returns a job ID.",
     inputSchema: {
@@ -222,6 +238,8 @@ async function handleTool(name, args) {
       return post("/api/fetch-candidates", args);
     case "kb_fetch_repo_candidates":
       return post("/api/fetch-repo-candidates", args);
+    case "kb_ingest_docs":
+      return post("/api/ingest-docs", args);
     case "kb_ingest_repo":
       return post("/api/ingest-repo", args);
     case "kb_ingest_repos":

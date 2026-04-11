@@ -33,6 +33,7 @@ import {
   searchArxiv,
   searchGithubRepos,
   fetchRepoCandidates,
+  ingestDocsSite,
 } from "./commands.js";
 import { buildContentIndex, buildEmbeddingIndex, semanticSearch } from "./embeddings.js";
 import { loadIndex } from "./indexer.js";
@@ -72,6 +73,7 @@ app.get("/api/status", async (_req, res) => {
     res.json({
       papers: index.papers.length,
       repos: index.repos.length,
+      docs: (index.docs ?? []).length,
       relations: index.relations.length,
     });
   } catch (err) {
@@ -275,6 +277,21 @@ app.post("/api/ingest-repos", (req, res) => {
       },
     });
     return { ingested: results.length };
+  });
+  res.json({ jobId: job.id, status: job.status });
+});
+
+app.post("/api/ingest-docs", (req, res) => {
+  const { url, maxPages = 100, includePaths, excludePaths, title } = req.body;
+  if (!url) return res.status(400).json({ error: "Missing url" });
+  const job = createJob(`ingest-docs ${url}`, async () => {
+    const record = await ingestDocsSite(url, { maxPages, includePaths, excludePaths, title });
+    return {
+      id: record.id,
+      title: record.title,
+      pageCount: record.pageCount,
+      totalBytes: record.totalBytes,
+    };
   });
   res.json({ jobId: job.id, status: job.status });
 });
