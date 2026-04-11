@@ -10,3 +10,4 @@ vault/
 inbox/
 vendor/
 vault-export.tar.gz
+vault-seed*.json
