@@ -351,6 +351,73 @@ app.post("/api/gap-analysis", (req, res) => {
 });
 
 // ---------------------------------------------------------------------------
+// Patch index — upsert papers/repos/docs and embeddings without wiping others
+// ---------------------------------------------------------------------------
+app.post("/api/patch-index", async (req, res) => {
+  try {
+    const { papers = [], repos = [], docs = [], embeddings = null } = req.body;
+
+    const { vaultRoot } = await import("./config.js");
+    const fsp = await import("node:fs/promises");
+    const indexFile = path.join(vaultRoot, "kb_index.json");
+    const embFile = path.join(vaultRoot, "kb_embeddings.json");
+
+    // Load existing index (tolerate missing/corrupted)
+    let current;
+    try {
+      current = JSON.parse(await fsp.readFile(indexFile, "utf8"));
+    } catch {
+      current = { papers: [], repos: [], docs: [], relations: [] };
+    }
+    current.papers = current.papers ?? [];
+    current.repos = current.repos ?? [];
+    current.docs = current.docs ?? [];
+    current.relations = current.relations ?? [];
+
+    const upsert = (arr, incoming) => {
+      const byId = new Map(arr.map((e) => [e.id, e]));
+      for (const e of incoming) byId.set(e.id, e);
+      return [...byId.values()];
+    };
+
+    current.papers = upsert(current.papers, papers);
+    current.repos = upsert(current.repos, repos);
+    current.docs = upsert(current.docs, docs);
+    current.generatedAt = new Date().toISOString();
+    await fsp.writeFile(indexFile, JSON.stringify(current, null, 2), "utf8");
+
+    let embeddingsResult = null;
+    if (embeddings && Array.isArray(embeddings.entries)) {
+      let existing;
+      try {
+        existing = JSON.parse(await fsp.readFile(embFile, "utf8"));
+      } catch {
+        existing = { entries: [] };
+      }
+      const byId = new Map((existing.entries ?? []).map((e) => [e.id, e]));
+      for (const e of embeddings.entries) byId.set(e.id, e);
+      const merged = {
+        model: embeddings.model ?? existing.model ?? "text-embedding-3-small",
+        generatedAt: new Date().toISOString(),
+        entries: [...byId.values()],
+      };
+      await fsp.writeFile(embFile, JSON.stringify(merged, null, 2), "utf8");
+      embeddingsResult = merged.entries.length;
+    }
+
+    res.json({
+      ok: true,
+      papers: current.papers.length,
+      repos: current.repos.length,
+      docs: current.docs.length,
+      embeddings: embeddingsResult,
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ---------------------------------------------------------------------------
 // Recover index from filesystem — rebuild kb_index.json from entity meta files
 // ---------------------------------------------------------------------------
 app.post("/api/recover-index", async (_req, res) => {
