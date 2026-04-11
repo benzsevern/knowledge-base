@@ -72,13 +72,21 @@ app.get("/api/status", async (_req, res) => {
   try {
     const index = await loadIndex();
     res.json({
+      ok: true,
       papers: index.papers.length,
       repos: index.repos.length,
       docs: (index.docs ?? []).length,
       relations: index.relations.length,
     });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    // Degraded mode — return 200 so healthcheck doesn't kill the container.
+    // This lets us hit /api/recover-index to fix a corrupted kb_index.json.
+    res.json({
+      ok: false,
+      degraded: true,
+      error: err.message,
+      hint: "Call POST /api/recover-index to rebuild kb_index.json from the filesystem.",
+    });
   }
 });
 
