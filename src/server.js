@@ -38,6 +38,7 @@ import {
 import { buildContentIndex, buildEmbeddingIndex, semanticSearch } from "./embeddings.js";
 import { loadIndex } from "./indexer.js";
 import { chat, gapAnalysis, literatureReview } from "./rag.js";
+import { generateTopicBrief } from "./briefings.js";
 import { importVault } from "./export.js";
 
 const app = express();
@@ -314,6 +315,16 @@ app.post("/api/embed-content", (req, res) => {
   const { repos = null, all = false, force = false } = req.body;
   if (!repos && !all) return res.status(400).json({ error: "Specify repos array or all: true" });
   const job = createJob("embed-content", async () => buildContentIndex({ repoIds: repos, force }));
+  res.json({ jobId: job.id, status: job.status });
+});
+
+app.post("/api/topic-brief", (req, res) => {
+  const { topic, topK, types, synthesize, scope, outPath } = req.body;
+  if (!topic) return res.status(400).json({ error: "Missing topic" });
+  const job = createJob(`topic-brief ${topic}`, async () => {
+    const result = await generateTopicBrief(topic, { topK, types, synthesize, scope, outPath });
+    return result;
+  });
   res.json({ jobId: job.id, status: job.status });
 });
 

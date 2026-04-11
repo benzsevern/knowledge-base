@@ -192,6 +192,31 @@ const TOOLS = [
     inputSchema: { type: "object", properties: {}, additionalProperties: false },
   },
   {
+    name: "kb_topic_brief",
+    description: "Generate a topic briefing document pulling from papers, repos, and docs. Returns structured markdown with excerpts grouped by source. Use --synthesize for an LLM-written narrative version. Returns a job ID.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        topic: { type: "string", description: "Topic to brief on (e.g. 'privacy preserving record linkage')" },
+        topK: { type: "number", description: "Total chunks to retrieve (default 40)" },
+        types: {
+          type: "array",
+          items: { type: "string", enum: ["paper", "repo", "docs"] },
+          description: "Filter to specific entity types",
+        },
+        synthesize: { type: "boolean", description: "Include LLM-synthesized narrative summary" },
+        scope: {
+          type: "array",
+          items: { type: "string" },
+          description: "Repo IDs to deep-scope retrieval into (for code-heavy topics)",
+        },
+        outPath: { type: "string", description: "Custom output file path" },
+      },
+      required: ["topic"],
+      additionalProperties: false,
+    },
+  },
+  {
     name: "kb_lit_review",
     description: "Generate a literature review for a paper or repo based on linked papers. Returns a job ID.",
     inputSchema: {
@@ -254,6 +279,8 @@ async function handleTool(name, args) {
       return get("/api/jobs");
     case "kb_graph":
       return get("/api/graph");
+    case "kb_topic_brief":
+      return post("/api/topic-brief", args);
     case "kb_lit_review":
       return post("/api/lit-review", args);
     case "kb_gap_analysis":

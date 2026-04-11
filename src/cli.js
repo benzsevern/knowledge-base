@@ -14,6 +14,7 @@ import {
 } from "./commands.js";
 import { buildContentIndex, buildEmbeddingIndex, semanticSearch } from "./embeddings.js";
 import { chat, gapAnalysis, literatureReview } from "./rag.js";
+import { generateTopicBrief } from "./briefings.js";
 
 function formatDuration(seconds) {
   const sec = Math.max(0, Math.round(seconds));
@@ -41,6 +42,7 @@ Usage:
   kb embed-content [--repos id,id,...] [--all] [--force]
   kb search "<query>" [--top N] [--scope id,id,...] [--deep]
   kb chat "<question>" [--top K] [--scope id,id,...] [--deep]
+  kb topic-brief "<topic>" [--top N] [--types papers,repos,docs] [--synthesize] [--scope id,id] [--out path]
   kb lit-review <entity_id_or_slug> [--out path]
   kb gap-analysis <repo_id_or_slug> [--out path]
   kb export [--out path]
@@ -274,6 +276,33 @@ export async function main(args) {
       for (const hit of result.hits) {
         console.log(`  ${hit.score.toFixed(3)}  ${hit.entry.entityTitle}`);
       }
+      return;
+    }
+    case "topic-brief": {
+      const positional = rest.filter((arg, i) => !arg.startsWith("--") && (i === 0 || !rest[i - 1].startsWith("--")));
+      const topic = positional[0];
+      if (!topic) throw new Error("Missing topic.");
+      const topFlag = rest.indexOf("--top");
+      const topK = topFlag !== -1 ? Number(rest[topFlag + 1]) : 40;
+      const typesFlag = rest.indexOf("--types");
+      const typesArg = typesFlag !== -1 ? rest[typesFlag + 1].split(",") : null;
+      // Normalize: "papers" → "paper", "repos" → "repo"
+      const types = typesArg
+        ? typesArg.map((t) => t.replace(/s$/, "")).map((t) => (t === "doc" ? "docs" : t))
+        : null;
+      const synthesize = rest.includes("--synthesize");
+      const scopeFlag = rest.indexOf("--scope");
+      const scope = scopeFlag !== -1 ? rest[scopeFlag + 1].split(",") : null;
+      const outFlag = rest.indexOf("--out");
+      const outPath = outFlag !== -1 ? rest[outFlag + 1] : undefined;
+
+      const result = await generateTopicBrief(topic, { topK, types, synthesize, scope, outPath });
+      console.log(`Wrote topic brief (${result.stats.entities} entities, ${result.stats.chunks} chunks, ${(result.bytes / 1024).toFixed(0)} KB) to:`);
+      console.log(`  ${result.outPath}`);
+      if (result.stats.papers) console.log(`  Papers: ${result.stats.papers}`);
+      if (result.stats.repos) console.log(`  Repos: ${result.stats.repos}`);
+      if (result.stats.docs) console.log(`  Docs: ${result.stats.docs}`);
+      if (synthesize) console.log(`  Synthesized narrative included.`);
       return;
     }
     case "lit-review": {
