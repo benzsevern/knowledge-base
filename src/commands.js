@@ -195,10 +195,41 @@ async function regenerateNotes(index) {
   }
 }
 
+async function downloadToTempFile(url) {
+  const res = await fetch(url, { headers: { "User-Agent": "kb-ingester/0.1" } });
+  if (!res.ok) {
+    throw new Error(`Download failed ${res.status}: ${url}`);
+  }
+  const buf = Buffer.from(await res.arrayBuffer());
+  if (buf.slice(0, 5).toString() !== "%PDF-") {
+    throw new Error(`Not a PDF: ${url}`);
+  }
+  // Derive filename from URL
+  const urlObj = new URL(url);
+  const basename = path.basename(urlObj.pathname) || `paper-${Date.now()}.pdf`;
+  const tmpDir = path.join(projectRoot, "inbox", "url-cache");
+  await ensureDir(tmpDir);
+  const tmpPath = path.join(tmpDir, basename);
+  await fs.writeFile(tmpPath, buf);
+  return tmpPath;
+}
+
+function isHttpUrl(input) {
+  return /^https?:\/\//i.test(input);
+}
+
 export async function ingestPaper(pdfInputPath, options = {}) {
   await ensureVaultLayout();
 
-  const pdfPath = path.resolve(pdfInputPath);
+  // Support URLs: download first, then ingest the local copy.
+  let resolvedInput = pdfInputPath;
+  let originalUrl = "";
+  if (isHttpUrl(pdfInputPath)) {
+    originalUrl = pdfInputPath;
+    resolvedInput = await downloadToTempFile(pdfInputPath);
+  }
+
+  const pdfPath = path.resolve(resolvedInput);
   if (!(await fileExists(pdfPath))) {
     throw new Error(`Paper not found: ${pdfPath}`);
   }
@@ -245,7 +276,7 @@ export async function ingestPaper(pdfInputPath, options = {}) {
     createdAt: now(),
     updatedAt: now(),
     sourcePath: copiedPdfPath,
-    sourceUrl: "",
+    sourceUrl: originalUrl,
     notePath,
     tags: ["research"],
     authors: metadata.authors,
