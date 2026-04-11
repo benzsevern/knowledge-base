@@ -343,6 +343,111 @@ app.post("/api/gap-analysis", (req, res) => {
 });
 
 // ---------------------------------------------------------------------------
+// Recover index from filesystem — rebuild kb_index.json from entity meta files
+// ---------------------------------------------------------------------------
+app.post("/api/recover-index", async (_req, res) => {
+  try {
+    const fsp = await import("node:fs/promises");
+    const { vaultRoot } = await import("./config.js");
+    const papersDir = path.join(vaultRoot, "papers");
+    const reposDir = path.join(vaultRoot, "repos");
+    const docsDir = path.join(vaultRoot, "docs");
+
+    const papers = [];
+    const repos = [];
+    const docs = [];
+
+    for (const slug of await fsp.readdir(papersDir).catch(() => [])) {
+      const notePath = path.join(papersDir, slug, "note.md");
+      try {
+        const note = await fsp.readFile(notePath, "utf8");
+        const fmMatch = note.match(/^---\n([\s\S]*?)\n---/);
+        if (!fmMatch) continue;
+        const fm = {};
+        for (const line of fmMatch[1].split("\n")) {
+          const m = line.match(/^(\w+):\s*"?(.*?)"?$/);
+          if (m) fm[m[1]] = m[2];
+        }
+        if (!fm.id) continue;
+        papers.push({
+          id: fm.id, slug, type: "paper",
+          title: fm.title || slug,
+          createdAt: fm.created_at || new Date().toISOString(),
+          updatedAt: fm.updated_at || new Date().toISOString(),
+          sourcePath: fm.source_path || "", sourceUrl: fm.source_url || "",
+          notePath, tags: ["research"],
+          year: fm.year || "", summary: "",
+          methodologySummary: fm.methodology_summary || "",
+          constraintsSummary: fm.constraints || "",
+          authors: [], citations: [], assets: [],
+          markdownExcerpt: "", markdownHash: "", extractedJsonPath: "",
+        });
+      } catch {}
+    }
+
+    for (const slug of await fsp.readdir(reposDir).catch(() => [])) {
+      const metaPath = path.join(reposDir, slug, "packed-context.meta.json");
+      try {
+        const meta = JSON.parse(await fsp.readFile(metaPath, "utf8"));
+        repos.push({
+          id: meta.id, slug, type: "repo",
+          title: meta.title, repoName: meta.title,
+          createdAt: meta.generatedAt || new Date().toISOString(),
+          updatedAt: meta.generatedAt || new Date().toISOString(),
+          sourcePath: meta.sourcePath || "", sourceUrl: "",
+          origin: (meta.sourcePath || "").includes("sources/repos") ? "git" : "local",
+          notePath: path.join(reposDir, slug, "note.md"),
+          packedContextPath: meta.packedContextPath,
+          packedContextMetaPath: metaPath,
+          tags: ["codebase"],
+          languages: meta.languages || [],
+          entrypoints: meta.entrypoints || [],
+          keyModules: meta.keyModules || [],
+          summary: `Packed ${(meta.includedFiles || []).length} files.`,
+        });
+      } catch {}
+    }
+
+    for (const slug of await fsp.readdir(docsDir).catch(() => [])) {
+      const metaPath = path.join(docsDir, slug, "meta.json");
+      try {
+        const meta = JSON.parse(await fsp.readFile(metaPath, "utf8"));
+        docs.push({
+          id: meta.id, slug, type: "docs",
+          title: meta.title, sourceUrl: meta.sourceUrl,
+          createdAt: meta.crawledAt || new Date().toISOString(),
+          updatedAt: meta.crawledAt || new Date().toISOString(),
+          pageCount: meta.pageCount, totalBytes: meta.totalBytes,
+          notePath: path.join(docsDir, slug, "note.md"),
+          metaPath, pagesDir: path.join(docsDir, slug, "pages"),
+          tags: ["documentation"],
+        });
+      } catch {}
+    }
+
+    const newIndex = {
+      generatedAt: new Date().toISOString(),
+      papers, repos, docs, relations: [],
+    };
+    await fsp.writeFile(
+      path.join(vaultRoot, "kb_index.json"),
+      JSON.stringify(newIndex, null, 2),
+      "utf8",
+    );
+
+    res.json({
+      ok: true,
+      papers: papers.length,
+      repos: repos.length,
+      docs: docs.length,
+      note: "Relations cleared — run /api/rebuild-links to regenerate them.",
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message, stack: err.stack });
+  }
+});
+
+// ---------------------------------------------------------------------------
 // Import index + embeddings (lightweight seed — ~55 MB)
 // ---------------------------------------------------------------------------
 app.post("/api/import-index", express.json({ limit: "200mb" }), async (req, res) => {
