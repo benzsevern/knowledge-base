@@ -52,15 +52,26 @@ async function readPaperMarkdown(paper) {
 }
 
 function repoSummaryText(repo) {
-  return [
+  // Cap list fields to keep summary under the embedding model's 8192 token limit.
+  // Assume ~4 chars/token → ~28KB max. We cap well below that.
+  const MAX_LIST_CHARS = 4000;
+  const capList = (items) => {
+    const joined = (items ?? []).join(", ");
+    return joined.length > MAX_LIST_CHARS ? joined.slice(0, MAX_LIST_CHARS) + "..." : joined;
+  };
+
+  const text = [
     `# ${repo.title}`,
-    repo.summary ?? "",
-    `Languages: ${(repo.languages ?? []).join(", ")}`,
-    `Key modules: ${(repo.keyModules ?? []).join(", ")}`,
-    `Entrypoints: ${(repo.entrypoints ?? []).join(", ")}`,
+    (repo.summary ?? "").slice(0, 2000),
+    `Languages: ${(repo.languages ?? []).slice(0, 20).join(", ")}`,
+    `Key modules: ${capList(repo.keyModules)}`,
+    `Entrypoints: ${capList(repo.entrypoints)}`,
   ]
     .filter(Boolean)
     .join("\n\n");
+
+  // Hard cap at 24 KB (~6000 tokens, well under the 8192 limit).
+  return text.length > 24000 ? text.slice(0, 24000) : text;
 }
 
 async function callEmbeddings(inputs, retries = 5) {
