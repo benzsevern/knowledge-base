@@ -106,7 +106,29 @@ export async function loadEmbeddings() {
   if (!(await fileExists(EMBEDDINGS_PATH))) {
     return { model: EMBEDDING_MODEL, generatedAt: null, entries: [] };
   }
-  return JSON.parse(await fs.readFile(EMBEDDINGS_PATH, "utf8"));
+  // Stream-parse to avoid "Invalid string length" on large embedding files.
+  const { createReadStream } = await import("node:fs");
+  const { createInterface } = await import("node:readline");
+  const rl = createInterface({ input: createReadStream(EMBEDDINGS_PATH, { encoding: "utf8" }), crlfDelay: Infinity });
+  const store = { model: EMBEDDING_MODEL, generatedAt: null, entries: [] };
+  let inEntries = false;
+  for await (const line of rl) {
+    const trimmed = line.trim();
+    if (!inEntries) {
+      const modelMatch = trimmed.match(/^"model"\s*:\s*"(.+?)"/);
+      if (modelMatch) store.model = modelMatch[1];
+      const dateMatch = trimmed.match(/^"generatedAt"\s*:\s*"(.+?)"/);
+      if (dateMatch) store.generatedAt = dateMatch[1];
+      if (trimmed.startsWith('"entries"')) inEntries = true;
+    } else {
+      if (trimmed === "]" || trimmed === "]}") break;
+      if (trimmed.startsWith("{")) {
+        const clean = trimmed.endsWith(",") ? trimmed.slice(0, -1) : trimmed;
+        try { store.entries.push(JSON.parse(clean)); } catch {}
+      }
+    }
+  }
+  return store;
 }
 
 async function saveEmbeddings(store) {
