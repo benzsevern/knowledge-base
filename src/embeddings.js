@@ -111,7 +111,20 @@ export async function loadEmbeddings() {
 
 async function saveEmbeddings(store) {
   await ensureDir(path.dirname(EMBEDDINGS_PATH));
-  await fs.writeFile(EMBEDDINGS_PATH, `${JSON.stringify(store, null, 2)}\n`, "utf8");
+  // Stream JSON to avoid "Invalid string length" on large embedding indexes.
+  const { createWriteStream } = await import("node:fs");
+  const ws = createWriteStream(EMBEDDINGS_PATH, { encoding: "utf8" });
+  const write = (s) => new Promise((resolve, reject) => {
+    if (!ws.write(s)) ws.once("drain", resolve);
+    else resolve();
+  });
+  await write(`{\n  "model": ${JSON.stringify(store.model)},\n  "generatedAt": ${JSON.stringify(store.generatedAt)},\n  "entries": [\n`);
+  for (let i = 0; i < store.entries.length; i++) {
+    const line = JSON.stringify(store.entries[i]);
+    await write(`    ${line}${i < store.entries.length - 1 ? "," : ""}\n`);
+  }
+  await write("  ]\n}\n");
+  await new Promise((resolve, reject) => { ws.end(resolve); ws.on("error", reject); });
 }
 
 export async function buildEmbeddingIndex({ force = false } = {}) {
