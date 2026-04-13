@@ -10,8 +10,8 @@ const EMBEDDINGS_PATH = path.join(vaultRoot, "kb_embeddings.json");
 const EMBEDDING_URL = "https://api.openai.com/v1/embeddings";
 const EMBEDDING_MODEL = process.env.KB_EMBEDDING_MODEL ?? "text-embedding-3-small";
 const CHUNK_MAX_CHARS = 2000; // ~500 tokens
-const BATCH_SIZE = 2048; // OpenAI max for text-embedding-3-small
-const EMBED_CONCURRENCY = 5; // parallel API requests
+const BATCH_SIZE = 512; // conservative to stay under OpenAI's per-request token limit
+const EMBED_CONCURRENCY = 8; // parallel API requests to compensate for smaller batches
 
 function sha1(text) {
   return crypto.createHash("sha1").update(text).digest("hex");
@@ -75,7 +75,7 @@ function repoSummaryText(repo) {
   return text.length > 24000 ? text.slice(0, 24000) : text;
 }
 
-async function callEmbeddings(inputs, retries = 5) {
+async function callEmbeddingsRaw(inputs, retries = 5) {
   if (!process.env.OPENAI_API_KEY) {
     throw new Error("OPENAI_API_KEY not set.");
   }
@@ -100,6 +100,23 @@ async function callEmbeddings(inputs, retries = 5) {
     }
     const json = await res.json();
     return json.data.map((row) => row.embedding);
+  }
+}
+
+async function callEmbeddings(inputs) {
+  try {
+    return await callEmbeddingsRaw(inputs);
+  } catch (err) {
+    // On 400 (token limit exceeded), split in half and retry recursively.
+    if (err.message?.includes("400") && inputs.length > 1) {
+      const mid = Math.ceil(inputs.length / 2);
+      const [left, right] = await Promise.all([
+        callEmbeddings(inputs.slice(0, mid)),
+        callEmbeddings(inputs.slice(mid)),
+      ]);
+      return left.concat(right);
+    }
+    throw err;
   }
 }
 
