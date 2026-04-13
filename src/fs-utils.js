@@ -36,15 +36,78 @@ export async function sha1File(targetPath) {
 
 export async function writeJson(targetPath, value) {
   await ensureDir(path.dirname(targetPath));
-  await fs.writeFile(targetPath, `${JSON.stringify(value, null, 2)}\n`, "utf8");
+  // Stream large JSON to avoid "Invalid string length" on big indexes.
+  const { createWriteStream } = await import("node:fs");
+  const ws = createWriteStream(targetPath, { encoding: "utf8" });
+  const write = (s) => new Promise((resolve) => {
+    if (!ws.write(s)) ws.once("drain", resolve);
+    else resolve();
+  });
+  await write("{\n");
+  const keys = Object.keys(value);
+  for (let ki = 0; ki < keys.length; ki++) {
+    const key = keys[ki];
+    const val = value[key];
+    const comma = ki < keys.length - 1 ? "," : "";
+    if (Array.isArray(val)) {
+      await write(`  ${JSON.stringify(key)}: [\n`);
+      for (let i = 0; i < val.length; i++) {
+        const line = JSON.stringify(val[i]);
+        await write(`    ${line}${i < val.length - 1 ? "," : ""}\n`);
+      }
+      await write(`  ]${comma}\n`);
+    } else {
+      await write(`  ${JSON.stringify(key)}: ${JSON.stringify(val)}${comma}\n`);
+    }
+  }
+  await write("}\n");
+  await new Promise((resolve, reject) => { ws.end(resolve); ws.on("error", reject); });
 }
 
 export async function readJson(targetPath, fallback) {
   if (!(await fileExists(targetPath))) {
     return fallback;
   }
-
-  return JSON.parse(await fs.readFile(targetPath, "utf8"));
+  // Stream-parse to handle large files that exceed Node's string length limit.
+  const stat = await fs.stat(targetPath);
+  if (stat.size < 50 * 1024 * 1024) {
+    // Under 50MB — safe to parse normally.
+    return JSON.parse(await fs.readFile(targetPath, "utf8"));
+  }
+  // Large file — stream line-by-line.
+  const { createReadStream } = await import("node:fs");
+  const { createInterface } = await import("node:readline");
+  const rl = createInterface({ input: createReadStream(targetPath, { encoding: "utf8" }), crlfDelay: Infinity });
+  const result = {};
+  let currentKey = null;
+  let currentArray = null;
+  for await (const line of rl) {
+    const trimmed = line.trim();
+    const keyArrayMatch = trimmed.match(/^"(\w+)":\s*\[$/);
+    if (keyArrayMatch) {
+      currentKey = keyArrayMatch[1];
+      currentArray = [];
+      continue;
+    }
+    if (currentArray !== null) {
+      if (trimmed === "]" || trimmed === "],") {
+        result[currentKey] = currentArray;
+        currentArray = null;
+        currentKey = null;
+        continue;
+      }
+      if (trimmed.startsWith("{") || trimmed.startsWith('"')) {
+        const clean = trimmed.endsWith(",") ? trimmed.slice(0, -1) : trimmed;
+        try { currentArray.push(JSON.parse(clean)); } catch {}
+      }
+      continue;
+    }
+    const kvMatch = trimmed.match(/^"(\w+)":\s*(.+?),?$/);
+    if (kvMatch) {
+      try { result[kvMatch[1]] = JSON.parse(kvMatch[2].replace(/,$/, "")); } catch {}
+    }
+  }
+  return result;
 }
 
 export function escapeYaml(value) {
