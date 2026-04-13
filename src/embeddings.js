@@ -10,8 +10,8 @@ const EMBEDDINGS_PATH = path.join(vaultRoot, "kb_embeddings.json");
 const EMBEDDING_URL = "https://api.openai.com/v1/embeddings";
 const EMBEDDING_MODEL = process.env.KB_EMBEDDING_MODEL ?? "text-embedding-3-small";
 const CHUNK_MAX_CHARS = 2000; // ~500 tokens
-const BATCH_SIZE = 512; // conservative to stay under OpenAI's per-request token limit
-const EMBED_CONCURRENCY = 8; // parallel API requests to compensate for smaller batches
+const MAX_BATCH_TOKENS = 200_000; // stay well under OpenAI's ~300K per-request token limit
+const EMBED_CONCURRENCY = 8; // parallel API requests
 
 function sha1(text) {
   return crypto.createHash("sha1").update(text).digest("hex");
@@ -103,22 +103,31 @@ async function callEmbeddingsRaw(inputs, retries = 5) {
   }
 }
 
-async function callEmbeddings(inputs) {
-  try {
-    return await callEmbeddingsRaw(inputs);
-  } catch (err) {
-    // On 400 (token limit exceeded), split in half and retry recursively.
-    if (err.message?.includes("400") && inputs.length > 1) {
-      const mid = Math.ceil(inputs.length / 2);
-      const [left, right] = await Promise.all([
-        callEmbeddings(inputs.slice(0, mid)),
-        callEmbeddings(inputs.slice(mid)),
-      ]);
-      return left.concat(right);
-    }
-    throw err;
-  }
+// Estimate tokens from text (~4 chars per token).
+function estimateTokens(text) {
+  return Math.ceil(text.length / 4);
 }
+
+// Split texts into batches that fit under MAX_BATCH_TOKENS.
+function batchByTokens(texts) {
+  const batches = [];
+  let current = [];
+  let currentTokens = 0;
+  for (const text of texts) {
+    const tokens = estimateTokens(text);
+    if (current.length > 0 && currentTokens + tokens > MAX_BATCH_TOKENS) {
+      batches.push(current);
+      current = [];
+      currentTokens = 0;
+    }
+    current.push(text);
+    currentTokens += tokens;
+  }
+  if (current.length) batches.push(current);
+  return batches;
+}
+
+const callEmbeddings = callEmbeddingsRaw;
 
 export async function loadEmbeddings() {
   if (!(await fileExists(EMBEDDINGS_PATH))) {
@@ -243,17 +252,21 @@ export async function buildEmbeddingIndex({ force = false } = {}) {
   }
 
   let embeddedCount = 0;
-  // Build batch list, then process with concurrency.
-  const batches = [];
-  for (let i = 0; i < toEmbed.length; i += BATCH_SIZE) {
-    batches.push(toEmbed.slice(i, i + BATCH_SIZE));
+  // Token-aware batching to avoid OpenAI 400 errors.
+  const textBatches = batchByTokens(toEmbed.map((e) => e.text));
+  // Map text batches back to entry batches.
+  const entryBatches = [];
+  let offset = 0;
+  for (const tb of textBatches) {
+    entryBatches.push(toEmbed.slice(offset, offset + tb.length));
+    offset += tb.length;
   }
   let cursor = 0;
-  const workers = Array.from({ length: Math.min(EMBED_CONCURRENCY, batches.length) }, async () => {
+  const workers = Array.from({ length: Math.min(EMBED_CONCURRENCY, entryBatches.length) }, async () => {
     while (true) {
       const idx = cursor++;
-      if (idx >= batches.length) return;
-      const batch = batches[idx];
+      if (idx >= entryBatches.length) return;
+      const batch = entryBatches[idx];
       const vectors = await callEmbeddings(batch.map((entry) => entry.text));
       batch.forEach((entry, j) => {
         finalEntries.push({ ...entry, vector: vectors[j] });
@@ -344,9 +357,13 @@ export async function buildContentIndex({ repoIds = null, force = false } = {}) 
       }
 
       const entries = [];
+      // Token-aware batching with offsets for chunk IDs.
+      const tokenBatches = batchByTokens(chunks);
       const contentBatches = [];
-      for (let i = 0; i < chunks.length; i += BATCH_SIZE) {
-        contentBatches.push({ offset: i, texts: chunks.slice(i, i + BATCH_SIZE) });
+      let chunkOffset = 0;
+      for (const tb of tokenBatches) {
+        contentBatches.push({ offset: chunkOffset, texts: tb });
+        chunkOffset += tb.length;
       }
       let contentCursor = 0;
       const contentWorkers = Array.from({ length: Math.min(EMBED_CONCURRENCY, contentBatches.length) }, async () => {
