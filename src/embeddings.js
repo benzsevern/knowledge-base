@@ -10,7 +10,8 @@ const EMBEDDINGS_PATH = path.join(vaultRoot, "kb_embeddings.json");
 const EMBEDDING_URL = "https://api.openai.com/v1/embeddings";
 const EMBEDDING_MODEL = process.env.KB_EMBEDDING_MODEL ?? "text-embedding-3-small";
 const CHUNK_MAX_CHARS = 2000; // ~500 tokens
-const BATCH_SIZE = 64;
+const BATCH_SIZE = 2048; // OpenAI max for text-embedding-3-small
+const EMBED_CONCURRENCY = 5; // parallel API requests
 
 function sha1(text) {
   return crypto.createHash("sha1").update(text).digest("hex");
@@ -225,14 +226,25 @@ export async function buildEmbeddingIndex({ force = false } = {}) {
   }
 
   let embeddedCount = 0;
+  // Build batch list, then process with concurrency.
+  const batches = [];
   for (let i = 0; i < toEmbed.length; i += BATCH_SIZE) {
-    const batch = toEmbed.slice(i, i + BATCH_SIZE);
-    const vectors = await callEmbeddings(batch.map((entry) => entry.text));
-    batch.forEach((entry, j) => {
-      finalEntries.push({ ...entry, vector: vectors[j] });
-    });
-    embeddedCount += batch.length;
+    batches.push(toEmbed.slice(i, i + BATCH_SIZE));
   }
+  let cursor = 0;
+  const workers = Array.from({ length: Math.min(EMBED_CONCURRENCY, batches.length) }, async () => {
+    while (true) {
+      const idx = cursor++;
+      if (idx >= batches.length) return;
+      const batch = batches[idx];
+      const vectors = await callEmbeddings(batch.map((entry) => entry.text));
+      batch.forEach((entry, j) => {
+        finalEntries.push({ ...entry, vector: vectors[j] });
+      });
+      embeddedCount += batch.length;
+    }
+  });
+  await Promise.all(workers);
 
   finalEntries.sort((a, b) => a.id.localeCompare(b.id));
 
@@ -315,23 +327,33 @@ export async function buildContentIndex({ repoIds = null, force = false } = {}) 
       }
 
       const entries = [];
+      const contentBatches = [];
       for (let i = 0; i < chunks.length; i += BATCH_SIZE) {
-        const batch = chunks.slice(i, i + BATCH_SIZE);
-        const vectors = await callEmbeddings(batch);
-        batch.forEach((text, j) => {
-          entries.push({
-            id: `${repo.id}#content-${i + j}`,
-            entityId: repo.id,
-            entityTitle: repo.title,
-            type: "repo",
-            kind: "content",
-            chunkIndex: i + j,
-            text,
-            hash: sha1(text),
-            vector: vectors[j],
-          });
-        });
+        contentBatches.push({ offset: i, texts: chunks.slice(i, i + BATCH_SIZE) });
       }
+      let contentCursor = 0;
+      const contentWorkers = Array.from({ length: Math.min(EMBED_CONCURRENCY, contentBatches.length) }, async () => {
+        while (true) {
+          const idx = contentCursor++;
+          if (idx >= contentBatches.length) return;
+          const { offset, texts } = contentBatches[idx];
+          const vectors = await callEmbeddings(texts);
+          texts.forEach((text, j) => {
+            entries.push({
+              id: `${repo.id}#content-${offset + j}`,
+              entityId: repo.id,
+              entityTitle: repo.title,
+              type: "repo",
+              kind: "content",
+              chunkIndex: offset + j,
+              text,
+              hash: sha1(text),
+              vector: vectors[j],
+            });
+          });
+        }
+      });
+      await Promise.all(contentWorkers);
 
       await saveRepoContent(repo.slug, {
         model: EMBEDDING_MODEL,
