@@ -10,8 +10,8 @@ const EMBEDDINGS_PATH = path.join(vaultRoot, "kb_embeddings.json");
 const EMBEDDING_URL = "https://api.openai.com/v1/embeddings";
 const EMBEDDING_MODEL = process.env.KB_EMBEDDING_MODEL ?? "text-embedding-3-small";
 const CHUNK_MAX_CHARS = 2000; // ~500 tokens
-const MAX_BATCH_TOKENS = 200_000; // stay well under OpenAI's ~300K per-request token limit
-const EMBED_CONCURRENCY = 8; // parallel API requests
+const MAX_BATCH_TOKENS = 80_000; // very conservative; code is ~2x denser than 4 chars/token
+const EMBED_CONCURRENCY = 4; // parallel requests; lower to avoid 429 rate limits
 
 function sha1(text) {
   return crypto.createHash("sha1").update(text).digest("hex");
@@ -103,18 +103,24 @@ async function callEmbeddingsRaw(inputs, retries = 5) {
   }
 }
 
-// Estimate tokens from text (~4 chars per token).
+// Estimate tokens from text. Use ~2 chars/token for code-heavy content
+// (code has more punctuation/symbols, and one BPE token can cover only 1-2 chars).
 function estimateTokens(text) {
-  return Math.ceil(text.length / 4);
+  return Math.ceil(text.length / 2);
 }
 
+// Maximum tokens per single input (OpenAI's 8191 limit, with safety margin).
+const MAX_INPUT_TOKENS = 7000;
+
 // Split texts into batches that fit under MAX_BATCH_TOKENS.
+// Drops any single text exceeding MAX_INPUT_TOKENS (would 400 the entire batch).
 function batchByTokens(texts) {
   const batches = [];
   let current = [];
   let currentTokens = 0;
   for (const text of texts) {
     const tokens = estimateTokens(text);
+    if (tokens > MAX_INPUT_TOKENS) continue; // skip oversized chunks
     if (current.length > 0 && currentTokens + tokens > MAX_BATCH_TOKENS) {
       batches.push(current);
       current = [];
