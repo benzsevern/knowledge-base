@@ -40,6 +40,7 @@ import { loadIndex } from "./indexer.js";
 import { chat, gapAnalysis, literatureReview } from "./rag.js";
 import { generateTopicBrief } from "./briefings.js";
 import { importVault } from "./export.js";
+import { readJson, writeJson } from "./fs-utils.js";
 
 const app = express();
 app.use(express.json({ limit: "200mb" }));
@@ -465,26 +466,27 @@ app.post("/api/delete-entity", async (req, res) => {
     const indexFile = path.join(vaultRoot, "kb_index.json");
     const embFile = path.join(vaultRoot, "kb_embeddings.json");
 
-    // --- Index ---
-    let current;
-    try {
-      current = JSON.parse(await fsp.readFile(indexFile, "utf8"));
-    } catch {
-      return res.status(404).json({ error: "Index not found" });
-    }
+    // --- Index (stream-parse via readJson — file may exceed Node's
+    //     max string length) ---
+    const current = await readJson(indexFile, null);
+    if (!current) return res.status(404).json({ error: "Index not found" });
+    current.papers = current.papers ?? [];
+    current.repos = current.repos ?? [];
+    current.docs = current.docs ?? [];
+    current.relations = current.relations ?? [];
 
     const before = {
-      papers: current.papers?.length ?? 0,
-      repos: current.repos?.length ?? 0,
-      docs: current.docs?.length ?? 0,
-      relations: current.relations?.length ?? 0,
+      papers: current.papers.length,
+      repos: current.repos.length,
+      docs: current.docs.length,
+      relations: current.relations.length,
     };
 
     let slug = "";
     let type = "";
     let notePath = "";
     for (const kind of ["papers", "repos", "docs"]) {
-      const arr = current[kind] ?? [];
+      const arr = current[kind];
       const hit = arr.find((e) => e.id === id);
       if (hit) {
         slug = hit.slug ?? "";
@@ -496,32 +498,31 @@ app.post("/api/delete-entity", async (req, res) => {
     }
     if (!slug) return res.status(404).json({ error: `Entity ${id} not found` });
 
-    current.relations = (current.relations ?? []).filter(
+    current.relations = current.relations.filter(
       (r) => r.fromId !== id && r.toId !== id,
     );
     current.generatedAt = new Date().toISOString();
-    await fsp.writeFile(indexFile, JSON.stringify(current, null, 2), "utf8");
+    await writeJson(indexFile, current);
 
     // --- Embeddings (summary + per-entity content chunks) ---
     let embRemoved = 0;
-    try {
-      const emb = JSON.parse(await fsp.readFile(embFile, "utf8"));
-      const entries = emb.entries ?? [];
+    const emb = await readJson(embFile, null);
+    if (emb && Array.isArray(emb.entries)) {
       // Match by exact id (summary) or by id prefix with ":" (chunked entries
       // are conventionally keyed "entityId:chunkN"). Also match entityId field
       // if present.
-      const kept = entries.filter((e) => {
+      const kept = emb.entries.filter((e) => {
         if (e.id === id) return false;
         if (typeof e.id === "string" && e.id.startsWith(`${id}:`)) return false;
         if (e.entityId === id) return false;
         return true;
       });
-      embRemoved = entries.length - kept.length;
-      emb.entries = kept;
-      emb.generatedAt = new Date().toISOString();
-      await fsp.writeFile(embFile, JSON.stringify(emb, null, 2), "utf8");
-    } catch {
-      // No embeddings file — nothing to do.
+      embRemoved = emb.entries.length - kept.length;
+      await writeJson(embFile, {
+        model: emb.model ?? "text-embedding-3-small",
+        generatedAt: new Date().toISOString(),
+        entries: kept,
+      });
     }
 
     // --- Vault directory ---
