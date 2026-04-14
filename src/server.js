@@ -448,6 +448,118 @@ app.post("/api/patch-index", async (req, res) => {
 });
 
 // ---------------------------------------------------------------------------
+// Delete entity — remove a paper/repo/docs entry and its dependent state.
+// Body: { id: string, removeFiles?: boolean }
+// Removes: index entry, relations involving it, embedding entries
+//   (summary + content chunks), optional vault directory.
+// ---------------------------------------------------------------------------
+app.post("/api/delete-entity", async (req, res) => {
+  try {
+    const { id, removeFiles = true } = req.body ?? {};
+    if (!id || typeof id !== "string") {
+      return res.status(400).json({ error: "Missing id" });
+    }
+
+    const { vaultRoot } = await import("./config.js");
+    const fsp = await import("node:fs/promises");
+    const indexFile = path.join(vaultRoot, "kb_index.json");
+    const embFile = path.join(vaultRoot, "kb_embeddings.json");
+
+    // --- Index ---
+    let current;
+    try {
+      current = JSON.parse(await fsp.readFile(indexFile, "utf8"));
+    } catch {
+      return res.status(404).json({ error: "Index not found" });
+    }
+
+    const before = {
+      papers: current.papers?.length ?? 0,
+      repos: current.repos?.length ?? 0,
+      docs: current.docs?.length ?? 0,
+      relations: current.relations?.length ?? 0,
+    };
+
+    let slug = "";
+    let type = "";
+    let notePath = "";
+    for (const kind of ["papers", "repos", "docs"]) {
+      const arr = current[kind] ?? [];
+      const hit = arr.find((e) => e.id === id);
+      if (hit) {
+        slug = hit.slug ?? "";
+        type = hit.type ?? kind.slice(0, -1);
+        notePath = hit.notePath ?? "";
+        current[kind] = arr.filter((e) => e.id !== id);
+        break;
+      }
+    }
+    if (!slug) return res.status(404).json({ error: `Entity ${id} not found` });
+
+    current.relations = (current.relations ?? []).filter(
+      (r) => r.fromId !== id && r.toId !== id,
+    );
+    current.generatedAt = new Date().toISOString();
+    await fsp.writeFile(indexFile, JSON.stringify(current, null, 2), "utf8");
+
+    // --- Embeddings (summary + per-entity content chunks) ---
+    let embRemoved = 0;
+    try {
+      const emb = JSON.parse(await fsp.readFile(embFile, "utf8"));
+      const entries = emb.entries ?? [];
+      // Match by exact id (summary) or by id prefix with ":" (chunked entries
+      // are conventionally keyed "entityId:chunkN"). Also match entityId field
+      // if present.
+      const kept = entries.filter((e) => {
+        if (e.id === id) return false;
+        if (typeof e.id === "string" && e.id.startsWith(`${id}:`)) return false;
+        if (e.entityId === id) return false;
+        return true;
+      });
+      embRemoved = entries.length - kept.length;
+      emb.entries = kept;
+      emb.generatedAt = new Date().toISOString();
+      await fsp.writeFile(embFile, JSON.stringify(emb, null, 2), "utf8");
+    } catch {
+      // No embeddings file — nothing to do.
+    }
+
+    // --- Vault directory ---
+    let removedDir = "";
+    if (removeFiles && slug) {
+      const subdir =
+        type === "paper" ? "papers" : type === "repo" ? "repos" : type === "docs" ? "docs" : "";
+      if (subdir) {
+        const dir = path.join(vaultRoot, subdir, slug);
+        try {
+          await fsp.rm(dir, { recursive: true, force: true });
+          removedDir = dir;
+        } catch {}
+      }
+    }
+
+    res.json({
+      ok: true,
+      id,
+      slug,
+      type,
+      notePath,
+      embeddingsRemoved: embRemoved,
+      removedDir,
+      before,
+      after: {
+        papers: current.papers?.length ?? 0,
+        repos: current.repos?.length ?? 0,
+        docs: current.docs?.length ?? 0,
+        relations: current.relations?.length ?? 0,
+      },
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ---------------------------------------------------------------------------
 // Recover index from filesystem — rebuild kb_index.json from entity meta files
 // ---------------------------------------------------------------------------
 app.post("/api/recover-index", async (_req, res) => {

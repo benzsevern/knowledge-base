@@ -84,10 +84,30 @@ function extractSection(markdown, headingMatchers) {
   return trimExcerpt(buffer.join("\n").trim(), 800);
 }
 
-function derivePaperMetadata(markdown, pdfPath) {
+// Strip only a literal .pdf extension — path.extname() misreads dots in
+// arxiv IDs like "2508.08322" as extensions.
+function stripPdfExtension(filename) {
+  return filename.replace(/\.pdf$/i, "");
+}
+
+// Detect arxiv ID from URL or filename. Handles new-style (2508.08322)
+// and old-style (cs.CL/0401001) identifiers, with optional version suffix.
+function detectArxivId(...inputs) {
+  const newStyle = /\b(\d{4}\.\d{4,5})(v\d+)?\b/;
+  const oldStyle = /\b([a-z-]+(?:\.[A-Z]{2})?\/\d{7})(v\d+)?\b/;
+  for (const input of inputs) {
+    if (!input) continue;
+    const m = input.match(newStyle) || input.match(oldStyle);
+    if (m) return m[1];
+  }
+  return "";
+}
+
+function derivePaperMetadata(markdown, pdfPath, fallbackTitle = "") {
   const titleMatch = String(markdown).match(/^#\s+(.+)$/m);
-  const title = titleMatch?.[1]?.trim() || path.basename(pdfPath, path.extname(pdfPath));
-  const yearMatch = title.match(/\b(19|20)\d{2}\b/) || path.basename(pdfPath).match(/\b(19|20)\d{2}\b/);
+  const filenameStem = stripPdfExtension(path.basename(pdfPath));
+  const title = titleMatch?.[1]?.trim() || fallbackTitle || filenameStem;
+  const yearMatch = title.match(/\b(19|20)\d{2}\b/) || filenameStem.match(/\b(19|20)\d{2}\b/);
   const summary = trimExcerpt(
     String(markdown)
       .replace(/^---[\s\S]*?---/, "")
@@ -204,9 +224,11 @@ async function downloadToTempFile(url) {
   if (buf.slice(0, 5).toString() !== "%PDF-") {
     throw new Error(`Not a PDF: ${url}`);
   }
-  // Derive filename from URL
+  // Derive filename from URL. Ensure .pdf extension so downstream
+  // path.extname() calls don't misinterpret dots in arxiv IDs.
   const urlObj = new URL(url);
-  const basename = path.basename(urlObj.pathname) || `paper-${Date.now()}.pdf`;
+  let basename = path.basename(urlObj.pathname) || `paper-${Date.now()}.pdf`;
+  if (!/\.pdf$/i.test(basename)) basename += ".pdf";
   const tmpDir = path.join(projectRoot, "inbox", "url-cache");
   await ensureDir(tmpDir);
   const tmpPath = path.join(tmpDir, basename);
@@ -234,7 +256,9 @@ export async function ingestPaper(pdfInputPath, options = {}) {
     throw new Error(`Paper not found: ${pdfPath}`);
   }
 
-  const slug = slugify(path.basename(pdfPath, path.extname(pdfPath)));
+  const filenameStem = stripPdfExtension(path.basename(pdfPath));
+  const arxivId = detectArxivId(originalUrl, filenameStem);
+  const slug = arxivId ? slugify(`arxiv-${arxivId}`) : slugify(filenameStem);
   const paperDir = path.join(vaultRoot, "papers", slug);
   const sourceDir = path.join(paperDir, "source");
   const rawDir = path.join(paperDir, "raw");
@@ -263,10 +287,12 @@ export async function ingestPaper(pdfInputPath, options = {}) {
   }
 
   if (!extractedMarkdown) {
-    extractedMarkdown = `# ${path.basename(pdfPath, path.extname(pdfPath))}\n\nSummary pending extraction.\n\n## Constraints\nManual review required.\n`;
+    const fallbackHeading = arxivId ? `arXiv:${arxivId}` : filenameStem;
+    extractedMarkdown = `# ${fallbackHeading}\n\nSummary pending extraction.\n\n## Constraints\nManual review required.\n`;
   }
 
-  const metadata = derivePaperMetadata(extractedMarkdown, pdfPath);
+  const fallbackTitle = arxivId ? `arXiv:${arxivId}` : filenameStem;
+  const metadata = derivePaperMetadata(extractedMarkdown, pdfPath, fallbackTitle);
   const notePath = path.join(paperDir, "note.md");
   const record = {
     id: stableId("paper", slug),
@@ -277,6 +303,7 @@ export async function ingestPaper(pdfInputPath, options = {}) {
     updatedAt: now(),
     sourcePath: copiedPdfPath,
     sourceUrl: originalUrl,
+    arxivId: arxivId || undefined,
     notePath,
     tags: ["research"],
     authors: metadata.authors,
