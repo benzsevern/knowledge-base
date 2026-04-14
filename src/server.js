@@ -45,6 +45,36 @@ const app = express();
 app.use(express.json({ limit: "200mb" }));
 
 // ---------------------------------------------------------------------------
+// Bearer-token gate for expensive / write endpoints
+// ---------------------------------------------------------------------------
+// When KB_API_TOKEN is set, requests to PROTECTED_PREFIXES must include a
+// matching Authorization: Bearer <token> header. When unset, the gate is
+// disabled (dev default). /api/search is protected because every call costs
+// an OpenAI embedding round-trip — even though the route is "read-only".
+const KB_API_TOKEN = process.env.KB_API_TOKEN || "";
+const PROTECTED_PREFIXES = [
+  "/api/search",
+  "/api/chat",
+  "/api/topic-brief",
+  "/api/gap-analysis",
+  "/api/lit-review",
+  "/api/embed",
+  "/api/ingest",
+  "/api/patch-index",
+  "/api/recover-index",
+  "/api/import-index",
+  "/api/rebuild-links",
+];
+app.use((req, res, next) => {
+  if (!KB_API_TOKEN) return next();
+  if (!PROTECTED_PREFIXES.some((p) => req.path.startsWith(p))) return next();
+  const header = req.get("authorization") || "";
+  const token = header.startsWith("Bearer ") ? header.slice(7) : "";
+  if (token !== KB_API_TOKEN) return res.status(401).json({ error: "Unauthorized" });
+  next();
+});
+
+// ---------------------------------------------------------------------------
 // Background job tracker
 // ---------------------------------------------------------------------------
 const jobs = new Map();
