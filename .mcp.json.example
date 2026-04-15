@@ -5,7 +5,8 @@
       "command": "node",
       "args": ["D:/show_case/knowledge_base/mcp/server.js"],
       "env": {
-        "KB_API_URL": "https://kb-api-production-d23f.up.railway.app"
+        "KB_API_URL": "https://kb-api-production-d23f.up.railway.app",
+        "KB_API_TOKEN": "<set from railway variables --kv | grep KB_API_TOKEN>"
       }
     }
   }

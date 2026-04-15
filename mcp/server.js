@@ -304,15 +304,21 @@ async function handleTool(name, args) {
   }
 }
 
+const TOKEN = process.env.KB_API_TOKEN ?? "";
+
+function authHeaders(extra = {}) {
+  return TOKEN ? { ...extra, Authorization: `Bearer ${TOKEN}` } : extra;
+}
+
 async function get(path) {
-  const res = await fetch(`${API}${path}`);
+  const res = await fetch(`${API}${path}`, { headers: authHeaders() });
   return await res.json();
 }
 
 async function post(path, body) {
   const res = await fetch(`${API}${path}`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: authHeaders({ "Content-Type": "application/json" }),
     body: JSON.stringify(body),
   });
   return await res.json();

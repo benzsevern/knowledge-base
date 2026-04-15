@@ -6,6 +6,8 @@ vault/
 .env
 .env.*
 !.env.example
+.mcp.json
+!.mcp.json.example
 .venv-marker/
 inbox/
 vendor/
