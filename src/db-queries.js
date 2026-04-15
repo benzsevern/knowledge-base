@@ -223,19 +223,37 @@ export async function semanticSearchPG(queryVector, { topK = 10, types = null, s
 }
 
 // ---------------------------------------------------------------------------
-// listEntityEmbeddingsPG — one row per entity with its summary-kind embedding.
-// Used by golden-showcase's knowledge-map generator to UMAP-project all
-// entities to 2D in one shot. Not paginated — corpus is ~1.5K entities.
-// Vector is serialized via ::text ("[0.1,0.2,...]") and parsed client-side.
+// listEntityEmbeddingsPG — one representative vector per entity.
+//   - Prefers the kind='summary' row when it exists (today: only repos).
+//   - Falls back to the centroid (avg) of all chunks for entities without one.
+//
+// Consumers need "a vector that represents this entity as a whole" — summary
+// when available is cleanest, centroid is the natural fallback. Used by
+// golden-showcase's knowledge-map generator to UMAP-project all entities
+// to 2D in one shot. Not paginated — corpus is ~1.5K entities.
+// Vector is serialized via ::text and parsed client-side.
 // ---------------------------------------------------------------------------
 export async function listEntityEmbeddingsPG() {
   const pool = db();
   const { rows } = await pool.query(`
+    WITH summary AS (
+      SELECT entity_id, embedding
+      FROM embeddings
+      WHERE kind = 'summary'
+    ),
+    centroid AS (
+      SELECT entity_id, avg(embedding) AS embedding
+      FROM embeddings
+      GROUP BY entity_id
+    )
     SELECT e.id, e.type, e.title, e.slug,
            e.meta->>'year' AS year,
-           em.embedding::text AS vector_text
+           COALESCE(s.embedding, c.embedding)::text AS vector_text,
+           CASE WHEN s.embedding IS NOT NULL THEN 'summary' ELSE 'centroid' END AS source
     FROM entities e
-    JOIN embeddings em ON em.entity_id = e.id AND em.kind = 'summary'
+    LEFT JOIN summary s  ON s.entity_id = e.id
+    LEFT JOIN centroid c ON c.entity_id = e.id
+    WHERE COALESCE(s.embedding, c.embedding) IS NOT NULL
     ORDER BY e.id
   `);
   return rows.map((r) => ({
@@ -244,6 +262,7 @@ export async function listEntityEmbeddingsPG() {
     title: r.title,
     slug: r.slug,
     year: r.year ?? null,
+    source: r.source,
     vector: JSON.parse(r.vector_text),
   }));
 }
