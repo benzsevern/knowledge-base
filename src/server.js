@@ -377,6 +377,42 @@ app.post("/api/ingest-paper", (req, res) => {
   res.json({ jobId: job.id, status: job.status });
 });
 
+// Download an arxiv PDF and ingest it. Accepts { arxivId } or { url }.
+// Normalizes common arxiv URL shapes (abs/, pdf/, with or without .pdf).
+app.post("/api/ingest-arxiv", async (req, res) => {
+  try {
+    const { arxivId, url } = req.body ?? {};
+    const id = (arxivId ?? url?.match(/\d{4}\.\d{4,5}/)?.[0] ?? "").trim();
+    if (!id) return res.status(400).json({ error: "Missing arxivId or URL containing one" });
+
+    const { projectRoot } = await import("./config.js");
+    const { ensureDir, fileExists } = await import("./fs-utils.js");
+    const fsp = await import("node:fs/promises");
+    const inboxDir = path.join(projectRoot, "inbox");
+    await ensureDir(inboxDir);
+    const pdfPath = path.join(inboxDir, `${id}.pdf`);
+
+    if (!(await fileExists(pdfPath))) {
+      const pdfUrl = `https://arxiv.org/pdf/${id}.pdf`;
+      const r = await fetch(pdfUrl, { headers: { "User-Agent": "kb-discover/0.1" } });
+      if (!r.ok) return res.status(502).json({ error: `arxiv fetch ${r.status}` });
+      const buf = Buffer.from(await r.arrayBuffer());
+      if (buf.slice(0, 5).toString() !== "%PDF-") {
+        return res.status(502).json({ error: "arxiv response not a PDF" });
+      }
+      await fsp.writeFile(pdfPath, buf);
+    }
+
+    const job = createJob(`ingest-arxiv ${id}`, async () => {
+      const record = await ingestPaper(pdfPath);
+      return { id: record.id, title: record.title, arxivId: id };
+    });
+    res.json({ jobId: job.id, status: job.status, arxivId: id });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 app.post("/api/ingest-papers", (req, res) => {
   const { paths = [] } = req.body;
   if (!paths.length) return res.status(400).json({ error: "Missing paths" });
