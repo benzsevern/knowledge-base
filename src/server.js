@@ -42,6 +42,7 @@ import { generateTopicBrief } from "./briefings.js";
 import { importVault } from "./export.js";
 import { readJson, writeJson } from "./fs-utils.js";
 import { dbHealth, runMigrations, hasDatabase } from "./db.js";
+import { useDbReads, statusCounts } from "./db-queries.js";
 
 const app = express();
 app.use(express.json({ limit: "200mb" }));
@@ -129,6 +130,9 @@ app.post("/api/admin/migrate-data", async (req, res) => {
       dryRun,
       onProgress: (snapshot) => {
         job.progress = snapshot;
+        // Mirror to stdout so log tail shows progress even if the in-memory
+        // job state is lost to a restart.
+        console.log(`[migrate] ${JSON.stringify(snapshot).slice(0, 400)}`);
       },
     });
     return stats;
@@ -137,13 +141,29 @@ app.post("/api/admin/migrate-data", async (req, res) => {
 });
 
 // ---------------------------------------------------------------------------
+// Ping — absolutely cheap liveness endpoint. Used by Railway healthchecks so
+// heavy in-process work (migrations, index rebuilds) doesn't cause restarts.
+// ---------------------------------------------------------------------------
+app.get("/api/ping", (_req, res) => {
+  res.json({ ok: true });
+});
+
+// ---------------------------------------------------------------------------
 // Status
 // ---------------------------------------------------------------------------
 app.get("/api/status", async (_req, res) => {
   try {
+    // Prefer Postgres counts once the migration has populated the tables —
+    // they're a single O(1) query and don't touch the 100MB+ kb_index.json.
+    if (await useDbReads()) {
+      const counts = await statusCounts();
+      res.json({ ok: true, source: "postgres", ...counts });
+      return;
+    }
     const index = await loadIndex();
     res.json({
       ok: true,
+      source: "json",
       papers: index.papers.length,
       repos: index.repos.length,
       docs: (index.docs ?? []).length,

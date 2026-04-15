@@ -1,0 +1,202 @@
+// Postgres-backed read queries. Mirrors the shape of the JSON-backed
+// functions in indexer.js + embeddings.js so call sites can swap cleanly.
+//
+// The feature flag `useDbReads()` is the single toggle — returns true when
+// DATABASE_URL is set AND the entities table has rows. That way a misconfigured
+// deploy (env var set but migration not run) transparently falls back to JSON.
+
+import { db, hasDatabase } from "./db.js";
+
+let _cachedReady = null;
+let _cachedReadyAt = 0;
+const READY_CACHE_MS = 30_000;
+
+export async function useDbReads() {
+  if (!hasDatabase()) return false;
+  const now = Date.now();
+  if (_cachedReady !== null && now - _cachedReadyAt < READY_CACHE_MS) {
+    return _cachedReady;
+  }
+  try {
+    const { rows } = await db().query("SELECT count(*)::int AS c FROM entities");
+    _cachedReady = rows[0].c > 0;
+  } catch {
+    _cachedReady = false;
+  }
+  _cachedReadyAt = now;
+  return _cachedReady;
+}
+
+// Force the readiness probe to re-run — useful immediately after migration.
+export function resetReadyCache() {
+  _cachedReady = null;
+}
+
+// ---------------------------------------------------------------------------
+// Row → record: inflate an entities row back into the JSON-shaped record
+// callers expect. `meta` JSONB carries everything that isn't id/type/slug/title.
+// ---------------------------------------------------------------------------
+function inflate(row) {
+  return {
+    id: row.id,
+    type: row.type,
+    slug: row.slug,
+    title: row.title,
+    createdAt: row.created_at?.toISOString?.() ?? row.created_at,
+    updatedAt: row.updated_at?.toISOString?.() ?? row.updated_at,
+    ...row.meta,
+  };
+}
+
+function inflateRelation(row) {
+  return {
+    fromId: row.from_id,
+    toId: row.to_id,
+    relationType: row.relation_type,
+    score: row.score,
+    evidence: row.evidence,
+    notePath: row.note_path,
+    updatedAt: row.updated_at?.toISOString?.() ?? row.updated_at,
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Status — cheap COUNTs only, avoids pulling entities.
+// ---------------------------------------------------------------------------
+export async function statusCounts() {
+  const pool = db();
+  const { rows } = await pool.query(`
+    SELECT
+      (SELECT count(*)::int FROM entities WHERE type = 'paper')  AS papers,
+      (SELECT count(*)::int FROM entities WHERE type = 'repo')   AS repos,
+      (SELECT count(*)::int FROM entities WHERE type = 'docs')   AS docs,
+      (SELECT count(*)::int FROM relations)                      AS relations,
+      (SELECT count(*)::int FROM embeddings)                     AS embeddings
+  `);
+  return rows[0];
+}
+
+// ---------------------------------------------------------------------------
+// loadIndexPG — returns the same shape as indexer.loadIndex().
+// Only use this when callers need the full graph; most read paths should
+// use the narrower helpers below.
+// ---------------------------------------------------------------------------
+export async function loadIndexPG() {
+  const pool = db();
+  const [papersQ, reposQ, docsQ, relsQ] = await Promise.all([
+    pool.query("SELECT * FROM entities WHERE type = 'paper'"),
+    pool.query("SELECT * FROM entities WHERE type = 'repo'"),
+    pool.query("SELECT * FROM entities WHERE type = 'docs'"),
+    pool.query("SELECT * FROM relations"),
+  ]);
+  return {
+    generatedAt: new Date().toISOString(),
+    papers: papersQ.rows.map(inflate),
+    repos: reposQ.rows.map(inflate),
+    docs: docsQ.rows.map(inflate),
+    relations: relsQ.rows.map(inflateRelation),
+  };
+}
+
+// ---------------------------------------------------------------------------
+// findEntityPG — resolve by id, slug, title, or repoName.
+// ---------------------------------------------------------------------------
+export async function findEntityPG(identifier) {
+  if (!identifier) return null;
+  const { rows } = await db().query(
+    `SELECT * FROM entities
+     WHERE id = $1 OR slug = $1 OR title = $1 OR meta->>'repoName' = $1
+     LIMIT 1`,
+    [identifier],
+  );
+  return rows[0] ? inflate(rows[0]) : null;
+}
+
+// ---------------------------------------------------------------------------
+// linkedEntitiesPG — resolve relations involving an entity. Returns the list
+// of linked records (already inflated), in both directions. Used by
+// /api/context/:id and the topic-brief / literature-review paths.
+// ---------------------------------------------------------------------------
+export async function linkedEntitiesPG(entityId) {
+  const { rows } = await db().query(
+    `SELECT e.*, r.relation_type, r.score
+       FROM relations r
+       JOIN entities e ON e.id = (CASE WHEN r.from_id = $1 THEN r.to_id ELSE r.from_id END)
+       WHERE r.from_id = $1 OR r.to_id = $1`,
+    [entityId],
+  );
+  return rows.map((r) => ({ ...inflate(r), relationType: r.relation_type, relationScore: r.score }));
+}
+
+// ---------------------------------------------------------------------------
+// semanticSearchPG — pgvector KNN over the embeddings table, with optional
+// filters:
+//   - types:  ['paper','repo','docs']  — entity-type filter (joins entities)
+//   - scope:  ['repoId1', 'repoSlug2'] — restrict to chunks from specific repos
+//   - deep:   boolean                  — include 'deep' kind chunks (default off)
+//
+// By default we search 'summary' + 'chunk' embeddings; 'deep' is opt-in via
+// scope or deep=true because it's the bulk of the rows.
+// ---------------------------------------------------------------------------
+export async function semanticSearchPG(queryVector, { topK = 10, types = null, scope = null, deep = false } = {}) {
+  const pool = db();
+  const vecLiteral = `[${queryVector.join(",")}]`;
+
+  // Resolve scope (repo IDs or slugs) to canonical IDs up front.
+  let scopeIds = null;
+  if (scope && scope.length) {
+    const { rows } = await pool.query(
+      `SELECT id FROM entities WHERE type = 'repo' AND (id = ANY($1) OR slug = ANY($1))`,
+      [scope],
+    );
+    scopeIds = rows.map((r) => r.id);
+  }
+
+  const conditions = [];
+  const params = [vecLiteral];
+  let p = 2;
+
+  const kinds = deep || scopeIds?.length ? ["summary", "chunk", "deep"] : ["summary", "chunk"];
+  conditions.push(`em.kind = ANY($${p}::text[])`);
+  params.push(kinds);
+  p += 1;
+
+  if (types && types.length) {
+    conditions.push(`e.type = ANY($${p}::text[])`);
+    params.push(types);
+    p += 1;
+  }
+  if (scopeIds?.length) {
+    conditions.push(`em.entity_id = ANY($${p}::text[])`);
+    params.push(scopeIds);
+    p += 1;
+  }
+
+  const sql = `
+    SELECT em.id, em.entity_id, em.kind, em.chunk_index, em.text,
+           e.type, e.title,
+           1 - (em.embedding <=> $1::vector) AS score
+    FROM embeddings em
+    JOIN entities e ON e.id = em.entity_id
+    WHERE ${conditions.join(" AND ")}
+    ORDER BY em.embedding <=> $1::vector
+    LIMIT $${p}
+  `;
+  params.push(topK);
+
+  const { rows } = await pool.query(sql, params);
+  // Return shape matches the JSON-era semanticSearch:
+  //   [{ score, entry: { entityId, entityTitle, type, kind, text, ... } }]
+  return rows.map((r) => ({
+    score: r.score,
+    entry: {
+      id: r.id,
+      entityId: r.entity_id,
+      entityTitle: r.title,
+      type: r.type,
+      kind: r.kind,
+      chunkIndex: r.chunk_index,
+      text: r.text,
+    },
+  }));
+}

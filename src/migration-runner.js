@@ -28,6 +28,13 @@ const ENTITY_BATCH = 500;
 const RELATION_BATCH = 2000;
 const EMBEDDING_BATCH = 200;
 
+// Yield to the event loop so /api/ping and /api/jobs/:id can respond during
+// heavy batch inserts. Without this, Railway healthchecks can time out and
+// kill the container mid-migration.
+function yieldLoop() {
+  return new Promise((resolve) => setImmediate(resolve));
+}
+
 // Postgres TEXT and JSONB columns reject raw NUL bytes (0x00). Marker-extracted
 // PDF text occasionally contains them as control-character noise. Strip them
 // before any INSERT — they carry no meaning in our corpus.
@@ -302,6 +309,7 @@ export async function runDataMigration({ onProgress = () => {}, dryRun = false }
         const slice = arr.slice(i, i + ENTITY_BATCH).map((r) => entityRow(r, type));
         if (!dryRun) await insertEntities(client, slice);
         stats[statsKey] += slice.length;
+        await yieldLoop();
         if (i % (ENTITY_BATCH * 10) === 0) {
           onProgress({ stage: `entities-${type}`, written: stats, elapsedMs: Date.now() - startedAt });
         }
@@ -314,6 +322,7 @@ export async function runDataMigration({ onProgress = () => {}, dryRun = false }
       const slice = relations.slice(i, i + RELATION_BATCH);
       if (!dryRun) await insertRelations(client, slice);
       stats.relations += slice.length;
+      await yieldLoop();
       if (i % (RELATION_BATCH * 10) === 0) {
         onProgress({ stage: "relations", written: stats.relations, total: relations.length, elapsedMs: Date.now() - startedAt });
       }
@@ -381,6 +390,7 @@ export async function runDataMigration({ onProgress = () => {}, dryRun = false }
         buffer.push(row);
         if (buffer.length >= EMBEDDING_BATCH) {
           await drainBuffer(buffer, skipCounter);
+          await yieldLoop();
           if (stats.embeddings % (EMBEDDING_BATCH * 25) === 0) {
             onProgress({
               stage: "embeddings-summary",
@@ -418,6 +428,7 @@ export async function runDataMigration({ onProgress = () => {}, dryRun = false }
           buffer.push(row);
           if (buffer.length >= EMBEDDING_BATCH) {
             await drainBuffer(buffer, skipCounter);
+            await yieldLoop();
           }
         }
         await drainBuffer(buffer, skipCounter, true);
