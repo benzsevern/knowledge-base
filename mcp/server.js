@@ -192,6 +192,18 @@ const TOOLS = [
     inputSchema: { type: "object", properties: {}, additionalProperties: false },
   },
   {
+    name: "kb_entity",
+    description: "Look up a single entity by id or slug directly from Postgres. Returns the full entity record, or {found: false} if not present.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        id: { type: "string", description: "Entity ID or slug (e.g. 'paper-arxiv-2508-08322')" },
+      },
+      required: ["id"],
+      additionalProperties: false,
+    },
+  },
+  {
     name: "kb_topic_brief",
     description: "Generate a topic briefing document pulling from papers, repos, and docs. Returns structured markdown with excerpts grouped by source. Use --synthesize for an LLM-written narrative version. Returns a job ID.",
     inputSchema: {
@@ -279,6 +291,8 @@ async function handleTool(name, args) {
       return get("/api/jobs");
     case "kb_graph":
       return get("/api/graph");
+    case "kb_entity":
+      return get(`/api/admin/entity/${encodeURIComponent(args.id)}`);
     case "kb_topic_brief":
       return post("/api/topic-brief", args);
     case "kb_lit_review":
