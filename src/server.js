@@ -35,14 +35,21 @@ import {
   fetchRepoCandidates,
   ingestDocsSite,
 } from "./commands.js";
-import { buildContentIndex, buildEmbeddingIndex, semanticSearch } from "./embeddings.js";
+import { buildContentIndex, buildEmbeddingIndex, embedQuery, semanticSearch } from "./embeddings.js";
 import { loadIndex } from "./indexer.js";
 import { chat, gapAnalysis, literatureReview } from "./rag.js";
 import { generateTopicBrief } from "./briefings.js";
 import { importVault } from "./export.js";
 import { readJson, writeJson } from "./fs-utils.js";
 import { dbHealth, runMigrations, hasDatabase } from "./db.js";
-import { useDbReads, statusCounts } from "./db-queries.js";
+import {
+  useDbReads,
+  statusCounts,
+  loadIndexPG,
+  findEntityPG,
+  linkedEntitiesPG,
+  semanticSearchPG,
+} from "./db-queries.js";
 
 const app = express();
 app.use(express.json({ limit: "200mb" }));
@@ -183,7 +190,7 @@ app.get("/api/status", async (_req, res) => {
 
 app.get("/api/graph", async (_req, res) => {
   try {
-    const index = await loadIndex();
+    const index = (await useDbReads()) ? await loadIndexPG() : await loadIndex();
     res.json({
       papers: index.papers.map((p) => ({ id: p.id, title: p.title, slug: p.slug, type: "paper" })),
       repos: index.repos.map((r) => ({ id: r.id, title: r.title, slug: r.slug, type: "repo", languages: r.languages })),
@@ -213,9 +220,16 @@ app.get("/api/jobs/:id", (req, res) => {
 // ---------------------------------------------------------------------------
 app.post("/api/search", async (req, res) => {
   try {
-    const { query, topK = 10, scope = null, deep = false } = req.body;
+    const { query, topK = 10, scope = null, deep = false, types = null } = req.body;
     if (!query) return res.status(400).json({ error: "Missing query" });
-    const hits = await semanticSearch(query, { topK, scope, deep });
+    let hits;
+    if (await useDbReads()) {
+      // pgvector KNN path — embed once, one SQL round-trip.
+      const vector = await embedQuery(query);
+      hits = await semanticSearchPG(vector, { topK, scope, deep, types });
+    } else {
+      hits = await semanticSearch(query, { topK, scope, deep });
+    }
     res.json(
       hits.map((h) => ({
         score: h.score,
@@ -223,7 +237,7 @@ app.post("/api/search", async (req, res) => {
         entityTitle: h.entry.entityTitle,
         type: h.entry.type,
         kind: h.entry.kind,
-        text: h.entry.text.slice(0, 500),
+        text: (h.entry.text ?? "").slice(0, 500),
       })),
     );
   } catch (err) {

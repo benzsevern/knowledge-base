@@ -135,6 +135,13 @@ function batchByTokens(texts) {
 
 const callEmbeddings = callEmbeddingsRaw;
 
+// Public: embed a single query string. Used by PG-backed semantic search
+// so callers don't need to touch the internal batching helpers.
+export async function embedQuery(query) {
+  const [vector] = await callEmbeddings([query]);
+  return vector;
+}
+
 export async function loadEmbeddings() {
   if (!(await fileExists(EMBEDDINGS_PATH))) {
     return { model: EMBEDDING_MODEL, generatedAt: null, entries: [] };
