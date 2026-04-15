@@ -103,6 +103,48 @@ function detectArxivId(...inputs) {
   return "";
 }
 
+// Fetch authoritative paper metadata from arXiv's Atom API. Zero-dep,
+// regex-based parse of the entry fields we care about.
+// https://info.arxiv.org/help/api/user-manual.html
+async function fetchArxivMetadata(arxivId) {
+  if (!arxivId) return null;
+  try {
+    const url = `https://export.arxiv.org/api/query?id_list=${encodeURIComponent(arxivId)}`;
+    const res = await fetch(url, {
+      headers: { "User-Agent": "kb-ingester/0.1" },
+      signal: AbortSignal.timeout(20000),
+    });
+    if (!res.ok) return null;
+    const xml = await res.text();
+    const entry = xml.match(/<entry>([\s\S]*?)<\/entry>/);
+    if (!entry) return null;
+    const body = entry[1];
+    const unescape = (s) =>
+      String(s)
+        .replace(/&amp;/g, "&")
+        .replace(/&lt;/g, "<")
+        .replace(/&gt;/g, ">")
+        .replace(/&quot;/g, '"')
+        .replace(/&apos;/g, "'")
+        .replace(/\s+/g, " ")
+        .trim();
+    const titleMatch = body.match(/<title>([\s\S]*?)<\/title>/);
+    const summaryMatch = body.match(/<summary>([\s\S]*?)<\/summary>/);
+    const publishedMatch = body.match(/<published>([^<]+)<\/published>/);
+    const authorMatches = [
+      ...body.matchAll(/<author>\s*<name>([\s\S]*?)<\/name>\s*<\/author>/g),
+    ];
+    return {
+      title: titleMatch ? unescape(titleMatch[1]) : "",
+      abstract: summaryMatch ? unescape(summaryMatch[1]) : "",
+      year: publishedMatch ? publishedMatch[1].slice(0, 4) : "",
+      authors: authorMatches.map((m) => unescape(m[1])).filter(Boolean),
+    };
+  } catch {
+    return null;
+  }
+}
+
 function derivePaperMetadata(markdown, pdfPath, fallbackTitle = "") {
   const titleMatch = String(markdown).match(/^#\s+(.+)$/m);
   const filenameStem = stripPdfExtension(path.basename(pdfPath));
@@ -260,6 +302,9 @@ export async function ingestPaper(pdfInputPath, options = {}) {
   const arxivId = detectArxivId(originalUrl, filenameStem);
   const slug = arxivId ? slugify(`arxiv-${arxivId}`) : slugify(filenameStem);
   const paperDir = path.join(vaultRoot, "papers", slug);
+  // Kick off arxiv metadata fetch in parallel with Marker extraction — Marker
+  // dominates wall time, so this is effectively free.
+  const arxivMetaPromise = arxivId ? fetchArxivMetadata(arxivId) : Promise.resolve(null);
   const sourceDir = path.join(paperDir, "source");
   const rawDir = path.join(paperDir, "raw");
   const assetsDir = path.join(paperDir, "assets");
@@ -291,8 +336,18 @@ export async function ingestPaper(pdfInputPath, options = {}) {
     extractedMarkdown = `# ${fallbackHeading}\n\nSummary pending extraction.\n\n## Constraints\nManual review required.\n`;
   }
 
-  const fallbackTitle = arxivId ? `arXiv:${arxivId}` : filenameStem;
+  const arxivMeta = await arxivMetaPromise;
+  const fallbackTitle = arxivMeta?.title || (arxivId ? `arXiv:${arxivId}` : filenameStem);
   const metadata = derivePaperMetadata(extractedMarkdown, pdfPath, fallbackTitle);
+  // arXiv's API is the authoritative source for title/authors/year when
+  // we have an arxiv ID — prefer it over Marker's extraction, which is
+  // heuristic and frequently picks up running headers or figure captions.
+  if (arxivMeta) {
+    if (arxivMeta.title) metadata.title = arxivMeta.title;
+    if (arxivMeta.authors.length) metadata.authors = arxivMeta.authors;
+    if (arxivMeta.year) metadata.year = arxivMeta.year;
+    if (arxivMeta.abstract) metadata.summary = trimExcerpt(arxivMeta.abstract, 1200);
+  }
   const notePath = path.join(paperDir, "note.md");
   const record = {
     id: stableId("paper", slug),
