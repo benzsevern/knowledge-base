@@ -22,6 +22,7 @@ import { db, hasDatabase } from "./db.js";
 const VAULT = process.env.KB_VAULT_ROOT || "/app/vault";
 const INDEX_FILE = path.join(VAULT, "kb_index.json");
 const EMBEDDINGS_FILE = path.join(VAULT, "kb_embeddings.json");
+const REPOS_DIR = path.join(VAULT, "repos");
 
 const ENTITY_BATCH = 500;
 const RELATION_BATCH = 2000;
@@ -136,24 +137,82 @@ function entityRow(record, type) {
 // ---------------------------------------------------------------------------
 
 async function* streamEmbeddingEntries(filepath) {
+  // Brace/quote-aware streaming parser — tolerates both the compact format
+  // (one JSON object per line) produced by fs-utils.writeJson() AND the
+  // pretty-printed format produced by plain JSON.stringify(data, null, 2).
+  //
+  // Approach: read the file as a character stream, skip until we're inside
+  // the "entries": [ ... ] array, then yield each balanced {...} block.
   const stream = fs.createReadStream(filepath, { encoding: "utf8", highWaterMark: 1024 * 1024 });
-  const rl = createInterface({ input: stream, crlfDelay: Infinity });
+
   let inEntries = false;
-  for await (const rawLine of rl) {
-    const line = rawLine.trim();
-    if (!inEntries) {
-      if (/^"entries":\s*\[$/.test(line)) {
-        inEntries = true;
+  let depth = 0;          // brace depth inside current entry (0 = between entries)
+  let inString = false;   // inside a JSON string
+  let escaped = false;    // previous char was a backslash
+  let buf = "";           // accumulates current entry
+
+  // Look for the sentinel '"entries":'. We'll treat the next '[' as the
+  // start of the entries array.
+  const SENTINEL = '"entries"';
+  let sentinelHit = false;
+
+  for await (const chunk of stream) {
+    for (let i = 0; i < chunk.length; i++) {
+      const ch = chunk[i];
+      if (!inEntries) {
+        if (!sentinelHit) {
+          // Crude substring search via a rolling buffer. entries token
+          // appears exactly once at top level.
+          buf += ch;
+          if (buf.length > SENTINEL.length + 2) buf = buf.slice(-SENTINEL.length - 2);
+          if (buf.includes(SENTINEL)) {
+            sentinelHit = true;
+            buf = "";
+          }
+        } else if (ch === "[") {
+          inEntries = true;
+          buf = "";
+        }
+        continue;
       }
-      continue;
-    }
-    if (line === "]" || line === "],") break;
-    if (line.startsWith("{")) {
-      const clean = line.endsWith(",") ? line.slice(0, -1) : line;
-      try {
-        yield JSON.parse(clean);
-      } catch {
-        // Skip malformed line — the source index can be noisy at the edges.
+
+      // We're inside the entries array.
+      if (depth === 0) {
+        if (ch === "]") return;           // end of array — done
+        if (ch === "{") {
+          depth = 1;
+          buf = "{";
+        }
+        // skip whitespace and commas between entries
+        continue;
+      }
+
+      // depth >= 1 — accumulating one entry
+      buf += ch;
+      if (inString) {
+        if (escaped) {
+          escaped = false;
+        } else if (ch === "\\") {
+          escaped = true;
+        } else if (ch === '"') {
+          inString = false;
+        }
+        continue;
+      }
+      if (ch === '"') {
+        inString = true;
+      } else if (ch === "{") {
+        depth += 1;
+      } else if (ch === "}") {
+        depth -= 1;
+        if (depth === 0) {
+          try {
+            yield JSON.parse(buf);
+          } catch {
+            // Skip malformed entry — single bad object shouldn't abort the run.
+          }
+          buf = "";
+        }
       }
     }
   }
@@ -208,116 +267,156 @@ export async function runDataMigration({ onProgress = () => {}, dryRun = false }
       },
     });
 
-    if (!dryRun) {
-      // Entities — one pass per type (not strictly necessary, but keeps
-      // stats clean). Upserts are idempotent so reruns are safe.
-      for (const [type, arr] of [["paper", papers], ["repo", repos], ["docs", docs]]) {
-        for (let i = 0; i < arr.length; i += ENTITY_BATCH) {
-          const slice = arr.slice(i, i + ENTITY_BATCH).map((r) => entityRow(r, type));
-          await insertEntities(client, slice);
-          stats[type === "docs" ? "docs" : `${type}s`] += slice.length;
-          if (i % (ENTITY_BATCH * 10) === 0) {
-            onProgress({ stage: `entities-${type}`, written: stats, elapsedMs: Date.now() - startedAt });
+    // Entities — one pass per type. Upserts are idempotent, so reruns are safe.
+    for (const [type, arr] of [["paper", papers], ["repo", repos], ["docs", docs]]) {
+      const statsKey = type === "docs" ? "docs" : `${type}s`;
+      for (let i = 0; i < arr.length; i += ENTITY_BATCH) {
+        const slice = arr.slice(i, i + ENTITY_BATCH).map((r) => entityRow(r, type));
+        if (!dryRun) await insertEntities(client, slice);
+        stats[statsKey] += slice.length;
+        if (i % (ENTITY_BATCH * 10) === 0) {
+          onProgress({ stage: `entities-${type}`, written: stats, elapsedMs: Date.now() - startedAt });
+        }
+      }
+    }
+    onProgress({ stage: "entities-done", stats });
+
+    // Relations — big. Entities are already loaded, FK checks on insert are cheap.
+    for (let i = 0; i < relations.length; i += RELATION_BATCH) {
+      const slice = relations.slice(i, i + RELATION_BATCH);
+      if (!dryRun) await insertRelations(client, slice);
+      stats.relations += slice.length;
+      if (i % (RELATION_BATCH * 10) === 0) {
+        onProgress({ stage: "relations", written: stats.relations, total: relations.length, elapsedMs: Date.now() - startedAt });
+      }
+    }
+    onProgress({ stage: "relations-done", stats });
+
+    // -------------------------------------------------------------------
+    // Pass 2: embeddings
+    //   2a: kb_embeddings.json     — paper chunks + repo/docs summaries (~27K)
+    //   2b: vault/repos/*/embeddings.json — per-repo deep content chunks (~680K)
+    // -------------------------------------------------------------------
+    async function drainBuffer(buffer, skipCounter, force = false) {
+      if (!buffer.length) return;
+      if (!force && buffer.length < EMBEDDING_BATCH) return;
+      if (dryRun) {
+        stats.embeddings += buffer.length;
+        buffer.length = 0;
+        return;
+      }
+      try {
+        await insertEmbeddings(client, buffer);
+        stats.embeddings += buffer.length;
+      } catch {
+        for (const row of buffer) {
+          try {
+            await insertEmbeddings(client, [row]);
+            stats.embeddings += 1;
+          } catch {
+            skipCounter.v += 1;
           }
         }
       }
-      onProgress({ stage: "entities-done", stats });
-
-      // Relations — big. Disable triggers / FK during bulk? Not needed;
-      // entities are already loaded and FK checks on insert are fast.
-      for (let i = 0; i < relations.length; i += RELATION_BATCH) {
-        const slice = relations.slice(i, i + RELATION_BATCH);
-        await insertRelations(client, slice);
-        stats.relations += slice.length;
-        if (i % (RELATION_BATCH * 10) === 0) {
-          onProgress({ stage: "relations", written: stats.relations, total: relations.length, elapsedMs: Date.now() - startedAt });
-        }
-      }
-      onProgress({ stage: "relations-done", stats });
+      buffer.length = 0;
     }
 
-    // -------------------------------------------------------------------
-    // Pass 2: embeddings — streamed
-    // -------------------------------------------------------------------
+    function coerceEntry(entry) {
+      // Handle both field names — `vector` is the actual on-disk name, but
+      // future writers might use `embedding`. Accept either.
+      const vec = entry.vector ?? entry.embedding;
+      if (!vec || !Array.isArray(vec) || vec.length !== 1536) return null;
+      if (!entry.entityId) return null;
+      return {
+        id: entry.id ?? `${entry.entityId}:${entry.chunkIndex ?? 0}`,
+        entityId: entry.entityId,
+        kind: entry.kind ?? (entry.chunkIndex != null ? "chunk" : "summary"),
+        chunkIndex: entry.chunkIndex ?? null,
+        text: entry.text ?? null,
+        embedding: vec,
+      };
+    }
+
+    const skipCounter = { v: 0 };
+
     if (fs.existsSync(EMBEDDINGS_FILE)) {
-      onProgress({ stage: "embeddings-start" });
+      onProgress({ stage: "embeddings-summary-start" });
       const buffer = [];
       let seen = 0;
-      let skipped = 0;
       for await (const entry of streamEmbeddingEntries(EMBEDDINGS_FILE)) {
         seen += 1;
-        if (!entry.embedding || !Array.isArray(entry.embedding) || entry.embedding.length !== 1536) {
-          skipped += 1;
+        const row = coerceEntry(entry);
+        if (!row) {
+          skipCounter.v += 1;
           continue;
         }
-        if (!entry.entityId) {
-          skipped += 1;
-          continue;
-        }
-        const row = {
-          id: entry.id ?? `${entry.entityId}:${entry.chunkIndex ?? 0}`,
-          entityId: entry.entityId,
-          kind: entry.kind ?? (entry.chunkIndex != null ? "chunk" : "summary"),
-          chunkIndex: entry.chunkIndex ?? null,
-          text: entry.text ?? null,
-          embedding: entry.embedding,
-        };
         buffer.push(row);
         if (buffer.length >= EMBEDDING_BATCH) {
-          if (!dryRun) {
-            try {
-              await insertEmbeddings(client, buffer);
-              stats.embeddings += buffer.length;
-            } catch (err) {
-              // Individual batch failures (missing parent entity, etc.) —
-              // fall back to per-row so one bad row doesn't kill a batch.
-              for (const row of buffer) {
-                try {
-                  await insertEmbeddings(client, [row]);
-                  stats.embeddings += 1;
-                } catch {
-                  skipped += 1;
-                }
-              }
-            }
-          } else {
-            stats.embeddings += buffer.length;
-          }
-          buffer.length = 0;
+          await drainBuffer(buffer, skipCounter);
           if (stats.embeddings % (EMBEDDING_BATCH * 25) === 0) {
             onProgress({
-              stage: "embeddings",
+              stage: "embeddings-summary",
               seen,
               written: stats.embeddings,
-              skipped,
+              skipped: skipCounter.v,
               elapsedMs: Date.now() - startedAt,
             });
           }
         }
       }
-      if (buffer.length) {
-        if (!dryRun) {
-          try {
-            await insertEmbeddings(client, buffer);
-            stats.embeddings += buffer.length;
-          } catch {
-            for (const row of buffer) {
-              try {
-                await insertEmbeddings(client, [row]);
-                stats.embeddings += 1;
-              } catch {
-                skipped += 1;
-              }
-            }
-          }
-        } else {
-          stats.embeddings += buffer.length;
-        }
-      }
-      onProgress({ stage: "embeddings-done", seen, skipped, stats });
+      await drainBuffer(buffer, skipCounter, true);
+      onProgress({ stage: "embeddings-summary-done", seen, skipped: skipCounter.v, written: stats.embeddings });
     } else {
-      onProgress({ stage: "embeddings-skipped", reason: "file-missing" });
+      onProgress({ stage: "embeddings-summary-skipped", reason: "file-missing" });
     }
+
+    // 2b: per-repo deep content embeddings
+    onProgress({ stage: "embeddings-deep-start" });
+    const repoSlugs = await fsp.readdir(REPOS_DIR).catch(() => []);
+    let reposProcessed = 0;
+    let reposWithEmbeddings = 0;
+    for (const slug of repoSlugs) {
+      const p = path.join(REPOS_DIR, slug, "embeddings.json");
+      if (!fs.existsSync(p)) continue;
+      reposWithEmbeddings += 1;
+      try {
+        const buffer = [];
+        for await (const entry of streamEmbeddingEntries(p)) {
+          const row = coerceEntry(entry);
+          if (!row) {
+            skipCounter.v += 1;
+            continue;
+          }
+          buffer.push(row);
+          if (buffer.length >= EMBEDDING_BATCH) {
+            await drainBuffer(buffer, skipCounter);
+          }
+        }
+        await drainBuffer(buffer, skipCounter, true);
+      } catch (err) {
+        onProgress({ stage: "embeddings-deep-repo-error", slug, error: err.message });
+      }
+      reposProcessed += 1;
+      if (reposProcessed % 50 === 0) {
+        onProgress({
+          stage: "embeddings-deep",
+          reposProcessed,
+          reposWithEmbeddings,
+          totalRepos: repoSlugs.length,
+          written: stats.embeddings,
+          skipped: skipCounter.v,
+          elapsedMs: Date.now() - startedAt,
+        });
+      }
+    }
+    onProgress({
+      stage: "embeddings-deep-done",
+      reposProcessed,
+      reposWithEmbeddings,
+      written: stats.embeddings,
+      skipped: skipCounter.v,
+    });
+    stats.skippedEmbeddings = skipCounter.v;
 
     // -------------------------------------------------------------------
     // Pass 3: build HNSW index + VACUUM ANALYZE
