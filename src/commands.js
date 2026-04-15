@@ -421,9 +421,10 @@ export async function ingestPaper(pdfInputPath, options = {}) {
 
   index.papers = upsertEntity(index.papers, record);
   if (hasDatabase()) {
-    await upsertEntityPG(record, "paper").catch((err) =>
-      process.stderr.write(`[warn] upsertEntityPG paper ${record.id}: ${err.message}\n`),
-    );
+    await upsertEntityPG(record, "paper").catch((err) => {
+      process.stderr.write(`[warn] upsertEntityPG paper ${record.id}: ${err.message}\n`);
+      throw err; // surface the real error so the job reports it
+    });
   }
   if (options.skipRebuild) {
     return { record, index };
