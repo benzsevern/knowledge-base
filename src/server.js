@@ -393,21 +393,32 @@ app.post("/api/ingest-arxiv-batch", async (req, res) => {
     const inboxDir = path.join(projectRoot, "inbox");
     await ensureDir(inboxDir);
 
-    const downloads = await Promise.all(
-      ids.map(async (id) => {
-        const pdfPath = path.join(inboxDir, `${id}.pdf`);
-        if (await fileExists(pdfPath)) return { id, pdfPath, skipped: "cached" };
-        try {
-          const r = await fetch(`https://arxiv.org/pdf/${id}.pdf`, {
-            headers: { "User-Agent": "kb-discover/0.1" },
-          });
-          if (!r.ok) return { id, error: `http ${r.status}` };
-          const buf = Buffer.from(await r.arrayBuffer());
-          if (buf.slice(0, 5).toString() !== "%PDF-") return { id, error: "not a PDF" };
-          await fsp.writeFile(pdfPath, buf);
-          return { id, pdfPath, downloaded: true };
-        } catch (err) {
-          return { id, error: err.message };
+    // Cap download concurrency — arxiv rate-limits aggressive parallel fetches.
+    const DOWNLOAD_CONCURRENCY = 6;
+    async function downloadOne(id) {
+      const pdfPath = path.join(inboxDir, `${id}.pdf`);
+      if (await fileExists(pdfPath)) return { id, pdfPath, skipped: "cached" };
+      try {
+        const r = await fetch(`https://arxiv.org/pdf/${id}.pdf`, {
+          headers: { "User-Agent": "kb-discover/0.1" },
+        });
+        if (!r.ok) return { id, error: `http ${r.status}` };
+        const buf = Buffer.from(await r.arrayBuffer());
+        if (buf.slice(0, 5).toString() !== "%PDF-") return { id, error: "not a PDF" };
+        await fsp.writeFile(pdfPath, buf);
+        return { id, pdfPath, downloaded: true };
+      } catch (err) {
+        return { id, error: err.message };
+      }
+    }
+    const downloads = [];
+    let dlCursor = 0;
+    await Promise.all(
+      Array.from({ length: Math.min(DOWNLOAD_CONCURRENCY, ids.length) }, async () => {
+        while (true) {
+          const i = dlCursor++;
+          if (i >= ids.length) return;
+          downloads[i] = await downloadOne(ids[i]);
         }
       }),
     );
