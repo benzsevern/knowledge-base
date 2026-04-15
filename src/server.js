@@ -377,6 +377,61 @@ app.post("/api/ingest-paper", (req, res) => {
   res.json({ jobId: job.id, status: job.status });
 });
 
+// Batch arxiv ingest. Accepts { arxivIds: [...] }. Downloads all PDFs in
+// parallel, then runs ingestPapersBatch (single rebuildLinks at the end).
+app.post("/api/ingest-arxiv-batch", async (req, res) => {
+  try {
+    const { arxivIds = [] } = req.body ?? {};
+    const ids = arxivIds
+      .map((s) => String(s).trim())
+      .filter((s) => /^\d{4}\.\d{4,5}$/.test(s));
+    if (!ids.length) return res.status(400).json({ error: "arxivIds must be non-empty list of IDs" });
+
+    const { projectRoot } = await import("./config.js");
+    const { ensureDir, fileExists } = await import("./fs-utils.js");
+    const fsp = await import("node:fs/promises");
+    const inboxDir = path.join(projectRoot, "inbox");
+    await ensureDir(inboxDir);
+
+    const downloads = await Promise.all(
+      ids.map(async (id) => {
+        const pdfPath = path.join(inboxDir, `${id}.pdf`);
+        if (await fileExists(pdfPath)) return { id, pdfPath, skipped: "cached" };
+        try {
+          const r = await fetch(`https://arxiv.org/pdf/${id}.pdf`, {
+            headers: { "User-Agent": "kb-discover/0.1" },
+          });
+          if (!r.ok) return { id, error: `http ${r.status}` };
+          const buf = Buffer.from(await r.arrayBuffer());
+          if (buf.slice(0, 5).toString() !== "%PDF-") return { id, error: "not a PDF" };
+          await fsp.writeFile(pdfPath, buf);
+          return { id, pdfPath, downloaded: true };
+        } catch (err) {
+          return { id, error: err.message };
+        }
+      }),
+    );
+
+    const paths = downloads.filter((d) => d.pdfPath).map((d) => d.pdfPath);
+    const errors = downloads.filter((d) => d.error);
+    if (!paths.length) return res.status(502).json({ error: "no PDFs downloaded", downloads });
+
+    const job = createJob(`ingest-arxiv-batch (${paths.length})`, async () => {
+      const results = await ingestPapersBatch(paths, {
+        onProgress: (info) => {
+          job.progress = info.record
+            ? { index: info.index, total: info.total, paperId: info.record.id }
+            : { index: info.index, total: info.total, error: info.error };
+        },
+      });
+      return { ingested: results.length, downloads, downloadErrors: errors };
+    });
+    res.json({ jobId: job.id, status: job.status, downloaded: paths.length, errors: errors.length });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // Download an arxiv PDF and ingest it. Accepts { arxivId } or { url }.
 // Normalizes common arxiv URL shapes (abs/, pdf/, with or without .pdf).
 app.post("/api/ingest-arxiv", async (req, res) => {
