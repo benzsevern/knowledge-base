@@ -13,7 +13,11 @@ const EMBEDDING_URL = "https://api.openai.com/v1/embeddings";
 const EMBEDDING_MODEL = process.env.KB_EMBEDDING_MODEL ?? "text-embedding-3-small";
 const CHUNK_MAX_CHARS = 2000; // ~500 tokens
 const MAX_BATCH_TOKENS = 80_000; // very conservative; code is ~2x denser than 4 chars/token
-const EMBED_CONCURRENCY = 4; // parallel requests; lower to avoid 429 rate limits
+// Parallel OpenAI requests. With MAX_BATCH_TOKENS=80K and the org TPM=1M,
+// concurrency=2 caps bursts at 160K tokens/s and leaves headroom for retries.
+// Raising to 4 saturates TPM on multi-hundred-paper embeds and starves the
+// retry backoff budget (see spider run 2026-04-15 — 3 consecutive 429s).
+const EMBED_CONCURRENCY = 2;
 
 function sha1(text) {
   return crypto.createHash("sha1").update(text).digest("hex");
