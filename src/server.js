@@ -41,6 +41,7 @@ import { chat, gapAnalysis, literatureReview } from "./rag.js";
 import { generateTopicBrief } from "./briefings.js";
 import { importVault } from "./export.js";
 import { readJson, writeJson } from "./fs-utils.js";
+import { dbHealth } from "./db.js";
 
 const app = express();
 app.use(express.json({ limit: "200mb" }));
@@ -95,6 +96,15 @@ function createJob(name, fn) {
     });
   return job;
 }
+
+// ---------------------------------------------------------------------------
+// Database health — returns Postgres version + installed extensions, or a
+// reason if DATABASE_URL isn't configured yet.
+// ---------------------------------------------------------------------------
+app.get("/api/db-health", async (_req, res) => {
+  const result = await dbHealth();
+  res.status(result.ok ? 200 : 503).json(result);
+});
 
 // ---------------------------------------------------------------------------
 // Status
