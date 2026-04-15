@@ -223,6 +223,32 @@ export async function semanticSearchPG(queryVector, { topK = 10, types = null, s
 }
 
 // ---------------------------------------------------------------------------
+// listEntityEmbeddingsPG — one row per entity with its summary-kind embedding.
+// Used by golden-showcase's knowledge-map generator to UMAP-project all
+// entities to 2D in one shot. Not paginated — corpus is ~1.5K entities.
+// Vector is serialized via ::text ("[0.1,0.2,...]") and parsed client-side.
+// ---------------------------------------------------------------------------
+export async function listEntityEmbeddingsPG() {
+  const pool = db();
+  const { rows } = await pool.query(`
+    SELECT e.id, e.type, e.title, e.slug,
+           e.meta->>'year' AS year,
+           em.embedding::text AS vector_text
+    FROM entities e
+    JOIN embeddings em ON em.entity_id = e.id AND em.kind = 'summary'
+    ORDER BY e.id
+  `);
+  return rows.map((r) => ({
+    id: r.id,
+    type: r.type,
+    title: r.title,
+    slug: r.slug,
+    year: r.year ?? null,
+    vector: JSON.parse(r.vector_text),
+  }));
+}
+
+// ---------------------------------------------------------------------------
 // loadEntitiesOnlyPG — same shape as loadIndexPG but omits relations.
 // Used by Phase 4 ingest paths so we never load the 913K-relation JSON.
 // ---------------------------------------------------------------------------

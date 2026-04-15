@@ -48,6 +48,7 @@ import {
   loadIndexPG,
   findEntityPG,
   linkedEntitiesPG,
+  listEntityEmbeddingsPG,
   semanticSearchPG,
   deleteEntityPG,
 } from "./db-queries.js";
@@ -136,6 +137,20 @@ app.get("/api/admin/entity/:id", async (req, res) => {
     if (!entity) return res.status(404).json({ found: false, id: req.params.id });
     res.json({ found: true, entity });
   } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Dump all entity-level summary embeddings in one shot. Consumer: the
+// golden-showcase knowledge-map generator script. Not paginated — corpus is
+// ~1.5K entities so payload is ~6 MB gzipped. Token-gated via PROTECTED_PREFIXES.
+app.get("/api/admin/entity-embeddings", async (_req, res) => {
+  try {
+    if (!(await useDbReads())) return res.status(503).json({ error: "postgres not ready" });
+    const entities = await listEntityEmbeddingsPG();
+    res.json({ count: entities.length, entities });
+  } catch (err) {
+    console.error("entity-embeddings failed:", err);
     res.status(500).json({ error: err.message });
   }
 });
