@@ -118,6 +118,24 @@ app.post("/api/admin/migrate", async (_req, res) => {
   }
 });
 
+// One-off data migration from kb_index.json + kb_embeddings.json into
+// Postgres. Creates a background job (same mechanism as ingestion) so
+// progress can be polled with /api/jobs/:id.
+app.post("/api/admin/migrate-data", async (req, res) => {
+  const { dryRun = false } = req.body ?? {};
+  const { runDataMigration } = await import("./migration-runner.js");
+  const job = createJob(`migrate-data${dryRun ? "-dryrun" : ""}`, async () => {
+    const stats = await runDataMigration({
+      dryRun,
+      onProgress: (snapshot) => {
+        job.progress = snapshot;
+      },
+    });
+    return stats;
+  });
+  res.json({ jobId: job.id, status: job.status });
+});
+
 // ---------------------------------------------------------------------------
 // Status
 // ---------------------------------------------------------------------------
