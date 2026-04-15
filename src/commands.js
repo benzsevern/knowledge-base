@@ -669,9 +669,18 @@ export async function rebuildLinks(existingIndex = null) {
   }
 
   const relations = [];
+  // Yield the event loop every N iterations so Railway's /api/ping healthcheck
+  // can respond. Without this, the ~1.14M scoring iterations freeze Node.js and
+  // Railway kills the container.
+  const YIELD_EVERY = 1000;
+  let iterCount = 0;
+  const maybeYield = () => {
+    if (++iterCount % YIELD_EVERY === 0) return new Promise((r) => setImmediate(r));
+  };
 
   for (const paper of papers) {
     for (const repo of repos) {
+      await maybeYield();
       const rel = scoreRelation(paper, repo);
       if (rel.score < 2) continue;
       const id = `${paper.id}__${repo.id}`;
@@ -692,6 +701,7 @@ export async function rebuildLinks(existingIndex = null) {
 
   for (let i = 0; i < repos.length; i += 1) {
     for (let j = i + 1; j < repos.length; j += 1) {
+      await maybeYield();
       const a = repos[i];
       const b = repos[j];
       const rel = scoreRepoRelation(a, b);

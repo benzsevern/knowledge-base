@@ -267,43 +267,43 @@ export async function upsertEntityPG(entity, type) {
 // Relation objects must have: fromId, toId, relationType, score, evidence, notePath.
 // ---------------------------------------------------------------------------
 export async function replaceRelationsPG(relations) {
-  const client = await db().connect();
+  const pool = db();
+  // TRUNCATE is O(1) unlike DELETE O(n) — critical for 913K rows.
+  // No transaction needed here; the table is briefly empty between
+  // truncate and inserts, which is fine for a read-only API.
+  await pool.query("TRUNCATE TABLE relations");
+
+  // Insert in independent per-batch transactions to avoid one enormous
+  // write-ahead log entry that can exceed Railway's Postgres memory limits.
+  // Yield the event loop between batches to keep /api/ping responsive.
   const BATCH = 500;
-  try {
-    await client.query("BEGIN");
-    await client.query("DELETE FROM relations");
-    for (let i = 0; i < relations.length; i += BATCH) {
-      const batch = relations.slice(i, i + BATCH);
-      const cols = ["from_id", "to_id", "relation_type", "score", "evidence", "note_path"];
-      const values = [];
-      const placeholders = [];
-      batch.forEach((r, j) => {
-        const base = j * cols.length;
-        placeholders.push(
-          `($${base + 1}, $${base + 2}, $${base + 3}, $${base + 4}, $${base + 5}::jsonb, $${base + 6})`,
-        );
-        values.push(
-          r.fromId,
-          r.toId,
-          r.relationType,
-          r.score ?? null,
-          JSON.stringify(r.evidence ?? []),
-          r.notePath ?? null,
-        );
-      });
-      await client.query(
-        `INSERT INTO relations (${cols.join(",")}) VALUES ${placeholders.join(",")}
-         ON CONFLICT (from_id, to_id, relation_type) DO UPDATE SET
-           score = EXCLUDED.score, evidence = EXCLUDED.evidence,
-           note_path = EXCLUDED.note_path, updated_at = now()`,
-        values,
+  const cols = ["from_id", "to_id", "relation_type", "score", "evidence", "note_path"];
+  for (let i = 0; i < relations.length; i += BATCH) {
+    const batch = relations.slice(i, i + BATCH);
+    const values = [];
+    const placeholders = [];
+    batch.forEach((r, j) => {
+      const base = j * cols.length;
+      placeholders.push(
+        `($${base + 1}, $${base + 2}, $${base + 3}, $${base + 4}, $${base + 5}::jsonb, $${base + 6})`,
       );
-    }
-    await client.query("COMMIT");
-  } catch (err) {
-    await client.query("ROLLBACK").catch(() => {});
-    throw err;
-  } finally {
-    client.release();
+      values.push(
+        r.fromId,
+        r.toId,
+        r.relationType,
+        r.score ?? null,
+        JSON.stringify(r.evidence ?? []),
+        r.notePath ?? null,
+      );
+    });
+    await pool.query(
+      `INSERT INTO relations (${cols.join(",")}) VALUES ${placeholders.join(",")}
+       ON CONFLICT (from_id, to_id, relation_type) DO UPDATE SET
+         score = EXCLUDED.score, evidence = EXCLUDED.evidence,
+         note_path = EXCLUDED.note_path, updated_at = now()`,
+      values,
+    );
+    // Yield between batches to keep the event loop alive.
+    await new Promise((r) => setImmediate(r));
   }
 }
