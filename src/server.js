@@ -115,6 +115,17 @@ app.get("/api/db-health", async (_req, res) => {
   res.status(result.ok ? 200 : 503).json(result);
 });
 
+// Diagnostic: look up a single entity by id/slug from Postgres.
+app.get("/api/admin/entity/:id", async (req, res) => {
+  try {
+    const entity = await findEntityPG(req.params.id);
+    if (!entity) return res.status(404).json({ found: false, id: req.params.id });
+    res.json({ found: true, entity });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // Manually trigger migrations. Useful for CI or emergencies. Protected by
 // the same token gate as other admin routes (prefix /api/admin).
 app.post("/api/admin/migrate", async (_req, res) => {
