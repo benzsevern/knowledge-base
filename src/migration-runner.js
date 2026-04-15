@@ -28,6 +28,21 @@ const ENTITY_BATCH = 500;
 const RELATION_BATCH = 2000;
 const EMBEDDING_BATCH = 200;
 
+// Postgres TEXT and JSONB columns reject raw NUL bytes (0x00). Marker-extracted
+// PDF text occasionally contains them as control-character noise. Strip them
+// before any INSERT — they carry no meaning in our corpus.
+function stripNul(value) {
+  if (value == null) return value;
+  if (typeof value === "string") return value.replace(/\u0000/g, "");
+  if (Array.isArray(value)) return value.map(stripNul);
+  if (typeof value === "object") {
+    const out = {};
+    for (const [k, v] of Object.entries(value)) out[k] = stripNul(v);
+    return out;
+  }
+  return value;
+}
+
 // ---------------------------------------------------------------------------
 // Batch insert helpers. Build a multi-VALUES statement with positional
 // parameters and execute in one round trip.
@@ -41,7 +56,13 @@ async function insertEntities(client, rows) {
   rows.forEach((r, i) => {
     const base = i * cols.length;
     placeholders.push(`($${base + 1}, $${base + 2}, $${base + 3}, $${base + 4}, $${base + 5}::jsonb)`);
-    values.push(r.id, r.type, r.slug, r.title, JSON.stringify(r.meta));
+    values.push(
+      stripNul(r.id),
+      stripNul(r.type),
+      stripNul(r.slug),
+      stripNul(r.title ?? r.slug ?? r.id),
+      JSON.stringify(stripNul(r.meta ?? {})),
+    );
   });
   const sql =
     `INSERT INTO entities (${cols.join(",")}) VALUES ${placeholders.join(",")} ` +
@@ -62,12 +83,12 @@ async function insertRelations(client, rows) {
       `($${base + 1}, $${base + 2}, $${base + 3}, $${base + 4}, $${base + 5}::jsonb, $${base + 6})`,
     );
     values.push(
-      r.fromId,
-      r.toId,
-      r.relationType,
+      stripNul(r.fromId),
+      stripNul(r.toId),
+      stripNul(r.relationType),
       r.score ?? null,
-      JSON.stringify(r.evidence ?? null),
-      r.notePath ?? null,
+      JSON.stringify(stripNul(r.evidence ?? null)),
+      stripNul(r.notePath ?? null),
     );
   });
   const sql =
@@ -90,7 +111,14 @@ async function insertEmbeddings(client, rows) {
     );
     // pgvector accepts "[0.1,0.2,...]" string form
     const vecLiteral = `[${r.embedding.join(",")}]`;
-    values.push(r.id, r.entityId, r.kind, r.chunkIndex ?? null, r.text ?? null, vecLiteral);
+    values.push(
+      stripNul(r.id),
+      stripNul(r.entityId),
+      stripNul(r.kind),
+      r.chunkIndex ?? null,
+      stripNul(r.text ?? null),
+      vecLiteral,
+    );
   });
   const sql =
     `INSERT INTO embeddings (${cols.join(",")}) VALUES ${placeholders.join(",")} ` +
