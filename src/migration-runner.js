@@ -16,7 +16,7 @@ import fsp from "node:fs/promises";
 import path from "node:path";
 import { createInterface } from "node:readline";
 
-import { readJson } from "./fs-utils.js";
+import { readJson, stripNul } from "./fs-utils.js";
 import { db, hasDatabase } from "./db.js";
 
 const VAULT = process.env.KB_VAULT_ROOT || "/app/vault";
@@ -38,18 +38,6 @@ function yieldLoop() {
 // Postgres TEXT and JSONB columns reject raw NUL bytes (0x00). Marker-extracted
 // PDF text occasionally contains them as control-character noise. Strip them
 // before any INSERT — they carry no meaning in our corpus.
-function stripNul(value) {
-  if (value == null) return value;
-  if (typeof value === "string") return value.replace(/\u0000/g, "");
-  if (Array.isArray(value)) return value.map(stripNul);
-  if (typeof value === "object") {
-    const out = {};
-    for (const [k, v] of Object.entries(value)) out[k] = stripNul(v);
-    return out;
-  }
-  return value;
-}
-
 // ---------------------------------------------------------------------------
 // Batch insert helpers. Build a multi-VALUES statement with positional
 // parameters and execute in one round trip.

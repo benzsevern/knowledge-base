@@ -151,3 +151,18 @@ export function tokenize(text) {
     ),
   );
 }
+
+
+// Recursively strip NUL bytes (\u0000) from strings/arrays/objects.
+// Postgres TEXT and JSONB reject \u0000 — Marker PDF extraction can produce them.
+export function stripNul(value) {
+  if (value == null) return value;
+  if (typeof value === "string") return value.replace(/\u0000/g, "");
+  if (Array.isArray(value)) return value.map(stripNul);
+  if (typeof value === "object") {
+    const out = {};
+    for (const [k, v] of Object.entries(value)) out[k] = stripNul(v);
+    return out;
+  }
+  return value;
+}

@@ -5,6 +5,7 @@
 // DATABASE_URL is set AND the entities table has rows. That way a misconfigured
 // deploy (env var set but migration not run) transparently falls back to JSON.
 
+import { stripNul } from "./fs-utils.js";
 import { db, hasDatabase } from "./db.js";
 
 let _cachedReady = null;
@@ -242,6 +243,7 @@ export async function loadEntitiesOnlyPG() {
 // ---------------------------------------------------------------------------
 export async function upsertEntityPG(entity, type) {
   const { id, slug, title, createdAt, updatedAt, type: _type, ...meta } = entity;
+  // stripNul: Marker PDF extraction can produce \u0000 bytes; Postgres JSONB rejects them.
   await db().query(
     `INSERT INTO entities (id, type, slug, title, meta, created_at, updated_at)
      VALUES ($1, $2, $3, $4, $5::jsonb, $6, $7)
@@ -249,11 +251,11 @@ export async function upsertEntityPG(entity, type) {
        slug = EXCLUDED.slug, title = EXCLUDED.title,
        meta = EXCLUDED.meta, updated_at = EXCLUDED.updated_at`,
     [
-      id,
+      stripNul(id),
       type,
-      slug ?? id,
-      title ?? id,
-      JSON.stringify(meta),
+      stripNul(slug ?? id),
+      stripNul(title ?? id),
+      JSON.stringify(stripNul(meta)),
       createdAt ? new Date(createdAt) : new Date(),
       updatedAt ? new Date(updatedAt) : new Date(),
     ],
