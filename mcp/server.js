@@ -292,7 +292,7 @@ async function handleTool(name, args) {
     case "kb_graph":
       return get("/api/graph");
     case "kb_entity":
-      return get(`/api/admin/entity/${encodeURIComponent(args.id)}`);
+      return get(`/api/entity/${encodeURIComponent(args.id)}`);
     case "kb_topic_brief":
       return post("/api/topic-brief", args);
     case "kb_lit_review":

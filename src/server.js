@@ -115,6 +115,19 @@ app.get("/api/db-health", async (_req, res) => {
   res.status(result.ok ? 200 : 503).json(result);
 });
 
+// Entity lookup — read-only, unprotected. Returns the PG entity for a given
+// id or slug. 404 if not found.
+app.get("/api/entity/:id", async (req, res) => {
+  try {
+    if (!(await useDbReads())) return res.status(503).json({ error: "postgres not ready" });
+    const entity = await findEntityPG(req.params.id);
+    if (!entity) return res.status(404).json({ found: false, id: req.params.id });
+    res.json({ found: true, entity });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // Diagnostic: look up a single entity by id/slug from Postgres.
 app.get("/api/admin/entity/:id", async (req, res) => {
   try {
