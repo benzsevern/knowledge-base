@@ -83,6 +83,21 @@ async function discoverMarkerPython() {
 export async function extractPaper(pdfPath, outputDir) {
   await ensureDir(outputDir);
 
+  // If a previous extraction already produced a markdown file, reuse it.
+  // This avoids re-running the blocking spawnSync Python calls (which freeze
+  // the Node event loop and cause Railway healthcheck timeouts).
+  const existing = await fs.readdir(outputDir).catch(() => []);
+  const existingMd = existing.find((f) => f.endsWith(".md"));
+  if (existingMd) {
+    const mdPath = path.join(outputDir, existingMd);
+    const jsonFile = existing.find((f) => f.endsWith(".json"));
+    return {
+      markdownPath: mdPath,
+      jsonPath: jsonFile ? path.join(outputDir, jsonFile) : null,
+      assetPaths: [],
+    };
+  }
+
   if (process.env.OPENAI_API_KEY) {
     try {
       const llmResult = await extractPaperViaLLM(pdfPath, outputDir);
