@@ -146,7 +146,9 @@ export async function semanticSearchPG(queryVector, { topK = 10, types = null, s
   try {
     // IVFFlat with lists=900; default probes=1 scans one cluster (~900 vectors),
     // too sparse. `probes = sqrt(lists)` ≈ 30 is the standard guidance; 15 is a
-    // good speed/recall tradeoff. SET LOCAL ties the change to this session.
+    // good speed/recall tradeoff. SET LOCAL requires an explicit transaction —
+    // without BEGIN the setting resets before the next statement (autocommit).
+    await client.query("BEGIN");
     await client.query("SET LOCAL ivfflat.probes = 15");
 
     // Resolve scope (repo IDs or slugs) to canonical IDs up front.
@@ -192,6 +194,7 @@ export async function semanticSearchPG(queryVector, { topK = 10, types = null, s
     params.push(topK);
 
     const { rows } = await client.query(sql, params);
+    await client.query("COMMIT");
     // Return shape matches the JSON-era semanticSearch:
     //   [{ score, entry: { entityId, entityTitle, type, kind, text, ... } }]
     return rows.map((r) => ({
@@ -206,6 +209,9 @@ export async function semanticSearchPG(queryVector, { topK = 10, types = null, s
         text: r.text,
       },
     }));
+  } catch (err) {
+    await client.query("ROLLBACK").catch(() => {});
+    throw err;
   } finally {
     client.release();
   }
