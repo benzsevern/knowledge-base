@@ -41,7 +41,7 @@ import { chat, gapAnalysis, literatureReview } from "./rag.js";
 import { generateTopicBrief } from "./briefings.js";
 import { importVault } from "./export.js";
 import { readJson, writeJson } from "./fs-utils.js";
-import { dbHealth } from "./db.js";
+import { dbHealth, runMigrations, hasDatabase } from "./db.js";
 
 const app = express();
 app.use(express.json({ limit: "200mb" }));
@@ -66,6 +66,7 @@ const PROTECTED_PREFIXES = [
   "/api/recover-index",
   "/api/import-index",
   "/api/rebuild-links",
+  "/api/admin",
 ];
 app.use((req, res, next) => {
   if (!KB_API_TOKEN) return next();
@@ -104,6 +105,17 @@ function createJob(name, fn) {
 app.get("/api/db-health", async (_req, res) => {
   const result = await dbHealth();
   res.status(result.ok ? 200 : 503).json(result);
+});
+
+// Manually trigger migrations. Useful for CI or emergencies. Protected by
+// the same token gate as other admin routes (prefix /api/admin).
+app.post("/api/admin/migrate", async (_req, res) => {
+  try {
+    const result = await runMigrations();
+    res.json(result);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // ---------------------------------------------------------------------------
@@ -718,7 +730,19 @@ app.post("/api/import-index", express.json({ limit: "200mb" }), async (req, res)
 // Start
 // ---------------------------------------------------------------------------
 const PORT = Number(process.env.PORT ?? 3000);
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
   console.log(`kb server listening on :${PORT}`);
+  if (hasDatabase()) {
+    try {
+      const result = await runMigrations();
+      if (result.applied?.length) {
+        console.log(`[db] applied migrations: ${result.applied.join(", ")}`);
+      } else {
+        console.log(`[db] schema up to date (${result.alreadyApplied?.length ?? 0} applied)`);
+      }
+    } catch (err) {
+      console.error("[db] migration failed:", err.message);
+    }
+  }
 });
 // force restart 1776199006

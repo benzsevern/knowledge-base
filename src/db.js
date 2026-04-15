@@ -7,8 +7,17 @@
 // explicitly disable cert verification (the private network is the security
 // boundary, not TLS).
 
+import fs from "node:fs/promises";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import pgPkg from "pg";
 const { Pool } = pgPkg;
+
+const migrationsDir = path.join(
+  path.dirname(fileURLToPath(import.meta.url)),
+  "..",
+  "migrations",
+);
 
 let _pool = null;
 
@@ -59,6 +68,56 @@ export async function dbHealth() {
     }
   } catch (err) {
     return { ok: false, error: err.message };
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Migrations — simple file-based runner. Each .sql file in migrations/ is
+// applied once, in filename order. Applied migrations are recorded in the
+// schema_migrations table. Failures abort and are surfaced to the caller.
+// ---------------------------------------------------------------------------
+export async function runMigrations() {
+  if (!hasDatabase()) {
+    return { skipped: true, reason: "DATABASE_URL not set" };
+  }
+  const pool = db();
+  const client = await pool.connect();
+  try {
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS schema_migrations (
+        filename    TEXT PRIMARY KEY,
+        applied_at  TIMESTAMPTZ NOT NULL DEFAULT now()
+      )
+    `);
+    const applied = new Set(
+      (await client.query("SELECT filename FROM schema_migrations")).rows.map(
+        (r) => r.filename,
+      ),
+    );
+    const files = (await fs.readdir(migrationsDir).catch(() => []))
+      .filter((f) => f.endsWith(".sql"))
+      .sort();
+    const ran = [];
+    for (const filename of files) {
+      if (applied.has(filename)) continue;
+      const sql = await fs.readFile(path.join(migrationsDir, filename), "utf8");
+      await client.query("BEGIN");
+      try {
+        await client.query(sql);
+        await client.query(
+          "INSERT INTO schema_migrations (filename) VALUES ($1)",
+          [filename],
+        );
+        await client.query("COMMIT");
+        ran.push(filename);
+      } catch (err) {
+        await client.query("ROLLBACK");
+        throw new Error(`Migration ${filename} failed: ${err.message}`);
+      }
+    }
+    return { ok: true, applied: ran, alreadyApplied: [...applied] };
+  } finally {
+    client.release();
   }
 }
 
