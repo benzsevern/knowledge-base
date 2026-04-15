@@ -5,7 +5,8 @@ import { spawnSync } from "node:child_process";
 import { indexPath, projectRoot, repoCloneRoot, vaultRoot } from "./config.js";
 import { ensureDir, fileExists, sha1File, slugify, stableId, tokenize } from "./fs-utils.js";
 import { hasDatabase } from "./db.js";
-import { loadEntitiesOnlyPG, replaceRelationsPG, upsertEntityPG, useDbReads } from "./db-queries.js";
+import { insertRelationBatchPG, loadEntitiesOnlyPG, upsertEntityPG, useDbReads } from "./db-queries.js";
+import { db } from "./db.js";
 import { findEntity, loadIndex, saveIndex, upsertEntity } from "./indexer.js";
 import { renderPaperNote, renderRelationNote, renderRepoNote, renderRepoRepoRelationNote } from "./markdown.js";
 import { extractPaper } from "./marker-adapter.js";
@@ -668,70 +669,125 @@ export async function rebuildLinks(existingIndex = null) {
     docs = idx.docs ?? [];
   }
 
-  const relations = [];
-  // Yield the event loop every N iterations so Railway's /api/ping healthcheck
-  // can respond. Without this, the ~1.14M scoring iterations freeze Node.js and
-  // Railway kills the container.
-  const YIELD_EVERY = 1000;
-  let iterCount = 0;
-  const maybeYield = () => {
-    if (++iterCount % YIELD_EVERY === 0) return new Promise((r) => setImmediate(r));
-  };
+  if (usePg) {
+    // PG streaming path — never accumulate 913K relation objects in memory.
+    // Score, flush to PG in 500-row batches, then discard. Keeps only lightweight
+    // Maps of linked entity IDs for note generation.
+    const BATCH = 500;
+    let buffer = [];
+    // Lightweight Maps for note rendering (just IDs, not full relation objects).
+    const paperToRepos = new Map();
+    const repoToPapers = new Map();
+    const repoToRepos = new Map();
 
+    const flushBuffer = async () => {
+      if (!buffer.length) return;
+      await insertRelationBatchPG(buffer);
+      buffer = [];
+      await new Promise((r) => setImmediate(r)); // keep event loop alive
+    };
+
+    // TRUNCATE is O(1) — critical for 913K existing rows.
+    await db().query("TRUNCATE TABLE relations");
+
+    let iterCount = 0;
+    const maybeYield = () => (++iterCount % 1000 === 0 ? new Promise((r) => setImmediate(r)) : undefined);
+
+    for (const paper of papers) {
+      for (const repo of repos) {
+        await maybeYield();
+        const rel = scoreRelation(paper, repo);
+        if (rel.score < 2) continue;
+        buffer.push({
+          fromId: paper.id, toId: repo.id, relationType: "informs",
+          score: rel.score,
+          evidence: rel.evidence.length ? rel.evidence : ["Token overlap between paper summary and repository metadata."],
+          notePath: path.join(vaultRoot, "links", `${paper.id}__${repo.id}.md`),
+        });
+        if (!paperToRepos.has(paper.id)) paperToRepos.set(paper.id, []);
+        paperToRepos.get(paper.id).push(repo.id);
+        if (!repoToPapers.has(repo.id)) repoToPapers.set(repo.id, []);
+        repoToPapers.get(repo.id).push(paper.id);
+        if (buffer.length >= BATCH) await flushBuffer();
+      }
+    }
+
+    for (let i = 0; i < repos.length; i += 1) {
+      for (let j = i + 1; j < repos.length; j += 1) {
+        await maybeYield();
+        const a = repos[i];
+        const b = repos[j];
+        const rel = scoreRepoRelation(a, b);
+        if (rel.score < 3) continue;
+        buffer.push({
+          fromId: a.id, toId: b.id, relationType: "related",
+          score: rel.score,
+          evidence: rel.evidence,
+          notePath: path.join(vaultRoot, "links", `${a.id}__${b.id}.md`),
+        });
+        if (!repoToRepos.has(a.id)) repoToRepos.set(a.id, []);
+        repoToRepos.get(a.id).push(b.id);
+        if (!repoToRepos.has(b.id)) repoToRepos.set(b.id, []);
+        repoToRepos.get(b.id).push(a.id);
+        if (buffer.length >= BATCH) await flushBuffer();
+      }
+    }
+    await flushBuffer();
+
+    // Write entity notes using the lightweight ID Maps.
+    for (const paper of papers) {
+      const linkedRepos = (paperToRepos.get(paper.id) ?? [])
+        .map((id) => repos.find((r) => r.id === id)).filter(Boolean);
+      paper.updatedAt = now();
+      await fs.writeFile(paper.notePath, `${renderPaperNote(paper, linkedRepos)}\n`, "utf8");
+    }
+    for (const repo of repos) {
+      const linkedPapers = (repoToPapers.get(repo.id) ?? [])
+        .map((id) => papers.find((p) => p.id === id)).filter(Boolean);
+      const linkedRepos = (repoToRepos.get(repo.id) ?? [])
+        .map((id) => repos.find((r) => r.id === id)).filter(Boolean);
+      repo.updatedAt = now();
+      await fs.writeFile(repo.notePath, `${renderRepoNote(repo, linkedPapers, linkedRepos)}\n`, "utf8");
+    }
+
+    // Save JSON with entities only (relations live in PG).
+    return saveIndex({ papers, repos, docs, relations: [] });
+  }
+
+  // JSON-only path (no PG) — accumulate and save as before.
+  const relations = [];
   for (const paper of papers) {
     for (const repo of repos) {
-      await maybeYield();
       const rel = scoreRelation(paper, repo);
       if (rel.score < 2) continue;
       const id = `${paper.id}__${repo.id}`;
       relations.push({
-        id,
-        fromId: paper.id,
-        toId: repo.id,
-        relationType: "informs",
+        id, fromId: paper.id, toId: repo.id, relationType: "informs",
         score: rel.score,
         confidence: rel.score >= 6 ? "high" : rel.score >= 4 ? "medium" : "low",
         evidence: rel.evidence.length ? rel.evidence : ["Token overlap between paper summary and repository metadata."],
-        createdAt: now(),
-        updatedAt: now(),
+        createdAt: now(), updatedAt: now(),
         notePath: path.join(vaultRoot, "links", `${id}.md`),
       });
     }
   }
-
   for (let i = 0; i < repos.length; i += 1) {
     for (let j = i + 1; j < repos.length; j += 1) {
-      await maybeYield();
       const a = repos[i];
       const b = repos[j];
       const rel = scoreRepoRelation(a, b);
       if (rel.score < 3) continue;
       const id = `${a.id}__${b.id}`;
       relations.push({
-        id,
-        fromId: a.id,
-        toId: b.id,
-        relationType: "related",
+        id, fromId: a.id, toId: b.id, relationType: "related",
         score: rel.score,
         confidence: rel.score >= 8 ? "high" : rel.score >= 5 ? "medium" : "low",
         evidence: rel.evidence,
-        createdAt: now(),
-        updatedAt: now(),
+        createdAt: now(), updatedAt: now(),
         notePath: path.join(vaultRoot, "links", `${id}.md`),
       });
     }
   }
-
-  if (usePg) {
-    // Write relations to PG atomically. Skips 913K individual link-file writes.
-    await replaceRelationsPG(relations);
-    const idx = { papers, repos, docs, relations };
-    await regenerateEntityNotes(idx);
-    // Save entities to JSON (relations omitted — they live in PG now).
-    return saveIndex({ ...idx, relations: [] });
-  }
-
-  // JSON-only path (no PG)
   const idx = existingIndex ?? (await loadIndex());
   idx.relations = relations;
   await regenerateNotes(idx);
