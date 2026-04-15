@@ -49,6 +49,7 @@ import {
   findEntityPG,
   linkedEntitiesPG,
   semanticSearchPG,
+  deleteEntityPG,
 } from "./db-queries.js";
 
 const app = express();
@@ -602,6 +603,16 @@ app.post("/api/delete-entity", async (req, res) => {
     current.generatedAt = new Date().toISOString();
     await writeJson(indexFile, current);
 
+    // --- Postgres mirror: delete entity, cascaded relations, and embeddings ---
+    let pgDeleted = false;
+    if (hasDatabase()) {
+      try {
+        pgDeleted = await deleteEntityPG(id);
+      } catch (err) {
+        process.stderr.write(`[warn] deleteEntityPG ${id}: ${err.message}\n`);
+      }
+    }
+
     // --- Embeddings (summary + per-entity content chunks) ---
     let embRemoved = 0;
     const emb = await readJson(embFile, null);
@@ -645,6 +656,7 @@ app.post("/api/delete-entity", async (req, res) => {
       notePath,
       embeddingsRemoved: embRemoved,
       removedDir,
+      pgDeleted,
       before,
       after: {
         papers: current.papers?.length ?? 0,

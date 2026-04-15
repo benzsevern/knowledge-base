@@ -166,7 +166,11 @@ export async function semanticSearchPG(queryVector, { topK = 10, types = null, s
     const params = [vecLiteral];
     let p = 2;
 
-    const kinds = deep || scopeIds?.length ? ["summary", "chunk", "deep"] : ["summary", "chunk"];
+    // Deep/content chunks were written with kind='content' by buildContentIndex
+    // (migrated as-is). Include both spellings so legacy/future data works.
+    const kinds = deep || scopeIds?.length
+      ? ["summary", "chunk", "deep", "content"]
+      : ["summary", "chunk"];
     conditions.push(`em.kind = ANY($${p}::text[])`);
     params.push(kinds);
     p += 1;
@@ -293,4 +297,77 @@ export async function insertRelationBatchPG(batch) {
        note_path = EXCLUDED.note_path, updated_at = now()`,
     values,
   );
+}
+
+// ---------------------------------------------------------------------------
+// Embedding writes: dual-write from buildEmbeddingIndex / buildContentIndex.
+// Rows must have: id, entityId, kind, chunkIndex, text, vector (1536-dim array).
+// ON CONFLICT updates the embedding+text so re-embed (force=true) overwrites.
+// ---------------------------------------------------------------------------
+export async function upsertEmbeddingBatchPG(batch) {
+  if (!batch.length) return;
+  const cols = ["id", "entity_id", "kind", "chunk_index", "text", "embedding"];
+  const values = [];
+  const placeholders = [];
+  batch.forEach((r, j) => {
+    const base = j * cols.length;
+    placeholders.push(
+      `($${base + 1}, $${base + 2}, $${base + 3}, $${base + 4}, $${base + 5}, $${base + 6}::vector)`,
+    );
+    values.push(
+      stripNul(r.id),
+      stripNul(r.entityId),
+      stripNul(r.kind),
+      r.chunkIndex ?? null,
+      stripNul(r.text ?? null),
+      `[${r.vector.join(",")}]`,
+    );
+  });
+  await db().query(
+    `INSERT INTO embeddings (${cols.join(",")}) VALUES ${placeholders.join(",")}
+     ON CONFLICT (id) DO UPDATE SET
+       kind = EXCLUDED.kind, chunk_index = EXCLUDED.chunk_index,
+       text = EXCLUDED.text, embedding = EXCLUDED.embedding`,
+    values,
+  );
+}
+
+// Remove all embedding rows for a given entity. Used when an entity is
+// deleted, or before a force re-embed to clear stale orphan chunks.
+export async function deleteEmbeddingsForEntityPG(entityId) {
+  if (!entityId) return 0;
+  const { rowCount } = await db().query(
+    "DELETE FROM embeddings WHERE entity_id = $1",
+    [entityId],
+  );
+  return rowCount ?? 0;
+}
+
+// Hard-delete an entity and anything referencing it. Relations FK is
+// ON DELETE CASCADE on entities? Check migration — if not, delete explicitly.
+export async function deleteEntityPG(entityId) {
+  if (!entityId) return false;
+  const pool = db();
+  const client = await pool.connect();
+  try {
+    await client.query("BEGIN");
+    await client.query(
+      "DELETE FROM relations WHERE from_id = $1 OR to_id = $1",
+      [entityId],
+    );
+    // embeddings has ON DELETE CASCADE on entity_id, so deleting the entity
+    // row removes them. But belt-and-suspenders:
+    await client.query("DELETE FROM embeddings WHERE entity_id = $1", [entityId]);
+    const { rowCount } = await client.query(
+      "DELETE FROM entities WHERE id = $1",
+      [entityId],
+    );
+    await client.query("COMMIT");
+    return (rowCount ?? 0) > 0;
+  } catch (err) {
+    await client.query("ROLLBACK").catch(() => {});
+    throw err;
+  } finally {
+    client.release();
+  }
 }

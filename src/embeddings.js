@@ -5,6 +5,8 @@ import crypto from "node:crypto";
 import { vaultRoot } from "./config.js";
 import { ensureDir, fileExists } from "./fs-utils.js";
 import { loadIndex } from "./indexer.js";
+import { hasDatabase } from "./db.js";
+import { upsertEmbeddingBatchPG } from "./db-queries.js";
 
 const EMBEDDINGS_PATH = path.join(vaultRoot, "kb_embeddings.json");
 const EMBEDDING_URL = "https://api.openai.com/v1/embeddings";
@@ -274,6 +276,7 @@ export async function buildEmbeddingIndex({ force = false } = {}) {
     entryBatches.push(toEmbed.slice(offset, offset + tb.length));
     offset += tb.length;
   }
+  const usePg = hasDatabase();
   let cursor = 0;
   const workers = Array.from({ length: Math.min(EMBED_CONCURRENCY, entryBatches.length) }, async () => {
     while (true) {
@@ -281,10 +284,17 @@ export async function buildEmbeddingIndex({ force = false } = {}) {
       if (idx >= entryBatches.length) return;
       const batch = entryBatches[idx];
       const vectors = await callEmbeddings(batch.map((entry) => entry.text));
-      batch.forEach((entry, j) => {
-        finalEntries.push({ ...entry, vector: vectors[j] });
-      });
+      const withVectors = batch.map((entry, j) => ({ ...entry, vector: vectors[j] }));
+      finalEntries.push(...withVectors);
       embeddedCount += batch.length;
+      if (usePg) {
+        try {
+          await upsertEmbeddingBatchPG(withVectors);
+        } catch (err) {
+          process.stderr.write(`[warn] upsertEmbeddingBatchPG (summary): ${err.message}\n`);
+          throw err;
+        }
+      }
     }
   });
   await Promise.all(workers);
@@ -378,6 +388,7 @@ export async function buildContentIndex({ repoIds = null, force = false } = {}) 
         contentBatches.push({ offset: chunkOffset, texts: tb });
         chunkOffset += tb.length;
       }
+      const usePg = hasDatabase();
       let contentCursor = 0;
       const contentWorkers = Array.from({ length: Math.min(EMBED_CONCURRENCY, contentBatches.length) }, async () => {
         while (true) {
@@ -385,19 +396,26 @@ export async function buildContentIndex({ repoIds = null, force = false } = {}) 
           if (idx >= contentBatches.length) return;
           const { offset, texts } = contentBatches[idx];
           const vectors = await callEmbeddings(texts);
-          texts.forEach((text, j) => {
-            entries.push({
-              id: `${repo.id}#content-${offset + j}`,
-              entityId: repo.id,
-              entityTitle: repo.title,
-              type: "repo",
-              kind: "content",
-              chunkIndex: offset + j,
-              text,
-              hash: sha1(text),
-              vector: vectors[j],
-            });
-          });
+          const batchEntries = texts.map((text, j) => ({
+            id: `${repo.id}#content-${offset + j}`,
+            entityId: repo.id,
+            entityTitle: repo.title,
+            type: "repo",
+            kind: "content",
+            chunkIndex: offset + j,
+            text,
+            hash: sha1(text),
+            vector: vectors[j],
+          }));
+          entries.push(...batchEntries);
+          if (usePg) {
+            try {
+              await upsertEmbeddingBatchPG(batchEntries);
+            } catch (err) {
+              process.stderr.write(`[warn] upsertEmbeddingBatchPG (content ${repo.id}): ${err.message}\n`);
+              throw err;
+            }
+          }
         }
       });
       await Promise.all(contentWorkers);
