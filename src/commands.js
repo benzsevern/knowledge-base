@@ -413,7 +413,7 @@ export async function ingestPaper(pdfInputPath, options = {}) {
     extractedJsonPath,
   };
 
-  let index = options.index ?? (await loadIndex());
+  let index = options.index ?? ((await useDbReads()) ? await loadEntitiesOnlyPG() : await loadIndex());
   const previous = index.papers.find((paper) => paper.id === record.id);
   if (previous) {
     record.createdAt = previous.createdAt;
@@ -569,7 +569,7 @@ export async function ingestRepo(repoInput, options = {}) {
   };
   record.packedContextMetaPath = await writeRepoMetadata(repoDir, record, packResult);
 
-  let index = options.index ?? (await loadIndex());
+  let index = options.index ?? ((await useDbReads()) ? await loadEntitiesOnlyPG() : await loadIndex());
   const previous = index.repos.find((repo) => repo.id === record.id);
   if (previous) {
     record.createdAt = previous.createdAt;
@@ -902,7 +902,7 @@ export async function ingestDocsSite(url, options = {}) {
 
   const record = await _ingestDocs(url, options);
 
-  let index = options.index ?? (await loadIndex());
+  let index = options.index ?? ((await useDbReads()) ? await loadEntitiesOnlyPG() : await loadIndex());
   const previous = (index.docs ?? []).find((d) => d.id === record.id);
   if (previous) {
     record.createdAt = previous.createdAt;
