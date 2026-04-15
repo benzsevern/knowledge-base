@@ -4,6 +4,8 @@ import { spawnSync } from "node:child_process";
 
 import { indexPath, projectRoot, repoCloneRoot, vaultRoot } from "./config.js";
 import { ensureDir, fileExists, sha1File, slugify, stableId, tokenize } from "./fs-utils.js";
+import { hasDatabase } from "./db.js";
+import { loadEntitiesOnlyPG, replaceRelationsPG, upsertEntityPG, useDbReads } from "./db-queries.js";
 import { findEntity, loadIndex, saveIndex, upsertEntity } from "./indexer.js";
 import { renderPaperNote, renderRelationNote, renderRepoNote, renderRepoRepoRelationNote } from "./markdown.js";
 import { extractPaper } from "./marker-adapter.js";
@@ -186,6 +188,43 @@ function derivePaperMetadata(markdown, pdfPath, fallbackTitle = "") {
     authors,
     citations,
   };
+}
+
+// Light version: writes paper/repo entity notes only. Used by the PG path in
+// rebuildLinks to avoid 913K individual link-file writes (too slow on Railway).
+async function regenerateEntityNotes(index) {
+  const paperToRepos = new Map();
+  const repoToPapers = new Map();
+  const repoToRepos = new Map();
+
+  for (const relation of index.relations) {
+    if (relation.relationType === "related") {
+      repoToRepos.set(relation.fromId, [...(repoToRepos.get(relation.fromId) ?? []), relation.toId]);
+      repoToRepos.set(relation.toId, [...(repoToRepos.get(relation.toId) ?? []), relation.fromId]);
+    } else {
+      paperToRepos.set(relation.fromId, [...(paperToRepos.get(relation.fromId) ?? []), relation.toId]);
+      repoToPapers.set(relation.toId, [...(repoToPapers.get(relation.toId) ?? []), relation.fromId]);
+    }
+  }
+
+  for (const paper of index.papers) {
+    const linkedRepos = (paperToRepos.get(paper.id) ?? [])
+      .map((id) => index.repos.find((r) => r.id === id))
+      .filter(Boolean);
+    paper.updatedAt = now();
+    await fs.writeFile(paper.notePath, `${renderPaperNote(paper, linkedRepos)}\n`, "utf8");
+  }
+
+  for (const repo of index.repos) {
+    const linkedPapers = (repoToPapers.get(repo.id) ?? [])
+      .map((id) => index.papers.find((p) => p.id === id))
+      .filter(Boolean);
+    const linkedRepos = (repoToRepos.get(repo.id) ?? [])
+      .map((id) => index.repos.find((r) => r.id === id))
+      .filter(Boolean);
+    repo.updatedAt = now();
+    await fs.writeFile(repo.notePath, `${renderRepoNote(repo, linkedPapers, linkedRepos)}\n`, "utf8");
+  }
 }
 
 async function regenerateNotes(index) {
@@ -380,6 +419,11 @@ export async function ingestPaper(pdfInputPath, options = {}) {
   }
 
   index.papers = upsertEntity(index.papers, record);
+  if (hasDatabase()) {
+    await upsertEntityPG(record, "paper").catch((err) =>
+      process.stderr.write(`[warn] upsertEntityPG paper ${record.id}: ${err.message}\n`),
+    );
+  }
   if (options.skipRebuild) {
     return { record, index };
   }
@@ -390,7 +434,9 @@ export async function ingestPaper(pdfInputPath, options = {}) {
 
 export async function ingestPapersBatch(pdfInputPaths, { onProgress } = {}) {
   await ensureVaultLayout();
-  let index = await loadIndex();
+  // When PG is the relation store, load only entities — avoids the OOM from
+  // materialising 913K relations into the Node heap.
+  let index = (await useDbReads()) ? await loadEntitiesOnlyPG() : await loadIndex();
   const results = [];
   const total = pdfInputPaths.length;
   const startedAt = Date.now();
@@ -529,6 +575,11 @@ export async function ingestRepo(repoInput, options = {}) {
   }
 
   index.repos = upsertEntity(index.repos, record);
+  if (hasDatabase()) {
+    await upsertEntityPG(record, "repo").catch((err) =>
+      process.stderr.write(`[warn] upsertEntityPG repo ${record.id}: ${err.message}\n`),
+    );
+  }
   if (options.skipRebuild) {
     return { record, index };
   }
@@ -599,58 +650,82 @@ function scoreRepoRelation(a, b) {
 
 export async function rebuildLinks(existingIndex = null) {
   await ensureVaultLayout();
-  const index = existingIndex ?? (await loadIndex());
+
+  // When PG holds relations, load only entities to avoid materialising the
+  // 913K-relation JSON into the Node heap — that's what caused the OOM.
+  const usePg = await useDbReads();
+
+  let papers, repos, docs;
+  if (existingIndex) {
+    ({ papers, repos } = existingIndex);
+    docs = existingIndex.docs ?? [];
+  } else if (usePg) {
+    const pg = await loadEntitiesOnlyPG();
+    ({ papers, repos, docs } = pg);
+  } else {
+    const idx = await loadIndex();
+    ({ papers, repos } = idx);
+    docs = idx.docs ?? [];
+  }
+
   const relations = [];
 
-  for (const paper of index.papers) {
-    for (const repo of index.repos) {
-      const relationScore = scoreRelation(paper, repo);
-      if (relationScore.score < 2) {
-        continue;
-      }
-
-      const relationId = `${paper.id}__${repo.id}`;
+  for (const paper of papers) {
+    for (const repo of repos) {
+      const rel = scoreRelation(paper, repo);
+      if (rel.score < 2) continue;
+      const id = `${paper.id}__${repo.id}`;
       relations.push({
-        id: relationId,
+        id,
         fromId: paper.id,
         toId: repo.id,
         relationType: "informs",
-        confidence: relationScore.score >= 6 ? "high" : relationScore.score >= 4 ? "medium" : "low",
-        evidence: relationScore.evidence.length ? relationScore.evidence : ["Token overlap between paper summary and repository metadata."],
+        score: rel.score,
+        confidence: rel.score >= 6 ? "high" : rel.score >= 4 ? "medium" : "low",
+        evidence: rel.evidence.length ? rel.evidence : ["Token overlap between paper summary and repository metadata."],
         createdAt: now(),
         updatedAt: now(),
-        notePath: path.join(vaultRoot, "links", `${relationId}.md`),
+        notePath: path.join(vaultRoot, "links", `${id}.md`),
       });
     }
   }
 
-  for (let i = 0; i < index.repos.length; i += 1) {
-    for (let j = i + 1; j < index.repos.length; j += 1) {
-      const a = index.repos[i];
-      const b = index.repos[j];
-      const relationScore = scoreRepoRelation(a, b);
-      if (relationScore.score < 3) {
-        continue;
-      }
-
-      const relationId = `${a.id}__${b.id}`;
+  for (let i = 0; i < repos.length; i += 1) {
+    for (let j = i + 1; j < repos.length; j += 1) {
+      const a = repos[i];
+      const b = repos[j];
+      const rel = scoreRepoRelation(a, b);
+      if (rel.score < 3) continue;
+      const id = `${a.id}__${b.id}`;
       relations.push({
-        id: relationId,
+        id,
         fromId: a.id,
         toId: b.id,
         relationType: "related",
-        confidence: relationScore.score >= 8 ? "high" : relationScore.score >= 5 ? "medium" : "low",
-        evidence: relationScore.evidence,
+        score: rel.score,
+        confidence: rel.score >= 8 ? "high" : rel.score >= 5 ? "medium" : "low",
+        evidence: rel.evidence,
         createdAt: now(),
         updatedAt: now(),
-        notePath: path.join(vaultRoot, "links", `${relationId}.md`),
+        notePath: path.join(vaultRoot, "links", `${id}.md`),
       });
     }
   }
 
-  index.relations = relations;
-  await regenerateNotes(index);
-  return saveIndex(index);
+  if (usePg) {
+    // Write relations to PG atomically. Skips 913K individual link-file writes.
+    await replaceRelationsPG(relations);
+    const idx = { papers, repos, docs, relations };
+    await regenerateEntityNotes(idx);
+    // Save entities to JSON (relations omitted — they live in PG now).
+    return saveIndex({ ...idx, relations: [] });
+  }
+
+  // JSON-only path (no PG)
+  const idx = existingIndex ?? (await loadIndex());
+  idx.relations = relations;
+  await regenerateNotes(idx);
+  return saveIndex(idx);
 }
 
 // YY = 07-29 (arXiv's new scheme started April 2007), MM = 01-12
@@ -768,6 +843,11 @@ export async function ingestDocsSite(url, options = {}) {
   }
 
   index.docs = upsertEntity(index.docs ?? [], record);
+  if (hasDatabase()) {
+    await upsertEntityPG(record, "docs").catch((err) =>
+      process.stderr.write(`[warn] upsertEntityPG docs ${record.id}: ${err.message}\n`),
+    );
+  }
   if (options.skipRebuild) {
     return { record, index };
   }
@@ -777,7 +857,8 @@ export async function ingestDocsSite(url, options = {}) {
 
 export async function ingestReposBatch(repoInputs, { onProgress } = {}) {
   await ensureVaultLayout();
-  let index = await loadIndex();
+  // Same OOM-safe load as ingestPapersBatch.
+  let index = (await useDbReads()) ? await loadEntitiesOnlyPG() : await loadIndex();
   const total = repoInputs.length;
   const startedAt = Date.now();
   const results = [];

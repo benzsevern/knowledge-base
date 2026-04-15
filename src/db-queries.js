@@ -216,3 +216,92 @@ export async function semanticSearchPG(queryVector, { topK = 10, types = null, s
     client.release();
   }
 }
+
+// ---------------------------------------------------------------------------
+// loadEntitiesOnlyPG — same shape as loadIndexPG but omits relations.
+// Used by Phase 4 ingest paths so we never load the 913K-relation JSON.
+// ---------------------------------------------------------------------------
+export async function loadEntitiesOnlyPG() {
+  const pool = db();
+  const [papersQ, reposQ, docsQ] = await Promise.all([
+    pool.query("SELECT * FROM entities WHERE type = 'paper'"),
+    pool.query("SELECT * FROM entities WHERE type = 'repo'"),
+    pool.query("SELECT * FROM entities WHERE type = 'docs'"),
+  ]);
+  return {
+    generatedAt: new Date().toISOString(),
+    papers: papersQ.rows.map(inflate),
+    repos: reposQ.rows.map(inflate),
+    docs: docsQ.rows.map(inflate),
+    relations: [],
+  };
+}
+
+// ---------------------------------------------------------------------------
+// upsertEntityPG — dual-write a single entity alongside the JSON index update.
+// ---------------------------------------------------------------------------
+export async function upsertEntityPG(entity, type) {
+  const { id, slug, title, createdAt, updatedAt, type: _type, ...meta } = entity;
+  await db().query(
+    `INSERT INTO entities (id, type, slug, title, meta, created_at, updated_at)
+     VALUES ($1, $2, $3, $4, $5::jsonb, $6, $7)
+     ON CONFLICT (id) DO UPDATE SET
+       slug = EXCLUDED.slug, title = EXCLUDED.title,
+       meta = EXCLUDED.meta, updated_at = EXCLUDED.updated_at`,
+    [
+      id,
+      type,
+      slug ?? id,
+      title ?? id,
+      JSON.stringify(meta),
+      createdAt ? new Date(createdAt) : new Date(),
+      updatedAt ? new Date(updatedAt) : new Date(),
+    ],
+  );
+}
+
+// ---------------------------------------------------------------------------
+// replaceRelationsPG — atomically replace all relations in one transaction.
+// Relation objects must have: fromId, toId, relationType, score, evidence, notePath.
+// ---------------------------------------------------------------------------
+export async function replaceRelationsPG(relations) {
+  const client = await db().connect();
+  const BATCH = 500;
+  try {
+    await client.query("BEGIN");
+    await client.query("DELETE FROM relations");
+    for (let i = 0; i < relations.length; i += BATCH) {
+      const batch = relations.slice(i, i + BATCH);
+      const cols = ["from_id", "to_id", "relation_type", "score", "evidence", "note_path"];
+      const values = [];
+      const placeholders = [];
+      batch.forEach((r, j) => {
+        const base = j * cols.length;
+        placeholders.push(
+          `($${base + 1}, $${base + 2}, $${base + 3}, $${base + 4}, $${base + 5}::jsonb, $${base + 6})`,
+        );
+        values.push(
+          r.fromId,
+          r.toId,
+          r.relationType,
+          r.score ?? null,
+          JSON.stringify(r.evidence ?? []),
+          r.notePath ?? null,
+        );
+      });
+      await client.query(
+        `INSERT INTO relations (${cols.join(",")}) VALUES ${placeholders.join(",")}
+         ON CONFLICT (from_id, to_id, relation_type) DO UPDATE SET
+           score = EXCLUDED.score, evidence = EXCLUDED.evidence,
+           note_path = EXCLUDED.note_path, updated_at = now()`,
+        values,
+      );
+    }
+    await client.query("COMMIT");
+  } catch (err) {
+    await client.query("ROLLBACK").catch(() => {});
+    throw err;
+  } finally {
+    client.release();
+  }
+}
