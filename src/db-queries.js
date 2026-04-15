@@ -140,63 +140,73 @@ export async function linkedEntitiesPG(entityId) {
 // ---------------------------------------------------------------------------
 export async function semanticSearchPG(queryVector, { topK = 10, types = null, scope = null, deep = false } = {}) {
   const pool = db();
+  const client = await pool.connect();
   const vecLiteral = `[${queryVector.join(",")}]`;
 
-  // Resolve scope (repo IDs or slugs) to canonical IDs up front.
-  let scopeIds = null;
-  if (scope && scope.length) {
-    const { rows } = await pool.query(
-      `SELECT id FROM entities WHERE type = 'repo' AND (id = ANY($1) OR slug = ANY($1))`,
-      [scope],
-    );
-    scopeIds = rows.map((r) => r.id);
-  }
+  try {
+    // IVFFlat with lists=900; default probes=1 scans one cluster (~900 vectors),
+    // too sparse. `probes = sqrt(lists)` ≈ 30 is the standard guidance; 15 is a
+    // good speed/recall tradeoff. SET LOCAL ties the change to this session.
+    await client.query("SET LOCAL ivfflat.probes = 15");
 
-  const conditions = [];
-  const params = [vecLiteral];
-  let p = 2;
+    // Resolve scope (repo IDs or slugs) to canonical IDs up front.
+    let scopeIds = null;
+    if (scope && scope.length) {
+      const { rows } = await client.query(
+        `SELECT id FROM entities WHERE type = 'repo' AND (id = ANY($1) OR slug = ANY($1))`,
+        [scope],
+      );
+      scopeIds = rows.map((r) => r.id);
+    }
 
-  const kinds = deep || scopeIds?.length ? ["summary", "chunk", "deep"] : ["summary", "chunk"];
-  conditions.push(`em.kind = ANY($${p}::text[])`);
-  params.push(kinds);
-  p += 1;
+    const conditions = [];
+    const params = [vecLiteral];
+    let p = 2;
 
-  if (types && types.length) {
-    conditions.push(`e.type = ANY($${p}::text[])`);
-    params.push(types);
+    const kinds = deep || scopeIds?.length ? ["summary", "chunk", "deep"] : ["summary", "chunk"];
+    conditions.push(`em.kind = ANY($${p}::text[])`);
+    params.push(kinds);
     p += 1;
-  }
-  if (scopeIds?.length) {
-    conditions.push(`em.entity_id = ANY($${p}::text[])`);
-    params.push(scopeIds);
-    p += 1;
-  }
 
-  const sql = `
-    SELECT em.id, em.entity_id, em.kind, em.chunk_index, em.text,
-           e.type, e.title,
-           1 - (em.embedding <=> $1::vector) AS score
-    FROM embeddings em
-    JOIN entities e ON e.id = em.entity_id
-    WHERE ${conditions.join(" AND ")}
-    ORDER BY em.embedding <=> $1::vector
-    LIMIT $${p}
-  `;
-  params.push(topK);
+    if (types && types.length) {
+      conditions.push(`e.type = ANY($${p}::text[])`);
+      params.push(types);
+      p += 1;
+    }
+    if (scopeIds?.length) {
+      conditions.push(`em.entity_id = ANY($${p}::text[])`);
+      params.push(scopeIds);
+      p += 1;
+    }
 
-  const { rows } = await pool.query(sql, params);
-  // Return shape matches the JSON-era semanticSearch:
-  //   [{ score, entry: { entityId, entityTitle, type, kind, text, ... } }]
-  return rows.map((r) => ({
-    score: r.score,
-    entry: {
-      id: r.id,
-      entityId: r.entity_id,
-      entityTitle: r.title,
-      type: r.type,
-      kind: r.kind,
-      chunkIndex: r.chunk_index,
-      text: r.text,
-    },
-  }));
+    const sql = `
+      SELECT em.id, em.entity_id, em.kind, em.chunk_index, em.text,
+             e.type, e.title,
+             1 - (em.embedding <=> $1::vector) AS score
+      FROM embeddings em
+      JOIN entities e ON e.id = em.entity_id
+      WHERE ${conditions.join(" AND ")}
+      ORDER BY em.embedding <=> $1::vector
+      LIMIT $${p}
+    `;
+    params.push(topK);
+
+    const { rows } = await client.query(sql, params);
+    // Return shape matches the JSON-era semanticSearch:
+    //   [{ score, entry: { entityId, entityTitle, type, kind, text, ... } }]
+    return rows.map((r) => ({
+      score: r.score,
+      entry: {
+        id: r.id,
+        entityId: r.entity_id,
+        entityTitle: r.title,
+        type: r.type,
+        kind: r.kind,
+        chunkIndex: r.chunk_index,
+        text: r.text,
+      },
+    }));
+  } finally {
+    client.release();
+  }
 }
