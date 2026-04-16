@@ -34,6 +34,7 @@ import {
   searchGithubRepos,
   fetchRepoCandidates,
   ingestDocsSite,
+  ingestSitemap,
 } from "./commands.js";
 import { buildContentIndex, buildEmbeddingIndex, embedQuery, semanticSearch } from "./embeddings.js";
 import { loadIndex } from "./indexer.js";
@@ -563,6 +564,25 @@ app.post("/api/ingest-repos", (req, res) => {
       },
     });
     return { ingested: results.length };
+  });
+  res.json({ jobId: job.id, status: job.status });
+});
+
+// Per-page sitemap ingest. No Firecrawl — uses the already-configured
+// gpt-5.4-nano to convert HTML → Markdown. One entity per URL.
+//   body: { sitemapUrl, urlFilter?, maxPages?=200, concurrency?=4 }
+app.post("/api/ingest-sitemap", (req, res) => {
+  const { sitemapUrl, urlFilter, maxPages = 200, concurrency = 4 } = req.body ?? {};
+  if (!sitemapUrl) return res.status(400).json({ error: "Missing sitemapUrl" });
+  const job = createJob(`ingest-sitemap ${sitemapUrl}`, async () => {
+    return await ingestSitemap(sitemapUrl, {
+      urlFilter,
+      maxPages,
+      concurrency,
+      onProgress: (info) => {
+        job.progress = info;
+      },
+    });
   });
   res.json({ jobId: job.id, status: job.status });
 });

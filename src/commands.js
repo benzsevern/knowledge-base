@@ -12,6 +12,7 @@ import { renderPaperNote, renderRelationNote, renderRepoNote, renderRepoRepoRela
 import { extractPaper } from "./marker-adapter.js";
 import { packRepository } from "./repo-packer.js";
 import { ingestDocs as _ingestDocs } from "./docs-ingester.js";
+import { parseSitemap, fetchAndExtractArticle } from "./sitemap-ingester.js";
 
 function now() {
   return new Date().toISOString();
@@ -894,6 +895,70 @@ export async function discoverArxivCandidates() {
   );
 
   return { outPath, candidates: sorted };
+}
+
+// ---------------------------------------------------------------------------
+// ingestSitemap — per-page ingest. Parses sitemap.xml, filters URLs, runs
+// HTML→Markdown via gpt-5.4-nano (no Firecrawl), writes one paper-shaped
+// entity per page, does a single rebuildLinks at the end.
+// ---------------------------------------------------------------------------
+export async function ingestSitemap(sitemapUrl, options = {}) {
+  const { urlFilter = null, maxPages = 200, concurrency = 4, onProgress } = options;
+  await ensureVaultLayout();
+  await ensureDir(path.join(vaultRoot, "articles"));
+
+  let urls = await parseSitemap(sitemapUrl);
+  if (urlFilter) {
+    const re = new RegExp(urlFilter);
+    urls = urls.filter((u) => re.test(u));
+  }
+  urls = urls.slice(0, maxPages);
+  const total = urls.length;
+  if (!total) return { total: 0, ingested: 0, failed: 0, results: [] };
+
+  let index = (await useDbReads()) ? await loadEntitiesOnlyPG() : await loadIndex();
+  const results = [];
+  let cursor = 0;
+  let done = 0;
+  const startedAt = Date.now();
+
+  async function worker() {
+    while (true) {
+      const i = cursor;
+      cursor += 1;
+      if (i >= total) return;
+      const url = urls[i];
+      try {
+        const record = await fetchAndExtractArticle(url);
+        const previous = index.papers.find((p) => p.id === record.id);
+        if (previous) record.createdAt = previous.createdAt;
+        index.papers = upsertEntity(index.papers, record);
+        if (hasDatabase()) {
+          await upsertEntityPG(record, "paper").catch((err) => {
+            process.stderr.write(`[warn] upsertEntityPG article ${record.id}: ${err.message}\n`);
+          });
+        }
+        results.push({ url, id: record.id, title: record.title });
+      } catch (err) {
+        results.push({ url, error: err.message });
+      }
+      done += 1;
+      if (onProgress) {
+        const elapsed = (Date.now() - startedAt) / 1000;
+        onProgress({ index: done, total, url, elapsedSec: elapsed });
+      }
+    }
+  }
+  await Promise.all(
+    Array.from({ length: Math.min(concurrency, total) }, () => worker()),
+  );
+
+  if (!options.skipRebuild) {
+    await rebuildLinks(index);
+  }
+
+  const ingested = results.filter((r) => !r.error).length;
+  return { total, ingested, failed: total - ingested, results };
 }
 
 export async function ingestDocsSite(url, options = {}) {
