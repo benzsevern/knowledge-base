@@ -50,6 +50,7 @@ import {
   findEntityPG,
   linkedEntitiesPG,
   listEntityEmbeddingsPG,
+  fetchEntityVectorPG,
   semanticSearchPG,
   deleteEntityPG,
 } from "./db-queries.js";
@@ -339,6 +340,34 @@ app.post("/api/search", async (req, res) => {
   }
 });
 
+// Semantic search keyed on an existing entity id, not a free-text query.
+// Used by downstream consumers (e.g., golden-showcase /audit) to find the
+// nearest neighbors of a specific entity without paying for a fresh embed.
+// Reuses the entity's summary embedding (or centroid fallback) as the query.
+app.post("/api/search-by-entity", async (req, res) => {
+  try {
+    const { entity_id: entityId, topK = 10, types = null, scope = null, deep = false } = req.body ?? {};
+    if (!entityId) return res.status(400).json({ error: "Missing entity_id" });
+    if (!(await useDbReads())) return res.status(503).json({ error: "postgres not ready" });
+    const vector = await fetchEntityVectorPG(entityId);
+    if (!vector) return res.status(404).json({ error: "entity has no embedding" });
+    const hits = await semanticSearchPG(vector, { topK, types, scope, deep });
+    res.json({
+      hits: hits.map((h) => ({
+        score: h.score,
+        entityId: h.entry.entityId,
+        entityTitle: h.entry.entityTitle,
+        type: h.entry.type,
+        kind: h.entry.kind,
+        text: (h.entry.text ?? "").slice(0, 500),
+      })),
+    });
+  } catch (err) {
+    console.error("search-by-entity failed:", err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 app.post("/api/chat", async (req, res) => {
   try {
     const { question, topK = 8, scope = null, deep = false } = req.body;
@@ -565,14 +594,14 @@ app.post("/api/ingest-papers", (req, res) => {
 });
 
 app.post("/api/ingest-repo", (req, res) => {
-  const { path: repoPath, source } = req.body;
-  const input = source ?? repoPath;
+  const { path: repoPath, source, url, meta } = req.body;
+  const input = source ?? repoPath ?? url;
   if (!input) return res.status(400).json({ error: "Missing source (path or GitHub URL or org/repo)" });
   const job = createJob(`ingest-repo ${input}`, async () => {
-    const record = await ingestRepo(input);
+    const record = await ingestRepo(input, { meta: meta && typeof meta === "object" ? meta : undefined });
     return { id: record.id, title: record.title };
   });
-  res.json({ jobId: job.id, status: job.status });
+  res.json({ jobId: job.id, job_id: job.id, status: job.status });
 });
 
 app.post("/api/ingest-repos", (req, res) => {

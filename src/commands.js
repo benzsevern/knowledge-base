@@ -579,6 +579,10 @@ export async function ingestRepo(repoInput, options = {}) {
     entrypoints: packResult.entrypoints,
     keyModules: packResult.keyModules,
     summary,
+    // Caller-provided metadata (e.g. {submittedBy, auditId, source:"user-audit"})
+    // lands as top-level fields; upsertEntityPG spreads non-standard keys into
+    // entities.meta JSONB automatically.
+    ...(options.meta || {}),
   };
   record.packedContextMetaPath = await writeRepoMetadata(repoDir, record, packResult);
 

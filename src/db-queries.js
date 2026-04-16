@@ -223,6 +223,32 @@ export async function semanticSearchPG(queryVector, { topK = 10, types = null, s
 }
 
 // ---------------------------------------------------------------------------
+// fetchEntityVectorPG — one representative vector for a single entity.
+// Prefers the kind='summary' row; falls back to the centroid (avg of chunks).
+// Returns the vector as a plain number[] or null if the entity has no rows.
+// ---------------------------------------------------------------------------
+export async function fetchEntityVectorPG(entityId) {
+  const pool = db();
+  const { rows } = await pool.query(
+    `
+    WITH summary AS (
+      SELECT embedding FROM embeddings
+       WHERE entity_id = $1 AND kind = 'summary' LIMIT 1
+    ),
+    centroid AS (
+      SELECT avg(embedding) AS embedding FROM embeddings
+       WHERE entity_id = $1
+    )
+    SELECT COALESCE((SELECT embedding FROM summary),
+                    (SELECT embedding FROM centroid))::text AS vector_text
+    `,
+    [entityId],
+  );
+  if (!rows.length || !rows[0].vector_text) return null;
+  return JSON.parse(rows[0].vector_text);
+}
+
+// ---------------------------------------------------------------------------
 // listEntityEmbeddingsPG — one representative vector per entity.
 //   - Prefers the kind='summary' row when it exists (today: only repos).
 //   - Falls back to the centroid (avg) of all chunks for entities without one.
