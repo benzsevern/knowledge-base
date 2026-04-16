@@ -186,6 +186,29 @@ app.get("/api/admin/entity-embeddings", async (_req, res) => {
   }
 });
 
+// Re-run llmSummarize over existing entities and UPDATE their meta with
+// better summary/methodology/constraints/topics. Skips rows that already
+// have a populated topics array unless force=true.
+//   body: { force?, limit?, concurrency? }
+app.post("/api/admin/resummarize", async (req, res) => {
+  const { force = false, limit = null, concurrency = 2 } = req.body ?? {};
+  const { backfillSummaries } = await import("./backfill.js");
+  const job = createJob("resummarize", async () => {
+    return await backfillSummaries({
+      force,
+      limit,
+      concurrency,
+      onProgress: (s) => {
+        job.progress = s;
+        if ((s.index || 0) % 25 === 0) {
+          console.log(`[resummarize] ${JSON.stringify(s)}`);
+        }
+      },
+    });
+  });
+  res.json({ jobId: job.id, status: job.status });
+});
+
 // Manually trigger migrations. Useful for CI or emergencies. Protected by
 // the same token gate as other admin routes (prefix /api/admin).
 app.post("/api/admin/migrate", async (_req, res) => {
