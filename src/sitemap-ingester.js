@@ -165,11 +165,20 @@ export async function fetchAndExtractArticle(url) {
     type: "paper",
     title,
     sourceUrl: url,
+    sourcePath: "",
     createdAt: now,
     updatedAt: now,
     notePath: path.join(articleDir, "note.md"),
     summary: trim(body.replace(/^#[^\n]+\n+/, ""), 1200),
     markdownExcerpt: trim(body, 2500),
+    // Paper-shape fields with empty defaults — renderPaperNote and
+    // scoreRelation expect these to exist as arrays/strings.
+    authors: [],
+    year: "",
+    methodologySummary: "",
+    constraintsSummary: "",
+    assets: [],
+    citations: [],
     tags: ["article"],
     kind: "article",
   };
