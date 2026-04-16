@@ -71,7 +71,7 @@ function stripHtmlBoilerplate(html) {
     .slice(0, HTML_CAP);
 }
 
-async function htmlToMarkdown(html, url) {
+async function htmlToMarkdown(html, url, retries = 5) {
   if (!process.env.OPENAI_API_KEY) {
     throw new Error("OPENAI_API_KEY not set");
   }
@@ -92,29 +92,42 @@ async function htmlToMarkdown(html, url) {
       },
     ],
   };
-  const res = await fetch(OPENAI_URL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
-    },
-    body: JSON.stringify(body),
-  });
-  if (!res.ok) {
-    const errText = await res.text();
-    throw new Error(`OpenAI ${res.status}: ${errText.slice(0, 300)}`);
-  }
-  const json = await res.json();
-  if (typeof json.output_text === "string" && json.output_text.length) {
-    return json.output_text;
-  }
-  const chunks = [];
-  for (const item of json.output ?? []) {
-    for (const piece of item.content ?? []) {
-      if (typeof piece.text === "string") chunks.push(piece.text);
+
+  for (let attempt = 0; attempt <= retries; attempt += 1) {
+    const res = await fetch(OPENAI_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+      },
+      body: JSON.stringify(body),
+    });
+    // 429 rate limit → exponential backoff (2s, 4s, 8s, 16s, 30s cap)
+    if (res.status === 429 && attempt < retries) {
+      const wait = Math.min(2 ** attempt * 2000, 30000);
+      process.stderr.write(
+        `[sitemap] 429 on ${url} (attempt ${attempt + 1}/${retries + 1}), waiting ${wait / 1000}s\n`,
+      );
+      await new Promise((r) => setTimeout(r, wait));
+      continue;
     }
+    if (!res.ok) {
+      const errText = await res.text();
+      throw new Error(`OpenAI ${res.status}: ${errText.slice(0, 300)}`);
+    }
+    const json = await res.json();
+    if (typeof json.output_text === "string" && json.output_text.length) {
+      return json.output_text;
+    }
+    const chunks = [];
+    for (const item of json.output ?? []) {
+      for (const piece of item.content ?? []) {
+        if (typeof piece.text === "string") chunks.push(piece.text);
+      }
+    }
+    return chunks.join("\n");
   }
-  return chunks.join("\n");
+  throw new Error(`OpenAI 429 exhausted retries for ${url}`);
 }
 
 // ---------------------------------------------------------------------------
