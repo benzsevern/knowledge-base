@@ -141,6 +141,36 @@ app.get("/api/admin/entity/:id", async (req, res) => {
   }
 });
 
+// Read the LLM-generated note for a single entity. Returns the markdown
+// text plus minimal metadata. Used by golden-showcase's /knowledge/[id]
+// page to render a curated view of an entity. Token-gated.
+app.get("/api/admin/entity/:id/note", async (req, res) => {
+  try {
+    const entity = await findEntityPG(req.params.id);
+    if (!entity) return res.status(404).json({ error: "entity not found" });
+    if (!entity.notePath) return res.status(404).json({ error: "no note for entity" });
+    let markdown;
+    try {
+      markdown = await fs.promises.readFile(entity.notePath, "utf8");
+    } catch (err) {
+      return res.status(404).json({ error: `note file unreadable: ${err.code || err.message}` });
+    }
+    res.json({
+      id: entity.id,
+      title: entity.title,
+      type: entity.type,
+      slug: entity.slug,
+      sourceUrl: entity.sourceUrl || null,
+      arxivId: entity.arxivId || null,
+      year: entity.year || null,
+      authors: entity.authors || null,
+      markdown,
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // Dump all entity-level summary embeddings in one shot. Consumer: the
 // golden-showcase knowledge-map generator script. Not paginated — corpus is
 // ~1.5K entities so payload is ~6 MB gzipped. Token-gated via PROTECTED_PREFIXES.
