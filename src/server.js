@@ -192,17 +192,18 @@ app.get("/api/admin/entity-embeddings", async (_req, res) => {
 // have a populated topics array unless force=true.
 //   body: { force?, limit?, concurrency? }
 app.post("/api/admin/resummarize", async (req, res) => {
-  const { force = false, limit = null, concurrency = 2 } = req.body ?? {};
-  const { backfillSummaries } = await import("./backfill.js");
-  const job = createJob("resummarize", async () => {
-    return await backfillSummaries({
+  const { type = "paper", force = false, limit = null, concurrency = 2 } = req.body ?? {};
+  const { backfillSummaries, backfillRepoSummaries } = await import("./backfill.js");
+  const runner = type === "repo" ? backfillRepoSummaries : backfillSummaries;
+  const job = createJob(`resummarize-${type}`, async () => {
+    return await runner({
       force,
       limit,
       concurrency,
       onProgress: (s) => {
         job.progress = s;
         if ((s.index || 0) % 25 === 0) {
-          console.log(`[resummarize] ${JSON.stringify(s)}`);
+          console.log(`[resummarize-${type}] ${JSON.stringify(s)}`);
         }
       },
     });

@@ -9,6 +9,7 @@ import path from "node:path";
 import { db } from "./db.js";
 import { stripNul } from "./fs-utils.js";
 import { llmSummarize } from "./llm-summarize.js";
+import { llmSummarizeRepo } from "./llm-repo-summarize.js";
 
 async function readEntityMarkdown(meta) {
   const notePath = meta?.notePath;
@@ -92,6 +93,83 @@ export async function backfillSummaries({
       } catch (err) {
         stats.failed += 1;
         process.stderr.write(`[backfill] ${row.id}: ${err.message}\n`);
+      }
+      if (onProgress && (stats.updated + stats.failed + stats.skipped) % 5 === 0) {
+        onProgress({ ...stats, index: stats.updated + stats.failed + stats.skipped });
+      }
+    }
+  }
+  await Promise.all(
+    Array.from({ length: Math.min(concurrency, total) }, () => worker()),
+  );
+
+  return stats;
+}
+
+// ---------------------------------------------------------------------------
+// Repo-variant backfill. Reads README + packed-context, calls
+// llmSummarizeRepo, and stores { summary, purpose, architecture, usage,
+// topics } in meta. Skips rows with populated topics unless force=true.
+// ---------------------------------------------------------------------------
+export async function backfillRepoSummaries({
+  force = false,
+  limit = null,
+  concurrency = 2,
+  onProgress,
+} = {}) {
+  const pool = db();
+
+  let sql = `
+    SELECT id, type, slug, title, meta
+      FROM entities
+     WHERE type = 'repo'
+  `;
+  if (!force) {
+    sql +=
+      " AND (meta->>'topics' IS NULL OR meta->>'topics' = '' OR meta->>'topics' = '[]')";
+  }
+  sql += " ORDER BY id";
+  if (limit) sql += ` LIMIT ${Number(limit)}`;
+
+  const { rows } = await pool.query(sql);
+  const total = rows.length;
+  const stats = { total, updated: 0, failed: 0, skipped: 0 };
+
+  let cursor = 0;
+  async function worker() {
+    while (true) {
+      const i = cursor;
+      cursor += 1;
+      if (i >= total) return;
+      const row = rows[i];
+      try {
+        // Pass the inflated record so llmSummarizeRepo can read disk paths.
+        const repo = { ...row.meta, id: row.id, slug: row.slug, title: row.title };
+        const llm = await llmSummarizeRepo(repo).catch(() => null);
+        if (!llm) {
+          stats.failed += 1;
+          continue;
+        }
+        const newMeta = {
+          ...row.meta,
+          summary: llm.summary || row.meta.summary || "",
+          purpose: llm.purpose ?? "",
+          architecture: llm.architecture ?? "",
+          usage: llm.usage ?? "",
+          topics: llm.topics ?? [],
+        };
+        if (Array.isArray(row.meta.tags) && Array.isArray(llm.topics)) {
+          const t = new Set([...row.meta.tags, ...llm.topics]);
+          newMeta.tags = [...t];
+        }
+        await pool.query(
+          "UPDATE entities SET meta = $1::jsonb, updated_at = now() WHERE id = $2",
+          [JSON.stringify(stripNul(newMeta)), row.id],
+        );
+        stats.updated += 1;
+      } catch (err) {
+        stats.failed += 1;
+        process.stderr.write(`[backfill-repo] ${row.id}: ${err.message}\n`);
       }
       if (onProgress && (stats.updated + stats.failed + stats.skipped) % 5 === 0) {
         onProgress({ ...stats, index: stats.updated + stats.failed + stats.skipped });
