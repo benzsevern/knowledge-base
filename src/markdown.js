@@ -34,21 +34,28 @@ function normalizeList(values) {
 }
 
 export function renderPaperNote(paper, linkedRepos) {
+  // Defensive defaults — "article" records (from sitemap ingest) and older
+  // rows in PG may not carry every paper-shape field. Missing → empty.
+  const tags = paper.tags ?? [];
+  const authors = paper.authors ?? [];
+  const assets = paper.assets ?? [];
+  const citations = paper.citations ?? [];
+
   const frontmatter = frontmatterLines({
     id: paper.id,
     type: "paper",
     title: paper.title,
-    source_path: paper.sourcePath,
+    source_path: paper.sourcePath ?? "",
     source_url: paper.sourceUrl ?? "",
-    tags: ["paper", ...paper.tags],
+    tags: ["paper", ...tags],
     created_at: paper.createdAt,
     updated_at: paper.updatedAt,
-    authors: paper.authors,
+    authors,
     year: paper.year ?? "",
-    methodology_summary: paper.methodologySummary,
-    constraints: paper.constraintsSummary,
-    artifacts: paper.assets,
-    citations: paper.citations,
+    methodology_summary: paper.methodologySummary ?? "",
+    constraints: paper.constraintsSummary ?? "",
+    artifacts: assets,
+    citations,
   });
 
   const repoLinks = linkedRepos.map((repo) => `[[repos/${repo.slug}/note|${repo.title}]]`);
@@ -68,10 +75,10 @@ export function renderPaperNote(paper, linkedRepos) {
     ...normalizeList(repoLinks),
     "",
     "## Assets",
-    ...normalizeList(paper.assets.map((asset) => `![[${path.relative(path.dirname(paper.notePath), asset).replace(/\\/g, "/")}]]`)),
+    ...normalizeList(assets.map((asset) => `![[${path.relative(path.dirname(paper.notePath), asset).replace(/\\/g, "/")}]]`)),
     "",
     "## Citations",
-    ...normalizeList(paper.citations),
+    ...normalizeList(citations),
     "",
     "## Source Extract",
     paper.markdownExcerpt || "No extracted markdown available.",
