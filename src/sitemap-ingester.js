@@ -8,6 +8,7 @@ import path from "node:path";
 
 import { vaultRoot } from "./config.js";
 import { ensureDir, slugify, stableId } from "./fs-utils.js";
+import { llmSummarize } from "./llm-summarize.js";
 
 const OPENAI_URL = "https://api.openai.com/v1/responses";
 const MODEL = process.env.KB_LLM_MODEL ?? "gpt-5.4-nano";
@@ -172,6 +173,11 @@ export async function fetchAndExtractArticle(url) {
   const now = new Date().toISOString();
   const id = stableId("article", slug);
 
+  // LLM summarization — produces much better quality than a naive first-N-chars
+  // slice. Falls back to the crude excerpt if it 429s out or parses badly.
+  const llm = await llmSummarize(body).catch(() => null);
+  const fallbackSummary = trim(body.replace(/^#[^\n]+\n+/, ""), 1200);
+
   const record = {
     id,
     slug,
@@ -182,18 +188,19 @@ export async function fetchAndExtractArticle(url) {
     createdAt: now,
     updatedAt: now,
     notePath: path.join(articleDir, "note.md"),
-    summary: trim(body.replace(/^#[^\n]+\n+/, ""), 1200),
+    summary: trim(llm?.summary || fallbackSummary, 1200),
     markdownExcerpt: trim(body, 2500),
-    // Paper-shape fields with empty defaults — renderPaperNote and
-    // scoreRelation expect these to exist as arrays/strings.
+    // Paper-shape fields — empty defaults ensure renderPaperNote and
+    // scoreRelation never crash on missing iterables.
     authors: [],
     year: "",
-    methodologySummary: "",
-    constraintsSummary: "",
+    methodologySummary: trim(llm?.methodology ?? "", 800),
+    constraintsSummary: trim(llm?.constraints ?? "", 800),
     assets: [],
     citations: [],
-    tags: ["article"],
+    tags: ["article", ...(llm?.topics ?? [])],
     kind: "article",
+    topics: llm?.topics ?? [],
   };
 
   const note = [

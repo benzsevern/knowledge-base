@@ -13,6 +13,7 @@ import { extractPaper } from "./marker-adapter.js";
 import { packRepository } from "./repo-packer.js";
 import { ingestDocs as _ingestDocs } from "./docs-ingester.js";
 import { parseSitemap, fetchAndExtractArticle } from "./sitemap-ingester.js";
+import { llmSummarize } from "./llm-summarize.js";
 
 function now() {
   return new Date().toISOString();
@@ -149,26 +150,35 @@ async function fetchArxivMetadata(arxivId) {
   }
 }
 
-function derivePaperMetadata(markdown, pdfPath, fallbackTitle = "") {
+async function derivePaperMetadata(markdown, pdfPath, fallbackTitle = "") {
   const titleMatch = String(markdown).match(/^#\s+(.+)$/m);
   const filenameStem = stripPdfExtension(path.basename(pdfPath));
   const title = titleMatch?.[1]?.trim() || fallbackTitle || filenameStem;
   const yearMatch = title.match(/\b(19|20)\d{2}\b/) || filenameStem.match(/\b(19|20)\d{2}\b/);
-  const summary = trimExcerpt(
+
+  // Regex-based fallback summary (used if LLM summarization returns null).
+  const regexSummary = trimExcerpt(
     String(markdown)
       .replace(/^---[\s\S]*?---/, "")
       .split(/\n{2,}/)
       .find((section) => section.trim() && !section.trim().startsWith("#")) ?? "",
     1200,
   );
-  const methodologySummary =
-    extractSection(markdown, [/^#{1,6}\s+(method|methodology|approach)/i]) ||
-    sentenceAround(markdown, /\b(method|approach|pipeline|architecture)\b/i) ||
-    "";
-  const constraintsSummary =
-    extractSection(markdown, [/^#{1,6}\s+(constraint|limitations|assumptions)/i]) ||
-    sentenceAround(markdown, /\b(constraint|limitation|assumption|must|requirement)\b/i) ||
-    "";
+  // Section-based fallback for explicit `# Methodology` / `# Constraints`.
+  // Dropped the old sentenceAround fallback — it matched any sentence with
+  // the keyword, leaking random body text into these fields.
+  const regexMethodology =
+    extractSection(markdown, [/^#{1,6}\s+(method|methodology|approach)/i]) || "";
+  const regexConstraints =
+    extractSection(markdown, [/^#{1,6}\s+(constraint|limitations|assumptions)/i]) || "";
+
+  // LLM pass produces better structured summaries when the text permits.
+  const llm = await llmSummarize(markdown).catch(() => null);
+
+  const summary = trimExcerpt(llm?.summary || regexSummary, 1200);
+  const methodologySummary = trimExcerpt(llm?.methodology || regexMethodology, 800);
+  const constraintsSummary = trimExcerpt(llm?.constraints || regexConstraints, 800);
+
   const authors =
     String(markdown)
       .split(/\r?\n/)
@@ -189,6 +199,7 @@ function derivePaperMetadata(markdown, pdfPath, fallbackTitle = "") {
     constraintsSummary,
     authors,
     citations,
+    topics: llm?.topics ?? [],
   };
 }
 
@@ -379,7 +390,7 @@ export async function ingestPaper(pdfInputPath, options = {}) {
 
   const arxivMeta = await arxivMetaPromise;
   const fallbackTitle = arxivMeta?.title || (arxivId ? `arXiv:${arxivId}` : filenameStem);
-  const metadata = derivePaperMetadata(extractedMarkdown, pdfPath, fallbackTitle);
+  const metadata = await derivePaperMetadata(extractedMarkdown, pdfPath, fallbackTitle);
   // arXiv's API is the authoritative source for title/authors/year when
   // we have an arxiv ID — prefer it over Marker's extraction, which is
   // heuristic and frequently picks up running headers or figure captions.
