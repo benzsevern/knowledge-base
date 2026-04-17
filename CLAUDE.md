@@ -18,7 +18,19 @@ Local-first RAG knowledge base: ingests papers (PDFs), GitHub repos, and doc sit
 - `.mcp.json` — **gitignored**, holds `KB_API_TOKEN`; copy from `.mcp.json.example` and fill via `railway variables --kv | grep KB_API_TOKEN`
 
 ## Current scale (Postgres)
-203 papers, 1321 repos, 17 docs, 913K relations, 827K+ embeddings. Run `kb_status` for live counts.
+~1,400 papers (arxiv + sitemap articles), 1,321 repos, 18 docs, ~2.3M relations, ~874K embeddings. Run `kb_status` for live counts.
+
+## Ingest endpoints
+- `/api/ingest-arxiv` — `{arxivId}` or `{url}`, downloads PDF + ingests. Single paper.
+- `/api/ingest-arxiv-batch` — `{arxivIds: [...]}`, downloads all (concurrency=6), single `rebuildLinks` at end. Used for citation spidering.
+- `/api/ingest-sitemap` — `{sitemapUrl, urlFilter?, maxPages?, concurrency?}`, fetches HTML per URL, converts to markdown via gpt-5.4-nano (no Firecrawl). One entity per page (type="paper", meta.kind="article").
+- `/api/admin/resummarize` — `{type: "paper"|"repo", force?, concurrency?}`, LLM backfill of summary/methodology/constraints/topics (papers) or summary/purpose/architecture/usage/topics (repos). Idempotent — skips entities with populated `topics` unless `force=true`.
+
+## LLM summarization
+- `src/llm-summarize.js` — paper-shape: `{summary, methodology, constraints, topics}`
+- `src/llm-repo-summarize.js` — repo-shape: `{summary, purpose, architecture, usage, topics}`, reads README + first 40KB of packed-context
+- `src/sitemap-ingester.js` — Firecrawl-free per-page ingest via gpt-5.4-nano HTML→markdown conversion
+- All three have 429 retry with exponential backoff (2s→30s cap)
 
 ## API auth
 - `PROTECTED_PREFIXES` in `src/server.js` (token-gated): `/api/search`, `/api/chat`, `/api/embed`, `/api/ingest*`, `/api/admin*`, etc.
@@ -29,6 +41,10 @@ Local-first RAG knowledge base: ingests papers (PDFs), GitHub repos, and doc sit
 - `upsertEntityPG` uses `ON CONFLICT DO UPDATE` — re-ingesting an existing entity does NOT increment counts. Use `kb_entity` / `/api/entity/:id` to confirm presence.
 - `.mcp.json` env reload requires full Claude Code restart; `/mcp` reconnect alone keeps stale env.
 - Embedding `kind`: `buildContentIndex` writes `kind='content'`, `buildEmbeddingIndex` writes `kind='chunk'|'summary'`. `semanticSearchPG` filters must include both `'content'` and `'deep'` spellings.
+- `renderPaperNote` in `src/markdown.js` iterates `paper.assets.map()`, `paper.citations`, `paper.tags`. Article-shaped records (from sitemap ingester) and legacy PG rows may lack these — always use `??` fallbacks. This crashed `rebuildLinks` 3 times before it was caught.
+- OpenAI TPM: `EMBED_CONCURRENCY=2` (was 4, caused 429 starvation). LLM summarize also contends for TPM. Monitor for `insufficient_quota` on large backfill jobs — OpenAI spend cap will silently kill long-running work.
+- Semantic Scholar API for citation spidering: `api.semanticscholar.org/graph/v1/paper/arXiv:{id}/references?fields=externalIds,title,year` — rate-limited, use 1.2s delay. New papers take days to weeks to index.
+- Railway cross-project: `railway link --project golden-showcase --service backend && railway redeploy --yes` manages sibling projects from this session.
 
 ## Context files
 - [context/architecture.md](context/architecture.md) — system design
