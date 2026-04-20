@@ -6,9 +6,21 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 
+import { Readability } from "@mozilla/readability";
+import { JSDOM } from "jsdom";
+import TurndownService from "turndown";
+
 import { vaultRoot } from "./config.js";
 import { ensureDir, slugify, stableId } from "./fs-utils.js";
 import { llmSummarize } from "./llm-summarize.js";
+
+const turndown = new TurndownService({
+  headingStyle: "atx",
+  codeBlockStyle: "fenced",
+  bulletListMarker: "-",
+});
+// Drop remaining noise that Readability usually keeps
+turndown.remove(["script", "style", "nav", "footer", "aside", "iframe", "noscript"]);
 
 const OPENAI_URL = "https://api.openai.com/v1/responses";
 const MODEL = process.env.KB_LLM_MODEL ?? "gpt-5.4-nano";
@@ -70,6 +82,23 @@ function stripHtmlBoilerplate(html) {
     .replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, "")
     .replace(/<!--[\s\S]*?-->/g, "")
     .slice(0, HTML_CAP);
+}
+
+// Fast path: Readability extracts main content, Turndown converts HTML→MD.
+// Returns null if the page doesn't look like readable article content so we
+// can fall through to the LLM path.
+function htmlToMarkdownFast(html, url) {
+  try {
+    const dom = new JSDOM(html, { url });
+    const reader = new Readability(dom.window.document);
+    const article = reader.parse();
+    if (!article || !article.content) return null;
+    const md = turndown.turndown(article.content).trim();
+    if (md.length < MIN_CONTENT) return null;
+    return md;
+  } catch {
+    return null;
+  }
 }
 
 async function htmlToMarkdown(html, url, retries = 5) {
@@ -160,7 +189,12 @@ export async function fetchAndExtractArticle(url) {
   const t0 = Date.now();
   const html = await fetchHtml(url);
   const tFetch = Date.now();
-  const markdown = await htmlToMarkdown(html, url);
+  let markdown = htmlToMarkdownFast(html, url);
+  let path_ = "fast";
+  if (!markdown) {
+    markdown = await htmlToMarkdown(html, url);
+    path_ = "llm";
+  }
   const tMd = Date.now();
   const body = markdown.trim();
   if (body === "NO_CONTENT") throw new Error("no content");
@@ -183,7 +217,7 @@ export async function fetchAndExtractArticle(url) {
   const tSum = Date.now();
   const fallbackSummary = trim(body.replace(/^#[^\n]+\n+/, ""), 1200);
   process.stderr.write(
-    `[timing] ${url} fetch=${tFetch - t0}ms md=${tMd - tFetch}ms write=${tWrite - tMd}ms sum=${tSum - tWrite}ms html=${html.length}b md=${body.length}b\n`,
+    `[timing] ${url} path=${path_} fetch=${tFetch - t0}ms md=${tMd - tFetch}ms write=${tWrite - tMd}ms sum=${tSum - tWrite}ms html=${html.length}b md=${body.length}b\n`,
   );
 
   const record = {
