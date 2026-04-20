@@ -157,8 +157,11 @@ function trim(text, max) {
 }
 
 export async function fetchAndExtractArticle(url) {
+  const t0 = Date.now();
   const html = await fetchHtml(url);
+  const tFetch = Date.now();
   const markdown = await htmlToMarkdown(html, url);
+  const tMd = Date.now();
   const body = markdown.trim();
   if (body === "NO_CONTENT") throw new Error("no content");
   if (body.length < MIN_CONTENT) throw new Error(`content too short (${body.length} chars)`);
@@ -168,6 +171,7 @@ export async function fetchAndExtractArticle(url) {
   const rawDir = path.join(articleDir, "raw");
   await ensureDir(rawDir);
   await fs.writeFile(path.join(rawDir, `${slug}.md`), `${body}\n`, "utf8");
+  const tWrite = Date.now();
 
   const title = inferTitle(body, url);
   const now = new Date().toISOString();
@@ -176,7 +180,11 @@ export async function fetchAndExtractArticle(url) {
   // LLM summarization — produces much better quality than a naive first-N-chars
   // slice. Falls back to the crude excerpt if it 429s out or parses badly.
   const llm = await llmSummarize(body).catch(() => null);
+  const tSum = Date.now();
   const fallbackSummary = trim(body.replace(/^#[^\n]+\n+/, ""), 1200);
+  process.stderr.write(
+    `[timing] ${url} fetch=${tFetch - t0}ms md=${tMd - tFetch}ms write=${tWrite - tMd}ms sum=${tSum - tWrite}ms html=${html.length}b md=${body.length}b\n`,
+  );
 
   const record = {
     id,
