@@ -131,10 +131,12 @@ async function insertEmbeddings(client, rows) {
 
 function entityRow(record, type) {
   // Pull out the columns we query on, leave the rest in meta.
-  const { id, slug, title, type: _type, ...rest } = record;
+  // Prefer record.type over the passed-in default — record knows whether it's
+  // article vs academic_paper, the caller only knows the bucket.
+  const { id, slug, title, type: recordType, ...rest } = record;
   return {
     id,
-    type,
+    type: recordType ?? type,
     slug,
     title: title ?? slug ?? id,
     meta: rest, // everything else

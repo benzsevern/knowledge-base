@@ -37,12 +37,12 @@ export async function backfillSummaries({
 } = {}) {
   const pool = db();
 
-  // Articles and arxiv papers both live under type='paper'. We skip rows that
-  // already carry a populated `topics` array unless force=true.
+  // Articles and academic_papers are the two sub-types we LLM-summarize.
+  // We skip rows that already carry a populated `topics` array unless force=true.
   let sql = `
     SELECT id, type, slug, title, meta
       FROM entities
-     WHERE type = 'paper'
+     WHERE type IN ('article','academic_paper')
   `;
   if (!force) {
     sql +=

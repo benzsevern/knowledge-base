@@ -308,7 +308,7 @@ app.get("/api/graph", async (_req, res) => {
   try {
     const index = (await useDbReads()) ? await loadIndexPG() : await loadIndex();
     res.json({
-      papers: index.papers.map((p) => ({ id: p.id, title: p.title, slug: p.slug, type: "paper" })),
+      papers: index.papers.map((p) => ({ id: p.id, title: p.title, slug: p.slug, type: p.type ?? "academic_paper" })),
       repos: index.repos.map((r) => ({ id: r.id, title: r.title, slug: r.slug, type: "repo", languages: r.languages })),
       relations: index.relations,
     });
@@ -916,7 +916,11 @@ app.post("/api/delete-entity", async (req, res) => {
     let removedDir = "";
     if (removeFiles && slug) {
       const subdir =
-        type === "paper" ? "papers" : type === "repo" ? "repos" : type === "docs" ? "docs" : "";
+        type === "article" ? "articles"
+        : type === "academic_paper" || type === "paper" ? "papers"
+        : type === "repo" ? "repos"
+        : type === "docs" ? "docs"
+        : "";
       if (subdir) {
         const dir = path.join(vaultRoot, subdir, slug);
         try {
@@ -976,7 +980,7 @@ app.post("/api/recover-index", async (_req, res) => {
         }
         if (!fm.id) continue;
         papers.push({
-          id: fm.id, slug, type: "paper",
+          id: fm.id, slug, type: fm.type || "academic_paper",
           title: fm.title || slug,
           createdAt: fm.created_at || new Date().toISOString(),
           updatedAt: fm.updated_at || new Date().toISOString(),

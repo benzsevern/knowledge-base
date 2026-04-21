@@ -91,7 +91,7 @@ export async function literatureReview(entityId, { outPath } = {}) {
 
   // Collect linked papers via the relation graph.
   let linkedPapers;
-  if (entity.type === "paper") {
+  if (entity.type === "article" || entity.type === "academic_paper") {
     // For a paper, gather other papers linked through any shared repo.
     const sharedRepoIds = index.relations
       .filter((r) => r.fromId === entity.id)

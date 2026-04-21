@@ -1,0 +1,256 @@
+{"archived":false,"description":"CycleJS Cookie Driver","language":"JavaScript","pushed":"2016-10-12T10:41:27Z","repo":"10clouds/cyclejs-cookie","stars":2}
+{"archived":false,"description":"Flux Standard Action utilities for Redux.","language":"JavaScript","pushed":"2024-07-21T16:45:27Z","repo":"acdlite/redux-actions","stars":6470}
+{"archived":false,"description":"Monospaced font family for user interface and coding environments","language":"CSS","pushed":"2025-10-28T23:34:52Z","repo":"adobe-fonts/source-code-pro","stars":20384}
+{"archived":false,"description":"A plugin for gulp that remembers and recalls files passed through it","language":"JavaScript","pushed":"2018-05-14T11:49:16Z","repo":"ahaurw01/gulp-remember","stars":149}
+{"archived":false,"description":"JavaScript Style Guide","language":"JavaScript","pushed":"2026-02-24T14:05:16Z","repo":"airbnb/javascript","stars":148106}
+{"archived":false,"description":"A jQuery plugin to convert normal HTML forms into AJAX forms simply.","language":"JavaScript","pushed":"2014-04-17T08:40:26Z","repo":"alaabadran/ALAJAX","stars":26}
+{"archived":false,"description":"JSX transpiler. A standard and configurable implementation of JSX decoupled from React.","language":"JavaScript","pushed":"2020-02-27T17:18:19Z","repo":"alexmingoia/jsx-transform","stars":292}
+{"archived":false,"description":"Consistency Made Simple","language":"JavaScript","pushed":"2026-04-06T21:36:24Z","repo":"amwmedia/plop","stars":7637}
+{"archived":false,"description":"The Ultimate JavaScript Module Builder \u0026 Automagical Task Runner. Convert AMD \u0026 CommonJS/NodeJS modules to UMD, AMD, CommonJS or bundle them as `combined.js` (rjs \u0026 almond, AMDclean soon) \u0026 automagically run/test/watch them on nodejs, Web/AMD or Web/Script. Declarative \u0026 DRY config with inheritance. Manipulate \u0026 inject dependencies, module code, banners, version etc while building with a single line. Support two kinds of plugins, ResourceConverter (i.e file level) and AfterBuilder (i.e the whole bundle). Transparent support for Coffeescript, IcedCoffeescript, Coco, LiveScript – they’re just JavaScript :-)","language":"CoffeeScript","pushed":"2020-06-12T16:00:27Z","repo":"anodynos/urequire","stars":264}
+{"archived":false,"description":"Turn callback-style functions or promises into futures!!","language":"JavaScript","pushed":"2016-02-29T19:59:02Z","repo":"arcseldon/futurizer","stars":3}
+{"archived":false,"description":"🦋 Fantasy Land compliant (monadic) alternative to Promises","language":"JavaScript","pushed":"2024-04-22T19:36:55Z","repo":"Avaq/Fluture","stars":2496}
+{"archived":false,"description":"Monadic middleware","language":"JavaScript","pushed":"2021-04-06T12:38:42Z","repo":"Avaq/Idealist","stars":59}
+{"archived":false,"description":"A router driver for Cycle.js, wrapping the router5 library","language":"JavaScript","pushed":"2015-09-09T12:05:51Z","repo":"axefrog/cycle-router5","stars":29}
+{"archived":false,"description":"Touch scrolling for the browser","language":"JavaScript","pushed":"2016-02-25T21:22:48Z","repo":"azoff/overscroll","stars":412}
+{"archived":false,"description":":zap: BEM syntax for CSS","language":"JavaScript","pushed":"2018-08-06T03:27:58Z","repo":"bem-contrib/pobem","stars":14}
+{"archived":false,"description":"Audio graph driver for Cycle.js based on virtual-audio-graph","language":"JavaScript","pushed":"2026-03-02T10:01:20Z","repo":"benji6/cycle-audio-graph","stars":19}
+{"archived":false,"description":"Angular development and testing examples with Babel in Javascript (ES6/ES7).","language":"JavaScript","pushed":"2017-05-13T19:46:18Z","repo":"blacksonic/angular2-esnext-starter","stars":484}
+{"archived":false,"description":"Simple, beautiful wysiwyg editor","language":"JavaScript","pushed":"2021-10-30T17:35:17Z","repo":"bootstrap-wysiwyg/bootstrap3-wysiwyg","stars":831}
+{"archived":false,"description":"Practical monad transformers for JS.","language":"JavaScript","pushed":"2016-12-27T15:05:33Z","repo":"boris-marinov/monad-transformers","stars":26}
+{"archived":false,"description":"A package manager for the web","language":"JavaScript","pushed":"2024-10-13T10:45:05Z","repo":"bower/bower","stars":14929}
+{"archived":false,"description":"DEPRECATED - Testing extensions for Mocha and Sinon","language":"JavaScript","pushed":"2020-02-20T18:51:20Z","repo":"box/leche","stars":102}
+{"archived":false,"description":"DEPRECATED - A friendly tool for CSS spriting","language":"JavaScript","pushed":"2017-09-06T23:56:57Z","repo":"box/shalam","stars":25}
+{"archived":false,"description":"A jQuery plugin allowing elements to follow the user as they scroll a page.","language":"JavaScript","pushed":"2017-02-02T01:34:00Z","repo":"box/stalker","stars":228}
+{"archived":false,"description":"API backing the Egg Hunt iOS app","language":"JavaScript","pushed":"2016-06-04T07:08:56Z","repo":"Bradcomp/egghunt-server","stars":6}
+{"archived":true,"description":"Hooks to support data binding between virtually any object.","language":"JavaScript","pushed":"2013-09-25T12:32:16Z","repo":"bruth/synapse","stars":150}
+{"archived":false,"description":"An internal DSL for generating HTML in JavaScript","language":"JavaScript","pushed":"2016-07-19T19:14:26Z","repo":"caolan/pithy","stars":433}
+{"archived":false,"description":"A Cycle driver for Socket.IO clients","language":"JavaScript","pushed":"2017-10-23T13:51:40Z","repo":"cgeorg/cycle-socket.io","stars":28}
+{"archived":false,"description":"Minimum Viable Pizza","language":"JavaScript","pushed":"2015-06-17T01:02:59Z","repo":"cgeorg/todomvp","stars":23}
+{"archived":false,"description":"Notes and code from the 3 part crowdcast with Derick Bailey summer, 2016","language":null,"pushed":"2016-09-05T21:25:36Z","repo":"ChetHarrison/A-Gentle-Introduction-to-Functional-JavaScript","stars":121}
+{"archived":false,"description":"Clojure to JS compiler","language":"Clojure","pushed":"2026-03-08T16:25:04Z","repo":"clojure/clojurescript","stars":9385}
+{"archived":true,"description":"Transducers for JavaScript","language":"JavaScript","pushed":"2023-06-03T21:41:12Z","repo":"cognitect-labs/transducers-js","stars":1602}
+{"archived":false,"description":"Documentation about css-modules","language":null,"pushed":"2024-05-30T14:58:51Z","repo":"css-modules/css-modules","stars":17963}
+{"archived":false,"description":"A home for issues that are common to multiple cucumber repositories","language":null,"pushed":"2026-03-11T16:37:58Z","repo":"cucumber/cucumber","stars":3350}
+{"archived":false,"description":"Cucumber for JavaScript","language":"TypeScript","pushed":"2026-04-11T11:22:16Z","repo":"cucumber/cucumber-js","stars":5306}
+{"archived":false,"description":"Ultra-high performance reactive programming","language":"JavaScript","pushed":"2022-12-06T17:07:17Z","repo":"cujojs/most","stars":3498}
+{"archived":false,"description":"tiny (2.7kb) functional programming library using native es5/6 operations","language":"JavaScript","pushed":"2017-10-26T14:09:18Z","repo":"cullophid/barely-functional","stars":107}
+{"archived":false,"description":"Functional programming date manipulation library","language":"JavaScript","pushed":"2019-12-11T21:34:02Z","repo":"cullophid/date-fp","stars":119}
+{"archived":false,"description":"monet.js - Monadic types library for JavaScript","language":"JavaScript","pushed":"2017-05-20T07:56:15Z","repo":"cwmyers/monet.js","stars":0}
+{"archived":false,"description":null,"language":"JavaScript","pushed":"2016-03-31T20:08:09Z","repo":"cyclejs/cycle-notification-driver","stars":21}
+{"archived":false,"description":"MOVED","language":null,"pushed":"2016-07-18T08:28:48Z","repo":"cyclejs/dom","stars":142}
+{"archived":false,"description":"Moved","language":null,"pushed":"2016-07-18T11:46:35Z","repo":"cyclejs/examples","stars":169}
+{"archived":false,"description":"MOVED","language":null,"pushed":"2016-09-12T18:53:15Z","repo":"cyclejs/history","stars":59}
+{"archived":false,"description":"Moved","language":null,"pushed":"2016-07-18T08:37:13Z","repo":"cyclejs/http","stars":50}
+{"archived":false,"description":"A Cycle.js Driver for using localStorage and sessionStorage.","language":"TypeScript","pushed":"2020-12-17T20:24:14Z","repo":"cyclejs/storage","stars":51}
+{"archived":false,"description":"A Hammer driver for Cycle.js","language":"JavaScript","pushed":"2015-11-25T08:08:15Z","repo":"CyclicMaterials/cycle-hammer-driver","stars":12}
+{"archived":true,"description":"A simple jQuery plugin for restoring vertical baselines thrown off by odd image sizes","language":"JavaScript","pushed":"2015-10-15T05:14:21Z","repo":"daneden/Baseline.js","stars":697}
+{"archived":false,"description":"jQuery plugin to serialize form elements into an object","language":"JavaScript","pushed":"2019-03-04T16:49:16Z","repo":"danheberden/jquery-serializeForm","stars":75}
+{"archived":false,"description":"Touché: bringing touch events to non-touch browsers (how touching!).  No dependencies.  No code bloat.","language":"JavaScript","pushed":"2023-08-04T17:36:32Z","repo":"davidcalhoun/touche","stars":143}
+{"archived":false,"description":"Extends Chai with assertions for the Sinon.JS mocking framework.","language":"JavaScript","pushed":"2025-08-22T10:58:39Z","repo":"domenic/sinon-chai","stars":1091}
+{"archived":false,"description":"Create HyperText with JavaScript.","language":"HTML","pushed":"2021-05-28T02:59:49Z","repo":"dominictarr/hyperscript","stars":2759}
+{"archived":true,"description":null,"language":"JavaScript","pushed":"2019-04-01T22:10:00Z","repo":"dominictarr/map-stream","stars":121}
+{"archived":false,"description":"Cycle driver for my favorite realtime database :)","language":"JavaScript","pushed":"2016-03-13T10:27:04Z","repo":"dralletje/cycle-firebase","stars":21}
+{"archived":false,"description":"Free monad Collection","language":"JavaScript","pushed":"2018-04-13T12:12:30Z","repo":"DrBoolean/freeky","stars":177}
+{"archived":false,"description":"Composable kmett style lenses","language":"JavaScript","pushed":"2015-09-28T15:38:11Z","repo":"DrBoolean/lenses","stars":216}
+{"archived":false,"description":"A javascript library that converts text with ANSI terminal codes into colorful HTML Zero dependencies.","language":"JavaScript","pushed":"2025-11-15T10:34:25Z","repo":"drudru/ansi_up","stars":871}
+{"archived":false,"description":"Manually curated collection of resources for frontend web developers.","language":null,"pushed":"2024-05-21T10:56:58Z","repo":"dypsilon/frontend-dev-bookmarks","stars":46420}
+{"archived":false,"description":"A Higher Order Component using react-redux to keep form state in a Redux store","language":"JavaScript","pushed":"2024-06-13T12:17:05Z","repo":"erikras/redux-form","stars":12502}
+{"archived":false,"description":"Clown Car Responsive Image Technique","language":"HTML","pushed":"2025-06-27T22:22:23Z","repo":"estelle/clowncar","stars":873}
+{"archived":false,"description":"Immutable persistent data collections for Javascript which increase efficiency and simplicity.","language":"TypeScript","pushed":"2026-04-10T07:03:24Z","repo":"facebook/immutable-js","stars":33077}
+{"archived":false,"description":"Delightful JavaScript Testing.","language":"TypeScript","pushed":"2026-04-10T05:23:11Z","repo":"facebook/jest","stars":45329}
+{"archived":false,"description":"A JavaScript codemod toolkit.","language":"JavaScript","pushed":"2026-04-11T01:13:13Z","repo":"facebook/jscodeshift","stars":9975}
+{"archived":true,"description":"Source transformer enabling ECMAScript 6 generator functions in JavaScript-of-today.","language":"JavaScript","pushed":"2024-02-29T11:04:34Z","repo":"facebook/regenerator","stars":3829}
+{"archived":true,"description":"Common combinators.","language":"JavaScript","pushed":"2016-01-11T17:15:37Z","repo":"fantasyland/fantasy-combinators","stars":66}
+{"archived":true,"description":"Free monad","language":"JavaScript","pushed":"2016-01-20T22:05:15Z","repo":"fantasyland/fantasy-frees","stars":26}
+{"archived":false,"description":"Specification for interoperability of common algebraic structures in JavaScript","language":"JavaScript","pushed":"2024-11-10T21:50:53Z","repo":"fantasyland/fantasy-land","stars":10232}
+{"archived":true,"description":"Composable, immutable getters and setters.","language":"JavaScript","pushed":"2016-02-17T19:03:18Z","repo":"fantasyland/fantasy-lenses","stars":108}
+{"archived":true,"description":"Reader control structure.","language":"JavaScript","pushed":"2017-07-27T06:06:25Z","repo":"fantasyland/fantasy-readers","stars":24}
+{"archived":false,"description":"A tiny, optimized, tested, standalone and robust pubsub implementation supporting different javascript environments","language":"JavaScript","pushed":"2015-09-04T08:33:39Z","repo":"federico-lox/pubsub.js","stars":120}
+{"archived":true,"description":"jQuery Mobile Pagination for touch, mouse, and keyboard","language":"JavaScript","pushed":"2022-08-30T21:58:19Z","repo":"filamentgroup/jqm-pagination","stars":214}
+{"archived":false,"description":"a tiny and isomorphic URL router for JavaScript","language":"JavaScript","pushed":"2020-12-26T19:39:17Z","repo":"flatiron/director","stars":5579}
+{"archived":false,"description":"Sourcemap support for gulpjs.","language":"JavaScript","pushed":"2024-09-13T14:59:03Z","repo":"floridoo/gulp-sourcemaps","stars":1099}
+{"archived":false,"description":"A collection of functions to favor functional programming in a DOM context","language":"JavaScript","pushed":"2016-01-16T11:38:35Z","repo":"fp-dom/fp-dom","stars":57}
+{"archived":false,"description":"A jQuery plugin for producing big, bold \u0026 responsive headlines","language":"HTML","pushed":"2018-10-19T18:36:52Z","repo":"freqDec/slabText","stars":1332}
+{"archived":true,"description":"Polyfill to remove click delays on browsers with touch UIs","language":"HTML","pushed":"2021-08-13T16:01:47Z","repo":"ftlabs/fastclick","stars":18551}
+{"archived":false,"description":null,"language":"JavaScript","pushed":"2017-05-30T15:23:01Z","repo":"futurize/future-io","stars":14}
+{"archived":true,"description":":boom: Puts your console on blast when React is making unnecessary updates.","language":"JavaScript","pushed":"2017-09-23T05:54:19Z","repo":"garbles/why-did-you-update","stars":4938}
+{"archived":false,"description":"Sanitize.js is a whitelist-based HTML sanitizer.","language":"JavaScript","pushed":"2021-12-01T18:12:18Z","repo":"gbirke/sanitize.js","stars":335}
+{"archived":false,"description":"T - a javascript template engine","language":"JavaScript","pushed":"2014-06-14T18:52:43Z","repo":"gcao/T.js","stars":16}
+{"archived":false,"description":"A book series (2 published editions) on the JS language.","language":null,"pushed":"2026-02-15T04:36:44Z","repo":"getify/You-Dont-Know-JS","stars":184423}
+{"archived":false,"description":"Helium - javascript tool to scan your site and show unused CSS","language":"JavaScript","pushed":"2015-07-13T19:21:08Z","repo":"geuis/helium-css","stars":3668}
+{"archived":false,"description":"Javascript audio library for the modern web.","language":"JavaScript","pushed":"2025-11-23T23:49:01Z","repo":"goldfire/howler.js","stars":25236}
+{"archived":true,"description":"An in-place DOM diffing library","language":"TypeScript","pushed":"2024-06-19T05:44:46Z","repo":"google/incremental-dom","stars":3543}
+{"archived":false,"description":"Asynchronous script loader/runner for ads, widgets and other third-party content","language":"JavaScript","pushed":"2012-10-21T21:49:25Z","repo":"gregersrygg/crapLoader","stars":71}
+{"archived":true,"description":"Scribe module - DO NOT DELETE","language":"JavaScript","pushed":"2019-02-12T10:06:30Z","repo":"guardian/html-janitor","stars":52}
+{"archived":true,"description":"DEPRECATED: A rich text editor framework for the web platform","language":"JavaScript","pushed":"2020-03-08T04:04:14Z","repo":"guardian/scribe","stars":3491}
+{"archived":false,"description":"Validate your forms, frontend, without writing a single line of javascript","language":"JavaScript","pushed":"2026-03-18T14:10:48Z","repo":"guillaumepotier/Parsley.js","stars":8990}
+{"archived":false,"description":"Virtual file format.","language":"JavaScript","pushed":"2025-05-31T22:56:03Z","repo":"gulpjs/vinyl","stars":1295}
+{"archived":false,"description":"Buttons with built-in loading indicators.","language":"JavaScript","pushed":"2021-12-02T21:28:53Z","repo":"hakimel/Ladda","stars":7799}
+{"archived":false,"description":"Learn how to use redux step by step","language":"JavaScript","pushed":"2021-05-01T06:20:18Z","repo":"happypoulp/redux-tutorial","stars":3735}
+{"archived":false,"description":"Jargon from the functional programming world in simple terms!","language":null,"pushed":"2023-10-17T12:04:55Z","repo":"hemanth/functional-programming-jargon","stars":18638}
+{"archived":false,"description":"Encode a set of form elements as a JSON object for manipulation/submission.","language":"JavaScript","pushed":"2017-06-15T00:22:30Z","repo":"hongymagic/jQuery.serializeObject","stars":148}
+{"archived":false,"description":"jQuery plugin for touch events","language":"JavaScript","pushed":"2020-07-13T18:10:22Z","repo":"HotStudio/touchy","stars":353}
+{"archived":false,"description":"Rename files easily","language":"JavaScript","pushed":"2025-07-16T05:30:05Z","repo":"hparra/gulp-rename","stars":685}
+{"message":"Not Found","documentation_url":"https://docs.github.com/rest/repos/repos#get-a-repository","status":"404"}{"repo": "Huddle/PhantomCSS", "error": true}
+{"archived":false,"description":"optical kerning for the web","language":"JavaScript","pushed":"2013-04-25T15:44:19Z","repo":"hudsonfoo/typebutter","stars":66}
+{"archived":false,"description":"Map vinyl files' contents as strings","language":"JavaScript","pushed":"2020-09-02T15:28:38Z","repo":"hughsk/vinyl-map","stars":36}
+{"archived":false,"description":"ECMAScript 2015+/CommonJS module dependencies resolved in depth","language":"JavaScript","pushed":"2017-04-13T12:43:41Z","repo":"iamstarkov/es-deps-deep","stars":12}
+{"archived":false,"description":"Powerful and lightweight inversion of control container. Moved to https://github.com/inversify/monorepo","language":"TypeScript","pushed":"2025-11-19T13:18:33Z","repo":"inversify/InversifyJS","stars":12067}
+{"archived":false,"description":"Use S3 as a source or destination of vinyl files.","language":"JavaScript","pushed":"2021-04-07T16:13:05Z","repo":"izaakschroeder/vinyl-s3","stars":20}
+{"archived":false,"description":"PostCSS plugin that combines CSS Modules and ES Imports","language":"JavaScript","pushed":"2017-10-07T16:50:56Z","repo":"jacobp100/es-css-modules","stars":169}
+{"archived":false,"description":"A tiny JavaScript library for making contenteditable beautiful (Like Medium's editor)","language":"JavaScript","pushed":"2016-06-27T19:41:36Z","repo":"jakiestfu/Medium.js","stars":4381}
+{"archived":false,"description":"A Library for creating beautiful mobile shelfs in Javascript (Facebook and Path style side menus)","language":"JavaScript","pushed":"2024-03-22T21:37:37Z","repo":"jakiestfu/Snap.js","stars":5959}
+{"archived":false,"description":"Make optimisation of images part of your automated build process","language":"TypeScript","pushed":"2024-09-13T07:35:45Z","repo":"JamieMason/ImageOptim-CLI","stars":3521}
+{"archived":false,"description":"Minimal templating with {{mustaches}} in JavaScript","language":"JavaScript","pushed":"2024-06-14T19:54:48Z","repo":"janl/mustache.js","stars":16718}
+{"archived":false,"description":"Simple JavaScript testing framework for browsers and node.js","language":"JavaScript","pushed":"2026-04-07T02:38:27Z","repo":"jasmine/jasmine","stars":15835}
+{"archived":false,"description":"Re-encode jpeg images with no perceivable quality loss.","language":"Go","pushed":"2016-05-16T03:17:08Z","repo":"jasonmoo/smlr","stars":431}
+{"archived":false,"description":"Hash.js is a 0.5 KB script that lets you in a super simple way manipulate everything behind # in urls.","language":"JavaScript","pushed":"2014-07-29T12:47:52Z","repo":"javve/hash.js","stars":158}
+{"archived":false,"description":"Cycle.js driver for Server-Sent Events","language":"CoffeeScript","pushed":"2016-01-28T17:14:51Z","repo":"jessaustin/cycle-sse-driver","stars":6}
+{"archived":false,"description":"An at-your-own pace practical workshop for absolute beginners to react","language":null,"pushed":"2018-02-15T23:48:30Z","repo":"jesstelford/react-workshop","stars":250}
+{"archived":false,"description":"A tree diagram (SVG) generator.","language":"JavaScript","pushed":"2022-12-19T15:58:11Z","repo":"jimblackler/treefun","stars":83}
+{"archived":false,"description":"A small library for generalized transformation of data (inspired by Clojure's transducers)","language":"JavaScript","pushed":"2017-06-12T01:28:58Z","repo":"jlongster/transducers.js","stars":1721}
+{"archived":false,"description":"Interactive JavaScript notebooks with clever graphing","language":"JavaScript","pushed":"2017-06-27T15:30:46Z","repo":"JoelOtter/kajero","stars":1860}
+{"message":"Not Found","documentation_url":"https://docs.github.com/rest/repos/repos#get-a-repository","status":"404"}{"repo": "joelrich/citojs", "error": true}
+{"archived":false,"description":null,"language":"JavaScript","pushed":"2015-07-16T15:10:21Z","repo":"joneshf/abstractions","stars":5}
+{"archived":false,"description":"A simple guide to HTML \u003chead\u003e elements","language":null,"pushed":"2026-03-17T07:27:16Z","repo":"joshbuchea/HEAD","stars":30252}
+{"archived":false,"description":"A no-nonsense CSS typography reset for styling user-generated content like blog posts, comments, and forum content.","language":"CSS","pushed":"2023-05-25T13:55:52Z","repo":"joshuarudd/typeset.css","stars":208}
+{"archived":true,"description":"Pointer Events Polyfill: a unified event system for the web platform","language":"JavaScript","pushed":"2021-02-10T20:28:23Z","repo":"jquery/PEP","stars":1660}
+{"archived":false,"description":"A jump-start for jQuery plugins development","language":"JavaScript","pushed":"2020-09-30T19:32:35Z","repo":"jquery-boilerplate/jquery-boilerplate","stars":2502}
+{"archived":false,"description":"A variety of jQuery plugin patterns for jump starting your plugin development","language":"JavaScript","pushed":"2016-01-30T14:06:23Z","repo":"jquery-boilerplate/jquery-patterns","stars":1575}
+{"archived":false,"description":"JavaScript animation engine","language":"JavaScript","pushed":"2026-02-13T17:19:34Z","repo":"juliangarnier/anime","stars":67063}
+{"archived":false,"description":"Learn and practice Reactive Extensions coding grid-based games","language":"JavaScript","pushed":"2016-10-20T20:25:59Z","repo":"JulienMoumne/rx-training-games","stars":15}
+{"archived":false,"description":"Storybook is the industry standard workshop for building, documenting, and testing UI components in isolation","language":"TypeScript","pushed":"2026-04-10T17:42:09Z","repo":"kadirahq/react-storybook","stars":89680}
+{"archived":false,"description":"jQuery plugin to resize images to fit in a container.","language":"HTML","pushed":"2018-07-06T14:19:33Z","repo":"karacas/imgLiquid","stars":972}
+{"archived":false,"description":"An absurdly small jQuery alternative for modern browsers.","language":"JavaScript","pushed":"2024-03-02T23:20:01Z","repo":"kenwheeler/cash","stars":7045}
+{"archived":false,"description":"~1K implementation of flux architecture","language":"JavaScript","pushed":"2017-11-23T12:05:37Z","repo":"krasimir/fluxiny","stars":78}
+{"archived":false,"description":"A free book that talks about design patterns/techniques used while developing with React.","language":"JavaScript","pushed":"2025-01-27T05:35:58Z","repo":"krasimir/react-in-patterns","stars":13591}
+{"archived":false,"description":"Create React App with server-side code support","language":"JavaScript","pushed":"2022-12-09T15:32:36Z","repo":"kriasoft/react-app","stars":612}
+{"archived":false,"description":"Functional Reactive Bindings (frb): A CommonJS package that includes functional and generic building blocks to help incrementally ensure consistent state.","language":"JavaScript","pushed":"2014-06-12T22:23:10Z","repo":"kriskowal/frb","stars":3}
+{"archived":false,"description":"A General Theory of Reactivity","language":"JavaScript","pushed":"2017-12-04T19:07:25Z","repo":"kriskowal/gtor","stars":3067}
+{"archived":false,"description":"A tiny JavaScript micro-library","language":"JavaScript","pushed":"2020-11-13T15:36:17Z","repo":"kylebarrow/chibi","stars":576}
+{"archived":false,"description":"Generative testing for JavaScript","language":"JavaScript","pushed":"2023-04-15T21:24:16Z","repo":"leebyron/testcheck-js","stars":1174}
+{"archived":false,"description":"A free simple responsive HTML email template","language":"HTML","pushed":"2024-08-20T11:27:07Z","repo":"leemunroe/responsive-html-email-template","stars":13692}
+{"archived":false,"description":"Lerna is a fast, modern build system for managing and publishing multiple JavaScript/TypeScript packages from the same repository.","language":"TypeScript","pushed":"2026-04-10T03:26:21Z","repo":"lerna/lerna","stars":36077}
+{"message":"Not Found","documentation_url":"https://docs.github.com/rest/repos/repos#get-a-repository","status":"404"}{"repo": "LiquidLabsGmbH/retractor", "error": true}
+{"archived":false,"description":"A modern JavaScript utility library delivering modularity, performance, \u0026 extras.","language":"JavaScript","pushed":"2026-04-01T20:43:12Z","repo":"lodash/lodash","stars":61326}
+{"archived":false,"description":null,"language":"JavaScript","pushed":"2014-07-09T17:13:07Z","repo":"loop-recur/lambdajs","stars":142}
+{"archived":false,"description":"Converts HTML form into JavaScript object","language":"JavaScript","pushed":"2019-11-14T14:09:41Z","repo":"macek/jquery-serialize-object","stars":1098}
+{"archived":false,"description":"A tiny CSS3 animation library with plug \u0026 play options.","language":"CSS","pushed":"2019-08-05T15:20:48Z","repo":"machito/animate.less","stars":532}
+{"archived":false,"description":"a programming typeface","language":null,"pushed":"2025-08-04T12:22:29Z","repo":"madmalik/mononoki","stars":4602}
+{"archived":false,"description":"emile.js is a no-frills stand-alone CSS animation JavaScript framework, named after Émile Cohl, early animator.","language":"JavaScript","pushed":"2022-04-15T06:12:33Z","repo":"madrobby/emile","stars":528}
+{"archived":false,"description":"Reduce misspelled email addresses in your web apps.","language":"JavaScript","pushed":"2022-05-06T21:06:51Z","repo":"mailcheck/mailcheck","stars":7951}
+{"archived":false,"description":"Email Blueprints is a collection of HTML email templates that can serve as a solid foundation and starting point for the design of emails","language":null,"pushed":"2019-10-23T04:38:04Z","repo":"mailchimp/Email-Blueprints","stars":7028}
+{"archived":false,"description":"Virtualize a DOM node","language":"JavaScript","pushed":"2018-12-08T01:00:01Z","repo":"marcelklehr/vdom-virtualize","stars":130}
+{"archived":false,"description":"A declarative, HTML-based language that makes building web apps fun","language":"JavaScript","pushed":"2026-04-03T17:29:54Z","repo":"marko-js/marko","stars":14356}
+{"archived":false,"description":":clapper: a dev server for rapid prototyping","language":"JavaScript","pushed":"2022-08-30T10:40:36Z","repo":"mattdesl/budo","stars":2170}
+{"archived":false,"description":"fast dom CSS styling","language":"JavaScript","pushed":"2017-05-12T07:13:42Z","repo":"mattdesl/dom-css","stars":153}
+{"archived":false,"description":"A Virtual DOM and diffing algorithm","language":"JavaScript","pushed":"2023-01-24T11:59:52Z","repo":"Matt-Esch/virtual-dom","stars":11909}
+{"archived":false,"description":"Parse browser forms into structured JavaScript objects. Six adapters — React hooks, vanilla DOM, jQuery, FormData, and more. One coherent API. ","language":"TypeScript","pushed":"2026-03-27T23:02:13Z","repo":"maxatwork/form2js","stars":632}
+{"archived":false,"description":"A Zepto Plugin for iOS like swipe navigation.","language":"JavaScript","pushed":"2013-10-01T11:52:10Z","repo":"max-power/swipeslide","stars":87}
+{"archived":false,"description":"It's a Medium at Starbucks. Pinky ring out.","language":"JavaScript","pushed":"2015-09-18T16:04:01Z","repo":"mduvall/grande.js","stars":1298}
+{"archived":false,"description":"Bundle CommonJS/Node.js modules for web browser","language":"JavaScript","pushed":"2021-06-30T16:05:34Z","repo":"medikoo/modules-webmake","stars":413}
+{"archived":false,"description":"A quick introduction to exploring how components can be created in several frameworks.","language":null,"pushed":"2016-06-06T07:09:19Z","repo":"Mercateo/component-check","stars":466}
+{"archived":false,"description":"A lightweight Javascript animation framework","language":"JavaScript","pushed":"2011-06-04T07:19:50Z","repo":"MikeMcTiernan/Janis","stars":73}
+{"archived":false,"description":"Custom Event/Messaging system for JavaScript inspired by AS3-Signals","language":"JavaScript","pushed":"2021-08-08T01:06:58Z","repo":"millermedeiros/js-signals","stars":1972}
+{"archived":false,"description":"CSS3 Animations with special effects","language":"SCSS","pushed":"2022-08-23T21:08:20Z","repo":"miniMAC/magic","stars":8595}
+{"archived":false,"description":"Simple, scalable state management.","language":"TypeScript","pushed":"2026-03-12T10:50:48Z","repo":"mobxjs/mobx","stars":28184}
+{"archived":false,"description":"Modernizr is a JavaScript library that detects HTML5 and CSS3 features in the user’s browser.","language":"JavaScript","pushed":"2026-04-11T08:58:12Z","repo":"Modernizr/Modernizr","stars":25658}
+{"archived":false,"description":"Blazing fast vinyl adapter for FTP","language":"JavaScript","pushed":"2024-01-12T07:17:08Z","repo":"morris/vinyl-ftp","stars":388}
+{"archived":false,"description":"A fully reactive JavaScript framework for Human-Computer Interaction","language":"TypeScript","pushed":"2017-04-26T17:25:30Z","repo":"motorcyclejs/core","stars":268}
+{"archived":false,"description":"Buttons made of Quantum Paper ","language":"JavaScript","pushed":"2015-12-17T02:04:12Z","repo":"nashvail/Quttons","stars":628}
+{"archived":false,"description":"Principles of writing consistent, idiomatic CSS.","language":null,"pushed":"2022-12-21T12:01:30Z","repo":"necolas/idiomatic-css","stars":6654}
+{"archived":false,"description":"Principles of writing consistent, idiomatic HTML.","language":null,"pushed":"2015-12-26T21:07:03Z","repo":"necolas/idiomatic-html","stars":522}
+{"archived":false,"description":"Cross-platform React UI packages","language":"JavaScript","pushed":"2025-10-16T15:10:21Z","repo":"necolas/react-native-web","stars":22119}
+{"archived":false,"description":"Turn Virtual DOM nodes into HTML","language":"JavaScript","pushed":"2023-12-15T05:08:48Z","repo":"nthtran/vdom-to-html","stars":139}
+{"archived":false,"description":"OctoLinker — Links together, what belongs together","language":"HTML","pushed":"2023-10-02T12:33:45Z","repo":"OctoLinker/browser-extension","stars":5351}
+{"archived":false,"description":"Regexp based validation collection for common internet validation tasks","language":"JavaScript","pushed":"2023-08-30T13:54:47Z","repo":"One-com/one-validation","stars":37}
+{"archived":false,"description":"A functional frontend framework.","language":"JavaScript","pushed":"2019-07-02T08:08:39Z","repo":"paldepind/functional-frontend-architecture","stars":1443}
+{"archived":false,"description":"A library which aids in making any JavaScript library more functional.","language":"JavaScript","pushed":"2015-03-31T19:52:11Z","repo":"paldepind/functionize","stars":50}
+{"archived":false,"description":"A virtual DOM library with focus on simplicity, modularity, powerful features and performance.","language":"TypeScript","pushed":"2025-10-23T07:50:51Z","repo":"paldepind/snabbdom","stars":12369}
+{"archived":false,"description":"A small JavaScript library for defining and using union types.","language":"JavaScript","pushed":"2019-06-05T12:33:58Z","repo":"paldepind/union-type","stars":479}
+{"archived":false,"description":"This repository has moved to:","language":"HTML","pushed":"2018-12-10T17:30:24Z","repo":"parkjs814/AlgorithmVisualizer","stars":128}
+{"archived":false,"description":"Select virtual-dom nodes using css selectors","language":"JavaScript","pushed":"2016-10-16T18:27:01Z","repo":"parshap/vtree-select","stars":31}
+{"archived":false,"description":"Fast and lightweight DOM diffing/patching (no virtual DOM needed)","language":"JavaScript","pushed":"2026-01-24T05:16:21Z","repo":"patrick-steele-idem/morphdom","stars":3525}
+{"archived":true,"description":"Normalizes nested JSON according to a schema","language":"JavaScript","pushed":"2022-03-19T22:44:12Z","repo":"paularmstrong/normalizr","stars":20856}
+{"archived":false,"description":":computer: Gets the dimensions of the Viewport and beyond.","language":"JavaScript","pushed":"2020-05-27T10:39:15Z","repo":"pazguille/viewport","stars":531}
+{"archived":true,"description":"A community-curated list of flexbox issues and cross-browser workarounds for them.","language":null,"pushed":"2024-01-19T22:00:42Z","repo":"philipwalton/flexbugs","stars":13574}
+{"archived":false,"description":"Generate a slug – transliteration with a lot of options","language":"JavaScript","pushed":"2024-03-15T00:57:14Z","repo":"pid/speakingurl","stars":1118}
+{"archived":true,"description":":twisted_rightwards_arrows: Solutions and non-solutions to JavaScript's async problem","language":"JavaScript","pushed":"2019-11-30T23:01:03Z","repo":"plaid/async-problem","stars":185}
+{"archived":false,"description":":pencil: Generate Markdown documentation from code comments","language":"JavaScript","pushed":"2024-01-03T09:44:30Z","repo":"plaid/transcribe","stars":79}
+{"archived":false,"description":"JavaScript pub/sub library supporting advanced subscription features, and several helpful add-ons.","language":"TypeScript","pushed":"2026-04-07T14:40:24Z","repo":"postaljs/postal.js","stars":2837}
+{"archived":false,"description":"Library for creating tagged constructors.","language":"JavaScript","pushed":"2021-07-19T10:37:27Z","repo":"puffnfresh/daggy","stars":705}
+{"archived":false,"description":"High performance implementation of Immutable Sequence in JavaScript, based on Finger Tree.","language":"JavaScript","pushed":"2015-08-10T04:00:58Z","repo":"qiao/immutable-sequence.js","stars":15}
+{"archived":false,"description":"monad transformer for arrays","language":"LiveScript","pushed":"2015-04-18T20:41:07Z","repo":"quarterto-archive/fantasy-arrayt","stars":9}
+{"archived":false,"description":"Quill is a modern WYSIWYG editor built for compatibility and extensibility","language":"TypeScript","pushed":"2025-07-25T06:09:23Z","repo":"quilljs/quill","stars":47037}
+{"archived":false,"description":"A Cycle.js Driver for making HTTP requests using fetcher.","language":"JavaScript","pushed":"2015-10-08T13:38:03Z","repo":"r7kamura/cycle-fetcher-driver","stars":14}
+{"archived":false,"description":"A library that ports Elm's effect system to Redux","language":"JavaScript","pushed":"2024-03-19T18:42:21Z","repo":"raisemarketplace/redux-loop","stars":1953}
+{"archived":false,"description":":ram::sparkles: Fantasy-Land compatible types for easy integration with Ramda.js","language":"JavaScript","pushed":"2022-01-31T13:41:16Z","repo":"ramda/ramda-fantasy","stars":1502}
+{"archived":false,"description":"[Deprecated] Debug performance of your React application","language":"JavaScript","pushed":"2018-06-15T11:40:25Z","repo":"RamonGebben/react-perf-tool","stars":413}
+{"archived":false,"description":"A Cycle.js driver for keyboard events","language":"JavaScript","pushed":"2016-09-10T05:24:04Z","repo":"raquelxmoss/cycle-keys","stars":32}
+{"archived":true,"description":"The Reactive Extensions for JavaScript","language":"JavaScript","pushed":"2018-04-18T20:17:39Z","repo":"Reactive-Extensions/RxJS","stars":19373}
+{"archived":false,"description":"A description of the conceptual model of React without implementation burden.","language":null,"pushed":"2019-01-02T14:52:59Z","repo":"reactjs/react-basic","stars":4449}
+{"archived":false,"description":"Selector library for Redux","language":"TypeScript","pushed":"2025-09-26T14:41:25Z","repo":"reactjs/reselect","stars":19046}
+{"archived":true,"description":"Give your forms a helping of awesome!","language":"JavaScript","pushed":"2019-01-14T07:07:20Z","repo":"remybach/jQuery.superLabels","stars":405}
+{"archived":false,"description":"CSS stringifier using the AST from 'css.parse'","language":"JavaScript","pushed":"2014-06-18T17:46:05Z","repo":"reworkcss/css-stringify","stars":55}
+{"archived":false,"description":"Flexible and powerful universal routing solution","language":"TypeScript","pushed":"2023-01-07T05:57:10Z","repo":"router5/router5","stars":1706}
+{"archived":false,"description":"the opposite of roff","language":"Ruby","pushed":"2022-01-29T05:32:21Z","repo":"rtomayko/ronn","stars":1402}
+{"archived":false,"description":"Principles of Writing Consistent, Idiomatic JavaScript","language":null,"pushed":"2024-01-08T20:19:45Z","repo":"rwaldron/idiomatic.js","stars":25695}
+{"archived":false,"description":"Full featured JavaScript image \u0026 video gallery. No dependencies","language":"JavaScript","pushed":"2026-02-17T20:17:04Z","repo":"sachinchoolur/lightgallery.js","stars":5324}
+{"archived":false,"description":"Sanctuary's website","language":"HTML","pushed":"2024-10-27T11:36:19Z","repo":"sanctuary-js/sanctuary-site","stars":7}
+{"archived":false,"description":"Minify css with clean-css.","language":"JavaScript","pushed":"2024-03-26T10:26:30Z","repo":"scniro/gulp-clean-css","stars":640}
+{"archived":false,"description":"The email boilerplate for sending out nicely formatted messages.","language":"HTML","pushed":"2021-04-28T18:47:01Z","repo":"seanpowell/Email-Boilerplate","stars":3796}
+{"archived":false,"description":"Cycle.js for the Fetch API","language":"JavaScript","pushed":"2015-10-21T05:48:58Z","repo":"secobarbital/cycle-fetch-driver","stars":2}
+{"archived":false,"description":"😎 Awesome lists about all kinds of interesting topics","language":null,"pushed":"2026-04-02T16:30:33Z","repo":"sindresorhus/awesome","stars":454098}
+{"archived":false,"description":"Only pass through changed files","language":"JavaScript","pushed":"2025-10-07T11:06:24Z","repo":"sindresorhus/gulp-changed","stars":740}
+{"archived":false,"description":"Change permissions of Vinyl files","language":"JavaScript","pushed":"2023-10-31T20:47:52Z","repo":"sindresorhus/gulp-chmod","stars":39}
+{"archived":false,"description":"Minify PNG, JPEG, GIF and SVG images","language":"JavaScript","pushed":"2025-11-11T06:45:37Z","repo":"sindresorhus/gulp-imagemin","stars":1903}
+{"archived":false,"description":"Display the size of your project","language":"JavaScript","pushed":"2025-01-24T06:31:41Z","repo":"sindresorhus/gulp-size","stars":226}
+{"archived":false,"description":"Create tarball from files","language":"JavaScript","pushed":"2025-09-16T02:59:43Z","repo":"sindresorhus/gulp-tar","stars":31}
+{"archived":false,"description":"Convert images to WebP","language":"JavaScript","pushed":"2025-09-10T09:34:38Z","repo":"sindresorhus/gulp-webp","stars":219}
+{"archived":false,"description":"Javascript tweening engine","language":"JavaScript","pushed":"2017-06-30T16:28:43Z","repo":"sole/tween.js","stars":338}
+{"archived":false,"description":"📩 Starter project for designing and testing HTML email templates","language":"JavaScript","pushed":"2022-12-11T23:37:40Z","repo":"sparkbox/email-lab","stars":282}
+{"archived":true,"description":" Interactive diagrams of Rx Observables","language":"JavaScript","pushed":"2021-10-26T12:15:21Z","repo":"staltz/rxmarbles","stars":4211}
+{"archived":false,"description":"An extremely intuitive, small, and fast functional reactive stream library for JavaScript","language":"TypeScript","pushed":"2023-07-18T20:00:00Z","repo":"staltz/xstream","stars":2372}
+{"archived":true,"description":"[DEPRECATED] A general purpose library for validating and formatting mobile phone numbers.          ","language":"CoffeeScript","pushed":"2020-04-07T20:02:18Z","repo":"stripe/jquery.mobilePhoneNumber","stars":327}
+{"archived":true,"description":"[DEPRECATED] A general purpose library for building credit card forms, validating inputs and formatting numbers.          ","language":"CoffeeScript","pushed":"2017-08-02T14:10:57Z","repo":"stripe/jquery.payment","stars":3512}
+{"archived":false,"description":"tap-producing test harness for node and browsers","language":"JavaScript","pushed":"2025-03-07T16:55:49Z","repo":"substack/tape","stars":5794}
+{"archived":false,"description":"Dynamic ES module loader","language":"JavaScript","pushed":"2026-03-20T21:04:28Z","repo":"systemjs/systemjs","stars":13099}
+{"archived":true,"description":"A developer tool to visualize a React application's component hierarchy.","language":"JavaScript","pushed":"2017-05-09T00:34:51Z","repo":"team-gryff/react-monocle","stars":2440}
+{"archived":false,"description":"Swipe is the most accurate touch slider.","language":"JavaScript","pushed":"2020-05-12T17:10:27Z","repo":"thebird/swipe","stars":6757}
+{"archived":false,"description":"Externalizes the source map found inside a stream to an external .js.map file","language":"JavaScript","pushed":"2023-02-07T08:43:04Z","repo":"thlorenz/exorcist","stars":329}
+{"archived":false,"description":null,"language":"TypeScript","pushed":"2024-08-02T15:54:27Z","repo":"tildeio/router.js","stars":1347}
+{"archived":false,"description":"A lightweight JavaScript library that matches paths against registered routes. It includes support for dynamic and star segments and nested handlers.","language":"TypeScript","pushed":"2023-01-11T09:45:01Z","repo":"tildeio/route-recognizer","stars":464}
+{"archived":false,"description":"Converts an HTML string into a virtual DOM","language":"JavaScript","pushed":"2023-03-23T19:50:10Z","repo":"TimBeyer/html-to-vdom","stars":171}
+{"archived":false,"description":"A functional javascript workshop. No libraries required (i.e. no underscore), just ES5.","language":"JavaScript","pushed":"2020-10-08T09:28:30Z","repo":"timoxley/functional-javascript-workshop","stars":2041}
+{"archived":true,"description":"Lazy-load content and lazy-register pages to reduce the first load time","language":"HTML","pushed":"2019-09-28T15:06:13Z","repo":"TimvdLippe/iron-lazy-pages","stars":95}
+{"archived":false,"description":"jpegoptim - utility to optimize/compress JPEG files","language":"C","pushed":"2026-03-01T01:15:03Z","repo":"tjko/jpegoptim","stars":1778}
+{"archived":false,"description":"Template antimatter for Node.js (Browsers too!)","language":"JavaScript","pushed":"2016-01-27T03:28:59Z","repo":"tmpvar/weld","stars":670}
+{"archived":false,"description":":radio: JavaScript transducers","language":"JavaScript","pushed":"2016-11-20T13:55:32Z","repo":"transduce/transduce","stars":92}
+{"archived":false,"description":"Pass through newer source files only","language":"JavaScript","pushed":"2020-11-26T14:19:52Z","repo":"tschaub/gulp-newer","stars":223}
+{"archived":false,"description":"A Grunt-enabled head-start with H5BP + jQuery + Modernizr + Respond + box-sizing:border-box;","language":"JavaScript","pushed":"2013-04-08T16:48:50Z","repo":"tsvensen/gruntstart","stars":275}
+{"archived":false,"description":"Riloadr - A cross-browser framework-independent responsive images loader written in Javascript.","language":"JavaScript","pushed":"2014-07-29T17:11:12Z","repo":"tubalmartin/riloadr","stars":642}
+{"message":"Not Found","documentation_url":"https://docs.github.com/rest/repos/repos#get-a-repository","status":"404"}{"repo": "TylorS/cycle-router", "error": true}
+{"archived":false,"description":"Alternative DOM driver utilizing the snabbdom library","language":"JavaScript","pushed":"2016-06-04T09:16:07Z","repo":"TylorS/cycle-snabbdom","stars":41}
+{"archived":false,"description":"UMD (Universal Module Definition) patterns for JavaScript modules that work everywhere.","language":"JavaScript","pushed":"2024-11-26T23:55:09Z","repo":"umdjs/umd","stars":7446}
+{"archived":true,"description":"Convert legacy HTML to Hyperscript (https://github.com/dominictarr/hyperscript and https://github.com/Matt-Esch/virtual-dom/blob/master/virtual-hyperscript)","language":"JavaScript","pushed":"2020-01-02T17:49:46Z","repo":"unframework/html2hyperscript","stars":45}
+{"archived":false,"description":"Video.js - open source HTML5 video player","language":"JavaScript","pushed":"2026-03-11T20:25:34Z","repo":"videojs/video.js","stars":39681}
+{"archived":false,"description":"Pull-to-refresh feature for mobile Safari with native Scrolling","language":"JavaScript","pushed":"2012-10-16T21:17:41Z","repo":"visiongeist/pull-to-refresh-js","stars":321}
+{"archived":false,"description":"JavaScript documentation generator for node using markdown and jsdoc","language":"JavaScript","pushed":"2022-09-07T14:50:30Z","repo":"visionmedia/dox","stars":2155}
+{"archived":false,"description":"Micro client-side router inspired by the Express router","language":"JavaScript","pushed":"2023-06-27T15:47:06Z","repo":"visionmedia/page.js","stars":7688}
+{"archived":false,"description":"Open source rich text editor for the modern web","language":"JavaScript","pushed":"2019-06-22T15:05:10Z","repo":"Voog/wysihtml","stars":3354}
+{"archived":true,"description":"CoffeeScript micro-library for Canvas Animations","language":"JavaScript","pushed":"2012-01-25T05:01:23Z","repo":"wambotron/Keanu","stars":21}
+{"archived":false,"description":"Vinyl adapter for the file system.","language":"JavaScript","pushed":"2025-06-01T21:41:10Z","repo":"wearefractal/vinyl-fs","stars":974}
+{"archived":false,"description":"JavaScript implementation of the Web Animations API","language":"JavaScript","pushed":"2021-06-20T11:58:39Z","repo":"web-animations/web-animations-js","stars":3777}
+{"archived":false,"description":"Factory for creating async request/response cycle.js drivers","language":"JavaScript","pushed":"2017-02-25T13:46:36Z","repo":"whitecolor/cycle-async-driver","stars":24}
+{"archived":false,"description":"Mongoose.js driver for Cycle.js.","language":"JavaScript","pushed":"2016-09-28T12:23:23Z","repo":"whitecolor/cycle-mongoose","stars":11}
+{"archived":false,"description":"A Cycle driver for requestAnimationFrame","language":"JavaScript","pushed":"2017-03-06T18:36:13Z","repo":"Widdershin/cycle-animation-driver","stars":34}
+{"archived":false,"description":"Try Cycle.js in your browser, no setup required.","language":"JavaScript","pushed":"2017-06-20T03:27:37Z","repo":"Widdershin/tricycle","stars":26}
+{"archived":false,"description":"Minimal templating on steroids.","language":"JavaScript","pushed":"2026-03-29T22:31:09Z","repo":"wycats/handlebars.js","stars":18615}
+{"archived":false,"description":"Medium.com WYSIWYG editor clone. Uses contenteditable API to implement a rich text solution.","language":"JavaScript","pushed":"2024-10-24T07:27:48Z","repo":"yabwe/medium-editor","stars":16116}
+{"archived":false,"description":"An alternative side effect model for Redux apps","language":"JavaScript","pushed":"2025-12-04T14:45:58Z","repo":"yelouafi/redux-saga","stars":22476}
+{"archived":false,"description":":palm_tree: HTML → virtual-dom","language":"JavaScript","pushed":"2016-04-09T04:07:04Z","repo":"yoshuawuyts/virtual-html","stars":177}
+{"archived":false,"description":"Pragmatic jQuery Style","language":null,"pushed":"2014-06-22T15:09:11Z","repo":"yuanyan/pragmatic-jquery","stars":109}
+{"archived":false,"description":"Observables for ECMAScript","language":"JavaScript","pushed":"2019-11-01T06:49:54Z","repo":"zenparsing/es-observable","stars":3110}
+{"archived":false,"description":"wysihtml5 powered rich-text editor with drag \u0026 drop image editing","language":"HTML","pushed":"2017-06-15T11:16:56Z","repo":"zohararad/wysihtml5n","stars":40}
+{"archived":false,"description":"Implements a subset of the HTML5 Forms module, including calendars, colour swatches, sliding widgets, client side validation and more.  ","language":"JavaScript","pushed":"2017-03-04T18:39:10Z","repo":"zoltan-dulac/html5Forms.js","stars":221}
+{"archived":false,"description":"Accelerated panning and zooming for HTML and Canvas","language":"JavaScript","pushed":"2025-11-21T21:38:30Z","repo":"zynga/scroller","stars":3899}

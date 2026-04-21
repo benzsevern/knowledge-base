@@ -223,7 +223,7 @@ export async function fetchAndExtractArticle(url) {
   const record = {
     id,
     slug,
-    type: "paper",
+    type: "article",
     title,
     sourceUrl: url,
     sourcePath: "",
@@ -248,8 +248,7 @@ export async function fetchAndExtractArticle(url) {
   const note = [
     "---",
     `id: "${id}"`,
-    `type: "paper"`,
-    `kind: "article"`,
+    `type: "article"`,
     `title: "${title.replace(/"/g, '\\"')}"`,
     `source_url: "${url}"`,
     `tags:`,

@@ -43,11 +43,11 @@ export function renderPaperNote(paper, linkedRepos) {
 
   const frontmatter = frontmatterLines({
     id: paper.id,
-    type: "paper",
+    type: paper.type ?? "academic_paper",
     title: paper.title,
     source_path: paper.sourcePath ?? "",
     source_url: paper.sourceUrl ?? "",
-    tags: ["paper", ...tags],
+    tags: [paper.type ?? "academic_paper", ...tags],
     created_at: paper.createdAt,
     updated_at: paper.updatedAt,
     authors,

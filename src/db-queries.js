@@ -8,6 +8,12 @@
 import { stripNul } from "./fs-utils.js";
 import { db, hasDatabase } from "./db.js";
 
+// The two types that together make up the old `paper` bucket. Use this
+// constant anywhere callers filter/count "papers" so adding a new subtype
+// later (e.g. 'preprint') is a one-line change.
+export const PAPER_TYPES = ["article", "academic_paper"];
+const PAPER_TYPES_SQL = "('article','academic_paper')";
+
 let _cachedReady = null;
 let _cachedReadyAt = 0;
 const READY_CACHE_MS = 30_000;
@@ -68,11 +74,13 @@ export async function statusCounts() {
   const pool = db();
   const { rows } = await pool.query(`
     SELECT
-      (SELECT count(*)::int FROM entities WHERE type = 'paper')  AS papers,
-      (SELECT count(*)::int FROM entities WHERE type = 'repo')   AS repos,
-      (SELECT count(*)::int FROM entities WHERE type = 'docs')   AS docs,
-      (SELECT count(*)::int FROM relations)                      AS relations,
-      (SELECT count(*)::int FROM embeddings)                     AS embeddings
+      (SELECT count(*)::int FROM entities WHERE type = 'article')        AS articles,
+      (SELECT count(*)::int FROM entities WHERE type = 'academic_paper') AS academic_papers,
+      (SELECT count(*)::int FROM entities WHERE type IN ${PAPER_TYPES_SQL}) AS papers,
+      (SELECT count(*)::int FROM entities WHERE type = 'repo')           AS repos,
+      (SELECT count(*)::int FROM entities WHERE type = 'docs')           AS docs,
+      (SELECT count(*)::int FROM relations)                              AS relations,
+      (SELECT count(*)::int FROM embeddings)                             AS embeddings
   `);
   return rows[0];
 }
@@ -85,7 +93,7 @@ export async function statusCounts() {
 export async function loadIndexPG() {
   const pool = db();
   const [papersQ, reposQ, docsQ, relsQ] = await Promise.all([
-    pool.query("SELECT * FROM entities WHERE type = 'paper'"),
+    pool.query(`SELECT * FROM entities WHERE type IN ${PAPER_TYPES_SQL}`),
     pool.query("SELECT * FROM entities WHERE type = 'repo'"),
     pool.query("SELECT * FROM entities WHERE type = 'docs'"),
     pool.query("SELECT * FROM relations"),
@@ -300,7 +308,7 @@ export async function listEntityEmbeddingsPG() {
 export async function loadEntitiesOnlyPG() {
   const pool = db();
   const [papersQ, reposQ, docsQ] = await Promise.all([
-    pool.query("SELECT * FROM entities WHERE type = 'paper'"),
+    pool.query(`SELECT * FROM entities WHERE type IN ${PAPER_TYPES_SQL}`),
     pool.query("SELECT * FROM entities WHERE type = 'repo'"),
     pool.query("SELECT * FROM entities WHERE type = 'docs'"),
   ]);
@@ -317,6 +325,7 @@ export async function loadEntitiesOnlyPG() {
 // upsertEntityPG — dual-write a single entity alongside the JSON index update.
 // ---------------------------------------------------------------------------
 export async function upsertEntityPG(entity, type) {
+  const effectiveType = type ?? entity.type;
   const { id, slug, title, createdAt, updatedAt, type: _type, ...meta } = entity;
   // stripNul: Marker PDF extraction can produce \u0000 bytes; Postgres JSONB rejects them.
   await db().query(
@@ -327,7 +336,7 @@ export async function upsertEntityPG(entity, type) {
        meta = EXCLUDED.meta, updated_at = EXCLUDED.updated_at`,
     [
       stripNul(id),
-      type,
+      effectiveType,
       stripNul(slug ?? id),
       stripNul(title ?? id),
       JSON.stringify(stripNul(meta)),

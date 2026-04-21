@@ -210,7 +210,7 @@ export async function buildEmbeddingIndex({ force = false } = {}) {
         id: `${paper.id}#chunk-${i}`,
         entityId: paper.id,
         entityTitle: paper.title,
-        type: "paper",
+        type: paper.type ?? "article",
         kind: "chunk",
         chunkIndex: i,
         text,

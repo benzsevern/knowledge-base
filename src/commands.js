@@ -404,7 +404,7 @@ export async function ingestPaper(pdfInputPath, options = {}) {
   const record = {
     id: stableId("paper", slug),
     slug,
-    type: "paper",
+    type: "academic_paper",
     title: metadata.title,
     createdAt: now(),
     updatedAt: now(),
@@ -433,8 +433,8 @@ export async function ingestPaper(pdfInputPath, options = {}) {
 
   index.papers = upsertEntity(index.papers, record);
   if (hasDatabase()) {
-    await upsertEntityPG(record, "paper").catch((err) => {
-      process.stderr.write(`[warn] upsertEntityPG paper ${record.id}: ${err.message}\n`);
+    await upsertEntityPG(record).catch((err) => {
+      process.stderr.write(`[warn] upsertEntityPG ${record.type} ${record.id}: ${err.message}\n`);
       throw err; // surface the real error so the job reports it
     });
   }
@@ -1066,8 +1066,8 @@ export async function ingestSitemap(sitemapUrl, options = {}) {
         if (previous) record.createdAt = previous.createdAt;
         index.papers = upsertEntity(index.papers, record);
         if (hasDatabase()) {
-          await upsertEntityPG(record, "paper").catch((err) => {
-            process.stderr.write(`[warn] upsertEntityPG article ${record.id}: ${err.message}\n`);
+          await upsertEntityPG(record).catch((err) => {
+            process.stderr.write(`[warn] upsertEntityPG ${record.type} ${record.id}: ${err.message}\n`);
           });
         }
         results.push({ url, id: record.id, title: record.title });
@@ -1341,14 +1341,14 @@ export async function queryContext(identifier) {
   }
 
   const relatedRelations =
-    entity.type === "paper"
+    (entity.type === "article" || entity.type === "academic_paper")
       ? index.relations.filter((relation) => relation.fromId === entity.id)
       : index.relations.filter(
           (relation) => relation.toId === entity.id || relation.fromId === entity.id,
         );
   const linkedEntities = relatedRelations
     .map((relation) => {
-      if (entity.type === "paper") {
+      if ((entity.type === "article" || entity.type === "academic_paper")) {
         return index.repos.find((repo) => repo.id === relation.toId);
       }
       if (relation.relationType === "related") {

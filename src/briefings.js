@@ -103,7 +103,7 @@ async function renderBrief(topic, hits, { scopeLabel } = {}) {
   const groups = groupByEntity(hits);
 
   const byType = {
-    paper: groups.filter((g) => g.type === "paper"),
+    paper: groups.filter((g) => g.type === "article" || g.type === "academic_paper"),
     repo: groups.filter((g) => g.type === "repo"),
     docs: groups.filter((g) => g.type === "docs"),
   };

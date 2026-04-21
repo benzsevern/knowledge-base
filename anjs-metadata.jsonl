@@ -1,0 +1,530 @@
+{"archived":false,"description":"A small, fast, JavaScript-based JavaScript parser","language":"JavaScript","pushed":"2026-04-08T13:52:20Z","repo":"acornjs/acorn","stars":11357}
+{"archived":false,"description":"Actionhero is a realtime multi-transport nodejs API Server with integrated cluster capabilities and delayed tasks","language":"TypeScript","pushed":"2026-02-03T01:39:07Z","repo":"actionhero/actionhero","stars":2419}
+{"archived":false,"description":"Node.js Background jobs backed by redis. ","language":"TypeScript","pushed":"2026-04-06T02:17:08Z","repo":"actionhero/node-resque","stars":1410}
+{"archived":false,"description":"AdonisJS is a TypeScript-first web framework for building web apps and API servers. It comes with support for testing, modern tooling, an ecosystem of official packages, and more.","language":"TypeScript","pushed":"2026-04-09T09:37:29Z","repo":"adonisjs/core","stars":18861}
+{"archived":false,"description":"Node.js client for the Aerospike database","language":"JavaScript","pushed":"2026-04-10T21:47:25Z","repo":"aerospike/aerospike-client-nodejs","stars":207}
+{"archived":false,"description":"Lightweight job scheduling for Node.js","language":"HTML","pushed":"2026-04-02T15:20:43Z","repo":"agenda/agenda","stars":9649}
+{"archived":false,"description":"Run .NET and Node.js code in-process on Windows, MacOS, and Linux","language":"C++","pushed":"2026-04-10T16:55:29Z","repo":"agracio/edge-js","stars":826}
+{"archived":false,"description":"A tiny (118 bytes), secure, URL-friendly, unique string ID generator for JavaScript","language":"JavaScript","pushed":"2026-04-07T22:00:18Z","repo":"ai/nanoid","stars":26722}
+{"archived":false,"description":"The fastest JSON schema Validator. Supports JSON Schema draft-04/06/07/2019-09/2020-12 and JSON Type Definition (RFC8927)","language":"TypeScript","pushed":"2026-02-20T18:05:59Z","repo":"ajv-validator/ajv","stars":14675}
+{"archived":false,"description":"System monitoring dashboard for terminal","language":"JavaScript","pushed":"2025-11-06T13:55:02Z","repo":"aksakalli/gtop","stars":9915}
+{"archived":false,"description":" :eyeglasses: Node.js module that tells you when your package npm dependencies are out of date.","language":"JavaScript","pushed":"2022-12-10T10:06:02Z","repo":"alanshaw/david","stars":969}
+{"archived":false,"description":"Runs a load test on the selected URL. Fast and easy to use. Can be integrated in your own workflow using the API.","language":"JavaScript","pushed":"2026-01-13T23:29:47Z","repo":"alexfernandez/loadtest","stars":2626}
+{"archived":false,"description":"Machine learning platform for Web developers","language":"TypeScript","pushed":"2026-04-11T00:37:11Z","repo":"alibaba/pipcook","stars":2593}
+{"archived":true,"description":"Locus is a debugging module for node.js","language":"JavaScript","pushed":"2021-09-29T17:56:00Z","repo":"alidavut/locus","stars":306}
+{"archived":false,"description":"Simple Node.JS stream (streams2) Transform that runs the transform functions concurrently (with a set max concurrency)","language":"JavaScript","pushed":"2020-08-11T20:24:18Z","repo":"almost/through2-concurrent","stars":75}
+{"archived":false,"description":"Amplication brings order to the chaos of large-scale software development by creating Golden Paths for developers - streamlined workflows that drive consistency, enable high-quality code practices, simplify onboarding, and accelerate standardized delivery across teams.","language":"TypeScript","pushed":"2026-04-10T23:51:06Z","repo":"amplication/amplication","stars":15987}
+{"archived":false,"description":"🐛 Memory leak testing for node.","language":"JavaScript","pushed":"2023-01-27T16:56:20Z","repo":"andywer/leakage","stars":1591}
+{"archived":false,"description":"Atomic and non-atomic counters and rate limiting tools. Limit resource access at any scale.","language":"JavaScript","pushed":"2026-04-07T19:10:18Z","repo":"animir/node-rate-limiter-flexible","stars":3513}
+{"archived":false,"description":"Nano: The official Apache CouchDB library for Node.js","language":"JavaScript","pushed":"2026-04-01T09:17:27Z","repo":"apache/couchdb-nano","stars":689}
+{"archived":false,"description":"A full-featured, open-source content management framework built with Node.js that empowers organizations by combining in-context editing and headless architecture in a full-stack JS environment.","language":"JavaScript","pushed":"2026-04-10T15:25:55Z","repo":"apostrophecms/apostrophe","stars":4544}
+{"message":"Not Found","documentation_url":"https://docs.github.com/rest/repos/repos#get-a-repository","status":"404"}{"repo": "apps/guardrails", "error": true}
+{"archived":false,"description":"a streaming interface for archive generation","language":"JavaScript","pushed":"2026-03-14T18:58:49Z","repo":"archiverjs/node-archiver","stars":2949}
+{"archived":false,"description":"See node.js errors with less clutter","language":"CoffeeScript","pushed":"2024-06-16T12:51:51Z","repo":"AriaMinaei/pretty-error","stars":1525}
+{"archived":false,"description":"Convert character encodings in pure javascript.","language":"JavaScript","pushed":"2026-04-01T18:08:02Z","repo":"ashtuchkin/iconv-lite","stars":3165}
+{"archived":false,"description":"Lightweight Web Worker API implementation with native threads","language":"C++","pushed":"2021-09-14T14:09:00Z","repo":"audreyt/node-webworker-threads","stars":2283}
+{"archived":false,"description":"Well-formatted and improved trace system calls and signals (when the debugger does not help)","language":"JavaScript","pushed":"2019-11-18T14:59:28Z","repo":"automation-stack/ctrace","stars":121}
+{"archived":false,"description":"MongoDB object modeling designed to work in an asynchronous environment.","language":"JavaScript","pushed":"2026-04-07T18:06:15Z","repo":"Automattic/mongoose","stars":27471}
+{"archived":false,"description":"Node.js test runner that lets you develop with confidence 🚀","language":"JavaScript","pushed":"2026-04-09T15:54:39Z","repo":"avajs/ava","stars":20849}
+{"archived":false,"description":"An NLP library for building bots, with entity extraction, sentiment analysis, automatic language identify, and so more","language":"JavaScript","pushed":"2025-01-09T14:43:04Z","repo":"axa-group/nlp.js","stars":6561}
+{"archived":false,"description":"Promise based HTTP client for the browser and node.js","language":"JavaScript","pushed":"2026-04-11T12:20:04Z","repo":"axios/axios","stars":108979}
+{"archived":false,"description":"JavaScript and Node.js cheatsheets","language":"HTML","pushed":"2024-01-10T02:10:00Z","repo":"azat-co/cheatsheets","stars":1358}
+{"archived":false,"description":"You Don't Know Node.js","language":"Python","pushed":"2018-11-27T09:04:15Z","repo":"azat-co/you-dont-know-node","stars":1545}
+{"archived":false,"description":"🐠 Babel is a compiler for writing next generation JavaScript.","language":"TypeScript","pushed":"2026-04-11T10:11:50Z","repo":"babel/babel","stars":43897}
+{"archived":false,"description":":scissors: An ES6+ aware minifier based on the Babel toolchain (beta)","language":"JavaScript","pushed":"2024-06-01T07:30:35Z","repo":"babel/minify","stars":4379}
+{"archived":false,"description":"An adapter-based ORM for Node.js  with support for mysql, mongo, postgres, mssql (SQL Server), and more","language":"JavaScript","pushed":"2022-12-11T08:47:16Z","repo":"balderdashy/waterline","stars":5399}
+{"archived":false,"description":"Build Amazon Simple Queue Service (SQS) based applications without the boilerplate","language":"TypeScript","pushed":"2026-04-06T01:32:56Z","repo":"bbc/sqs-consumer","stars":1890}
+{"archived":false,"description":":two_men_holding_hands: A curated list of awesome developer tools for writing cross-platform Node.js code","language":null,"pushed":"2023-02-07T20:03:47Z","repo":"bcoe/awesome-cross-platform-nodejs","stars":1200}
+{"archived":false,"description":"A simple, fast, robust job/task queue for Node.js, backed by Redis.","language":"JavaScript","pushed":"2026-04-10T03:25:29Z","repo":"bee-queue/bee-queue","stars":4025}
+{"archived":true,"description":"A benchmarking library. As used on jsPerf.com.","language":"JavaScript","pushed":"2022-12-22T13:38:09Z","repo":"bestiejs/benchmark.js","stars":5478}
+{"archived":false,"description":"Get the mac address of the current machine you are on via Node.js","language":"TypeScript","pushed":"2026-03-26T06:30:42Z","repo":"bevry/getmac","stars":359}
+{"archived":false,"description":"Determine if a filename and/or buffer is text or binary. Smarter detection than the other solutions.","language":"TypeScript","pushed":"2026-03-26T06:48:57Z","repo":"bevry/istextorbinary","stars":158}
+{"archived":false,"description":"A javascript Bitcoin library for node.js and browsers.","language":"JavaScript","pushed":"2026-02-17T01:08:49Z","repo":"bitcoinjs/bitcoinjs-lib","stars":5983}
+{"archived":false,"description":"A full stack for bitcoin and blockchain-based applications","language":"TypeScript","pushed":"2026-04-10T20:41:18Z","repo":"bitpay/bitcore","stars":4986}
+{"archived":false,"description":"Abstruse is a free and open-source CI/CD platform that tests your models and code.","language":"Go","pushed":"2024-01-31T17:06:40Z","repo":"bleenco/abstruse","stars":954}
+{"archived":false,"description":":rainbow:  Beautiful color gradients in terminal output","language":"TypeScript","pushed":"2024-10-12T08:36:03Z","repo":"bokub/gradient-string","stars":1188}
+{"archived":false,"description":"A simple Node.js ORM for PostgreSQL, MySQL and SQLite3 built on top of Knex.js","language":"JavaScript","pushed":"2024-08-10T14:12:20Z","repo":"bookshelf/bookshelf","stars":6362}
+{"archived":false,"description":"🤖 GPU accelerated Neural networks in JavaScript for Browsers and Node.js","language":"TypeScript","pushed":"2024-09-26T21:51:23Z","repo":"BrainJS/brain.js","stars":14858}
+{"archived":false,"description":"⚡️ An opinionated, zero-config static site generator.","language":"JavaScript","pushed":"2024-07-17T23:25:05Z","repo":"brandonweiss/charge","stars":432}
+{"archived":false,"description":"⚡️ A simple, easy way to deploy static websites to Amazon S3.","language":"JavaScript","pushed":"2021-04-09T18:35:48Z","repo":"brandonweiss/discharge","stars":645}
+{"archived":false,"description":"Bree is a Node.js and JavaScript job task scheduler with worker threads, cron, Date, and human syntax. Built for @ladjs, @forwardemail, @spamscanner, @cabinjs.","language":"JavaScript","pushed":"2026-02-17T22:09:07Z","repo":"breejs/bree","stars":3283}
+{"archived":false,"description":"PostgreSQL client for node.js.","language":"JavaScript","pushed":"2026-04-02T20:19:53Z","repo":"brianc/node-postgres","stars":13111}
+{"archived":false,"description":"Browser compilation library – an asset pipeline for applications that run in the browser","language":"JavaScript","pushed":"2025-11-17T22:03:03Z","repo":"broccolijs/broccoli","stars":3328}
+{"archived":true,"description":"🍴 Web applications made easy. Since 2011.","language":"JavaScript","pushed":"2023-01-10T19:30:15Z","repo":"brunch/brunch","stars":6758}
+{"archived":false,"description":"High-level streams library for Node.js and the browser","language":"JavaScript","pushed":"2020-06-18T07:57:58Z","repo":"caolan/highland","stars":3464}
+{"archived":false,"description":"An authorization library that supports access control models like ACL, RBAC, ABAC in Node.js and Browser","language":"TypeScript","pushed":"2026-04-08T09:45:28Z","repo":"casbin/node-casbin","stars":2881}
+{"archived":false,"description":"🖍 Terminal string styling done right","language":"JavaScript","pushed":"2026-01-27T06:30:36Z","repo":"chalk/chalk","stars":23127}
+{"archived":false,"description":"The fast, flexible, and elegant library for parsing and manipulating HTML and XML.","language":"TypeScript","pushed":"2026-04-10T03:17:16Z","repo":"cheeriojs/cheerio","stars":30264}
+{"archived":false,"description":"Parser Building Toolkit for JavaScript","language":"TypeScript","pushed":"2026-04-11T09:26:11Z","repo":"Chevrotain/chevrotain","stars":2762}
+{"archived":false,"description":"A high-level terminal interface library for node.js.","language":"JavaScript","pushed":"2024-03-22T10:02:56Z","repo":"chjj/blessed","stars":11811}
+{"archived":false,"description":"Fast and efficient CSS optimizer for node.js and the Web","language":"JavaScript","pushed":"2024-10-18T06:34:43Z","repo":"clean-css/clean-css","stars":4197}
+{"archived":false,"description":"Pretty unicode tables for the command line","language":"JavaScript","pushed":"2024-11-21T06:44:43Z","repo":"cli-table/cli-table3","stars":615}
+{"archived":false,"description":"Supercharged End 2 End Testing Framework for NodeJS","language":"JavaScript","pushed":"2026-04-10T12:26:55Z","repo":"codeceptjs/CodeceptJS","stars":4217}
+{"archived":false,"description":"Multiple, simultaneous, individually controllable spinners for concurrent tasks in Node.js CLI programs","language":"JavaScript","pushed":"2020-04-01T00:05:11Z","repo":"codekirei/node-multispinner","stars":295}
+{"archived":false,"description":"TypeScript-first schema validation with static type inference","language":"TypeScript","pushed":"2026-02-15T14:20:41Z","repo":"colinhacks/zod","stars":42360}
+{"archived":false,"description":"OpenAPI based binary serialization","language":"TypeScript","pushed":"2025-11-03T21:56:58Z","repo":"compactr/compactr.js","stars":105}
+{"archived":false,"description":"Create native background daemons on Linux systems.","language":"JavaScript","pushed":"2022-02-24T08:44:25Z","repo":"coreybutler/node-linux","stars":424}
+{"archived":false,"description":"Node utilities for Mac","language":"JavaScript","pushed":"2024-05-16T22:30:45Z","repo":"coreybutler/node-mac","stars":541}
+{"archived":false,"description":"Windows support for Node.JS scripts (daemons, eventlog, UAC, etc).","language":"JavaScript","pushed":"2024-10-01T21:28:07Z","repo":"coreybutler/node-windows","stars":2933}
+{"archived":false,"description":"A node.js version management utility for Windows. Ironically written in Go.","language":"Go","pushed":"2026-03-08T05:10:07Z","repo":"coreybutler/nvm-windows","stars":45885}
+{"archived":false,"description":"Easy to use cryptographic framework for data protection: secure messaging with forward secrecy and secure data storage. Has unified APIs across 14 platforms.","language":"C","pushed":"2026-01-09T16:01:56Z","repo":"cossacklabs/themis","stars":1958}
+{"archived":false,"description":"Couchbase Node.js Client Library (Official)","language":"TypeScript","pushed":"2026-04-10T03:25:15Z","repo":"couchbase/couchnode","stars":463}
+{"archived":false,"description":"A JavaScript implementation of Git.","language":"JavaScript","pushed":"2021-11-06T16:38:31Z","repo":"creationix/js-git","stars":3845}
+{"archived":false,"description":"Graph theory (network) library for visualisation and analysis","language":"JavaScript","pushed":"2026-04-10T17:19:47Z","repo":"cytoscape/cytoscape.js","stars":10934}
+{"archived":false,"description":"Pipeable javascript. Quickly filter, map, and reduce from the terminal","language":"JavaScript","pushed":"2023-02-09T08:55:17Z","repo":"danielstjules/pjs","stars":418}
+{"archived":false,"description":"⏳ Modern JavaScript date utility library ⌛️","language":"TypeScript","pushed":"2025-09-08T08:25:16Z","repo":"date-fns/date-fns","stars":36541}
+{"archived":true,"description":"Jose-Simple allows the encryption and decryption of data using the JOSE (JSON Object Signing and Encryption) standard.","language":"JavaScript","pushed":"2024-04-23T05:46:09Z","repo":"davesag/jose-simple","stars":66}
+{"archived":false,"description":"Check NPM package licenses","language":"JavaScript","pushed":"2024-01-29T23:56:03Z","repo":"davglass/license-checker","stars":1677}
+{"archived":false,"description":"🔥 single-command flamegraph profiling 🔥","language":"JavaScript","pushed":"2025-09-30T08:30:19Z","repo":"davidmarkclements/0x","stars":3533}
+{"archived":false,"description":"A tiny JavaScript debugging utility modelled after Node.js core's debugging technique. Works in Node.js and web browsers","language":"JavaScript","pushed":"2026-04-01T12:03:30Z","repo":"debug-js/debug","stars":11444}
+{"archived":false,"description":"The Browser / Node.js Client for deepstream.io","language":"TypeScript","pushed":"2025-04-27T01:55:47Z","repo":"deepstreamIO/deepstream.io-client-js","stars":303}
+{"archived":false,"description":"Accessibility engine for automated Web UI testing","language":"JavaScript","pushed":"2026-04-10T14:46:44Z","repo":"dequelabs/axe-core","stars":7009}
+{"archived":false,"description":"A Node.js tool to automate end-to-end web testing.","language":"JavaScript","pushed":"2026-04-10T03:25:38Z","repo":"DevExpress/testcafe","stars":9914}
+{"archived":false,"description":"Better Queue for NodeJS","language":"JavaScript","pushed":"2024-06-22T07:26:25Z","repo":"diamondio/better-queue","stars":547}
+{"archived":false,"description":"Empower your website frontends with layouts, meta-data, pre-processors (markdown, jade, coffeescript, etc.), partials, skeletons, file watching, querying, and an amazing plugin system. DocPad will streamline your web development process allowing you to craft powerful static sites quicker than ever before.","language":"CoffeeScript","pushed":"2024-02-11T13:53:58Z","repo":"docpad/docpad","stars":3052}
+{"archived":false,"description":"🃏 A magical documentation site generator.","language":"JavaScript","pushed":"2026-04-11T05:12:28Z","repo":"docsifyjs/docsify","stars":31119}
+{"archived":false,"description":":book: documentation for modern JavaScript","language":"JavaScript","pushed":"2025-04-15T18:50:26Z","repo":"documentationjs/documentation","stars":5805}
+{"archived":true,"description":"rawStream.pipe(JSONStream.parse()).pipe(streamOfObjects)","language":"JavaScript","pushed":"2018-10-14T01:23:58Z","repo":"dominictarr/JSONStream","stars":1933}
+{"archived":false,"description":"Sexy fonts for the console","language":"Rust","pushed":"2025-10-16T20:46:40Z","repo":"dominikwilkowski/cfonts","stars":1850}
+{"archived":false,"description":"NodeJS Framework for Interactive CLIs","language":"TypeScript","pushed":"2024-06-16T15:11:48Z","repo":"drew-y/cliffy","stars":368}
+{"archived":false,"description":"ORM","language":"TypeScript","pushed":"2026-04-10T10:38:55Z","repo":"drizzle-team/drizzle-orm","stars":33809}
+{"archived":false,"description":"Fix broken node modules instantly  🏃🏽‍♀️💨","language":"TypeScript","pushed":"2025-09-30T07:56:17Z","repo":"ds300/patch-package","stars":11150}
+{"archived":false,"description":"Excel XLSX parser/generator written in JavaScript with Node.js and browser support, jQuery/d3-style method chaining, encryption, and a focus on keeping existing workbook features and styles in tact.","language":"JavaScript","pushed":"2024-03-12T10:01:25Z","repo":"dtjohnson/xlsx-populate","stars":998}
+{"archived":false,"description":":heavy_check_mark: Run tests for multiple versions of Node.js in local env.","language":"JavaScript","pushed":"2021-12-25T14:12:49Z","repo":"egoist/testen","stars":173}
+{"archived":false,"description":"📗 How to write cross-platform Node.js code","language":"JavaScript","pushed":"2025-05-25T23:03:22Z","repo":"ehmicky/cross-platform-node-guide","stars":1419}
+{"archived":false,"description":"Run any command on specific Node.js versions","language":"JavaScript","pushed":"2026-04-10T21:53:04Z","repo":"ehmicky/nve","stars":712}
+{"archived":false,"description":"🤠 Object property paths with wildcards and regexps 🌵","language":"JavaScript","pushed":"2026-04-10T21:59:02Z","repo":"ehmicky/wild-wild-path","stars":729}
+{"archived":false,"description":"Virtual environment for Node.js \u0026 integrator with virtualenv","language":"Python","pushed":"2025-12-27T20:06:33Z","repo":"ekalinin/nodeenv","stars":1782}
+{"archived":false,"description":"html emails and attachments to any smtp server with nodejs","language":"TypeScript","pushed":"2025-12-15T22:52:37Z","repo":"eleith/emailjs","stars":2208}
+{"archived":false,"description":"JSON-RPC 2.0 implementation over WebSockets for Node.js and JavaScript/TypeScript","language":"JavaScript","pushed":"2026-04-10T10:00:54Z","repo":"elpheria/rpc-websockets","stars":625}
+{"archived":false,"description":"Use C# in web apps with comfort","language":"C#","pushed":"2026-04-11T12:04:17Z","repo":"Elringus/DotNetJS","stars":757}
+{"archived":false,"description":"Find and fix problems in your JavaScript code.","language":"JavaScript","pushed":"2026-04-11T10:36:15Z","repo":"eslint/eslint","stars":27184}
+{"archived":false,"description":"Turn multiple data sources into a single GraphQL API","language":"TypeScript","pushed":"2026-04-06T22:47:35Z","repo":"exogee-technology/graphweaver","stars":548}
+{"archived":false,"description":"Fast, unopinionated, minimalist web framework for node.","language":"JavaScript","pushed":"2026-04-07T12:08:20Z","repo":"expressjs/express","stars":68922}
+{"archived":false,"description":"Light Weight Image Processor for NodeJS","language":"C","pushed":"2022-04-19T23:34:20Z","repo":"EyalAr/lwip","stars":2364}
+{"archived":false,"description":"Omelette is a simple, template based autocompletion tool for Node and Deno projects with super easy API. (For Bash, Zsh and Fish)","language":"CoffeeScript","pushed":"2022-01-21T18:01:33Z","repo":"f/omelette","stars":1403}
+{"archived":false,"description":"Easy to maintain open source documentation websites.","language":"TypeScript","pushed":"2026-04-10T20:33:15Z","repo":"facebook/docusaurus","stars":64486}
+{"archived":false,"description":"Delightful JavaScript Testing.","language":"TypeScript","pushed":"2026-04-10T05:23:11Z","repo":"facebook/jest","stars":45329}
+{"archived":false,"description":"Agentic Digital Self Platform","language":"TypeScript","pushed":"2025-10-16T05:42:41Z","repo":"FactorJS/factor","stars":1466}
+{"archived":false,"description":"Fast and low overhead web framework, for Node.js","language":"JavaScript","pushed":"2026-04-10T17:10:54Z","repo":"fastify/fastify","stars":36019}
+{"archived":false,"description":"Simple pub/sub messaging for the web","language":"JavaScript","pushed":"2025-06-17T14:32:36Z","repo":"faye/faye","stars":4391}
+{"archived":false,"description":"The API and real-time application framework","language":"TypeScript","pushed":"2026-04-02T04:47:56Z","repo":"feathersjs/feathers","stars":15250}
+{"archived":false,"description":"A node.js package for Steven Levithan's excellent dateFormat() function.","language":"JavaScript","pushed":"2023-03-31T14:05:02Z","repo":"felixge/node-dateformat","stars":1296}
+{"archived":false,"description":"A stream that emits multiple other streams one after another (streams3)","language":"JavaScript","pushed":"2021-09-08T20:03:16Z","repo":"feross/multistream","stars":297}
+{"archived":false,"description":"means completeness and balancing, from the Arabic word الجبر","language":"TypeScript","pushed":"2025-06-30T04:27:31Z","repo":"fibo/algebra","stars":108}
+{"archived":false,"description":"I2C serial bus access with Node.js","language":"JavaScript","pushed":"2024-03-21T11:46:23Z","repo":"fivdi/i2c-bus","stars":348}
+{"archived":false,"description":"GPIO access and interrupt detection with Node.js","language":"JavaScript","pushed":"2024-06-27T02:45:26Z","repo":"fivdi/onoff","stars":1257}
+{"archived":false,"description":"Fast GPIO, PWM, servo control, state change notification and interrupt handling with Node.js on the Raspberry Pi","language":"JavaScript","pushed":"2023-01-23T21:44:55Z","repo":"fivdi/pigpio","stars":967}
+{"archived":false,"description":"SPI serial bus access with Node.js","language":"C++","pushed":"2021-09-26T07:43:13Z","repo":"fivdi/spi-device","stars":116}
+{"archived":true,"description":"⚡️ Fast parsing, formatting and timezone manipulations for dates","language":"C++","pushed":"2018-01-15T06:11:13Z","repo":"floatdrop/node-cctz","stars":58}
+{"archived":false,"description":"A JavaScript PDF generation library for Node and the browser","language":"JavaScript","pushed":"2026-04-07T15:22:53Z","repo":"foliojs/pdfkit","stars":10626}
+{"archived":false,"description":"TypeScript clients for databases that prevent SQL Injection","language":"TypeScript","pushed":"2026-03-30T09:31:23Z","repo":"ForbesLindesay/atdatabases","stars":631}
+{"archived":false,"description":"Create, preview (browser/iOS Simulator), and send custom email templates for Node.js.  Made for @forwardemail, @ladjs, @cabinjs, @spamscanner, and @breejs.","language":"JavaScript","pushed":"2025-12-31T18:11:37Z","repo":"forwardemail/email-templates","stars":3727}
+{"archived":false,"description":"Privacy-focused encrypted email for everyone.  All-in-one alternative to Gmail + Mailchimp + Sendgrid.","language":"JavaScript","pushed":"2026-04-11T12:15:49Z","repo":"forwardemail/forwardemail.net","stars":1556}
+{"archived":false,"description":"Design patterns and best practices for building scaleable, maintainable and beautiful Node.js applications. Now with website! --\u003e","language":"JavaScript","pushed":"2016-01-19T21:17:10Z","repo":"FredKSchott/the-node-way","stars":1498}
+{"archived":true,"description":"A blazing fast js bundler/loader with a comprehensive API :fire:","language":"JavaScript","pushed":"2022-12-01T07:53:31Z","repo":"fuse-box/fuse-box","stars":3977}
+{"archived":false,"description":"Global HTTP/HTTPS proxy agent configurable using environment variables.","language":"TypeScript","pushed":"2026-03-11T16:29:02Z","repo":"gajus/global-agent","stars":393}
+{"archived":false,"description":"A Node.js PostgreSQL client with runtime and build time type safety, and composable SQL.","language":"TypeScript","pushed":"2026-04-06T22:40:15Z","repo":"gajus/slonik","stars":4899}
+{"archived":false,"description":"Automatic generation of N-API wrapper from a C++ library","language":"C++","pushed":"2023-07-12T03:07:30Z","repo":"Geode-solutions/genepi","stars":83}
+{"archived":false,"description":"Node.js Video Library / MP4 \u0026 FLV parser / MP4 builder / HLS muxer","language":"JavaScript","pushed":"2026-03-17T19:40:24Z","repo":"gkozlenko/node-video-lib","stars":371}
+{"archived":false,"description":":white_check_mark:  The Node.js best practices list (July 2024)","language":"Dockerfile","pushed":"2025-04-15T21:52:42Z","repo":"goldbergyoni/nodebestpractices","stars":105174}
+{"archived":false,"description":"A tool for writing better scripts","language":"JavaScript","pushed":"2026-03-28T15:48:25Z","repo":"google/zx","stars":45364}
+{"archived":false,"description":"High performance Node.js/PostgreSQL job queue (also suitable for getting jobs generated by PostgreSQL triggers/functions out into a different work queue)","language":"TypeScript","pushed":"2026-03-19T11:16:32Z","repo":"graphile/worker","stars":2207}
+{"archived":false,"description":"End-to-end, hierarchical, real-time, colorful logs and stories","language":"JavaScript","pushed":"2023-01-13T01:54:59Z","repo":"guigrpa/storyboard","stars":766}
+{"archived":false,"description":"A toolkit to automate \u0026 enhance your workflow","language":"JavaScript","pushed":"2026-02-09T06:30:13Z","repo":"gulpjs/gulp","stars":32987}
+{"archived":true,"description":"Hackable HTTP proxy for resiliency testing and simulated network conditions","language":"JavaScript","pushed":"2022-02-17T16:26:15Z","repo":"h2non/toxy","stars":2723}
+{"archived":false,"description":"Minimal templating on steroids.","language":"JavaScript","pushed":"2026-03-29T22:31:09Z","repo":"handlebars-lang/handlebars.js","stars":18615}
+{"archived":false,"description":"The Simple, Secure Framework Developers Trust","language":"JavaScript","pushed":"2026-04-02T08:28:56Z","repo":"hapijs/hapi","stars":14782}
+{"archived":false,"description":"We need a better Markdown previewer.","language":"JavaScript","pushed":"2020-09-24T16:07:01Z","repo":"hatashiro/pen","stars":330}
+{"archived":false,"description":"A fast, simple \u0026 powerful blog framework, powered by Node.js.","language":"TypeScript","pushed":"2026-04-11T00:15:57Z","repo":"hexojs/hexo","stars":41336}
+{"archived":false,"description":"Web framework built on Web Standards","language":"TypeScript","pushed":"2026-04-08T10:18:15Z","repo":"honojs/hono","stars":29874}
+{"archived":false,"description":"A simple, zero-configuration, command-line http server","language":"JavaScript","pushed":"2026-04-02T06:59:49Z","repo":"http-party/http-server","stars":14170}
+{"archived":false,"description":"Convenience wrapper for ReadableStream, with an API lifted from \"from\" and \"through2\"","language":"JavaScript","pushed":"2019-06-11T15:51:29Z","repo":"hughsk/from2","stars":132}
+{"archived":false,"description":" i18next: learn once - translate everywhere","language":"JavaScript","pushed":"2026-04-08T09:41:43Z","repo":"i18next/i18next","stars":8536}
+{"archived":false,"description":"⏰ Day.js 2kB immutable date-time library alternative to Moment.js with the same modern API","language":"JavaScript","pushed":"2026-04-09T22:01:40Z","repo":"iamkun/dayjs","stars":48623}
+{"archived":false,"description":"A simple and composable way to validate data in JavaScript (and TypeScript).","language":"TypeScript","pushed":"2024-10-01T02:42:53Z","repo":"ianstormtaylor/superstruct","stars":7146}
+{"archived":false,"description":"Minify images seamlessly","language":"JavaScript","pushed":"2025-03-07T09:39:56Z","repo":"imagemin/imagemin","stars":5718}
+{"archived":false,"description":"📈 Minimalistic zero-dependencies statsd client for Node.js ","language":"TypeScript","pushed":"2025-04-28T10:47:10Z","repo":"immobiliare/dats","stars":103}
+{"archived":false,"description":"Immutable persistent data collections for Javascript which increase efficiency and simplicity.","language":"TypeScript","pushed":"2026-04-10T07:03:24Z","repo":"immutable-js/immutable-js","stars":33077}
+{"archived":false,"description":"The RAW NMEA parser and GPS utility library","language":"JavaScript","pushed":"2025-08-16T12:23:41Z","repo":"infusion/GPS.js","stars":268}
+{"archived":false,"description":"A DHCP server and client written in pure JavaScript","language":"JavaScript","pushed":"2024-03-27T13:48:27Z","repo":"infusion/node-dhcp","stars":304}
+{"archived":false,"description":"HTML parsing/serialization toolset for Node.js. WHATWG HTML Living Standard (aka HTML5)-compliant.","language":"TypeScript","pushed":"2026-04-10T03:23:36Z","repo":"inikulin/parse5","stars":3886}
+{"archived":false,"description":"An implementation of IPFS in TypeScript","language":"TypeScript","pushed":"2026-04-10T17:33:52Z","repo":"ipfs/helia","stars":1308}
+{"archived":false,"description":"Virtual Environments for Node","language":"Shell","pushed":"2026-01-23T17:17:21Z","repo":"isaacs/nave","stars":1633}
+{"archived":false,"description":"A pure JavaScript implementation of git for node and browsers!","language":"JavaScript","pushed":"2026-04-06T21:12:04Z","repo":"isomorphic-git/isomorphic-git","stars":8148}
+{"archived":false,"description":"the Istanbul command line interface","language":"JavaScript","pushed":"2026-02-23T14:50:00Z","repo":"istanbuljs/nyc","stars":5756}
+{"archived":false,"description":"Line-by-line Stream reader for node.js","language":"JavaScript","pushed":"2019-11-06T16:27:58Z","repo":"jahewson/node-byline","stars":326}
+{"archived":false,"description":"Simple, unobtrusive authentication for Node.js.","language":"JavaScript","pushed":"2024-08-16T21:56:14Z","repo":"jaredhanson/passport","stars":23525}
+{"archived":false,"description":"Simple key-value storage with support for multiple backends","language":"TypeScript","pushed":"2026-04-03T18:54:33Z","repo":"jaredwray/keyv","stars":3116}
+{"archived":false,"description":"Literate Programming can be Quick and Dirty.","language":"HTML","pushed":"2025-11-17T10:31:55Z","repo":"jashkenas/docco","stars":3571}
+{"archived":false,"description":":sparkles: Make your JSON look AWESOME","language":"JavaScript","pushed":"2023-11-29T22:26:11Z","repo":"Javascipt/Jsome","stars":250}
+{"archived":true,"description":":heavy_check_mark: More than 100 security checks for your Node.js API","language":"JavaScript","pushed":"2024-04-23T07:17:37Z","repo":"jesusprubio/strong-node","stars":509}
+{"archived":false,"description":"An extensive math library for JavaScript and Node.js","language":"JavaScript","pushed":"2026-04-07T14:39:22Z","repo":"josdejong/mathjs","stars":15023}
+{"archived":false,"description":"instrumented streams","language":"JavaScript","pushed":"2021-11-02T20:28:33Z","repo":"joyent/node-vstream","stars":59}
+{"archived":false,"description":"Node.js: extra methods for the fs object like copy(), remove(), mkdirs()","language":"JavaScript","pushed":"2026-04-09T15:17:58Z","repo":"jprichardson/node-fs-extra","stars":9614}
+{"archived":false,"description":"Dead simple Object schema validation","language":"TypeScript","pushed":"2026-04-10T02:10:31Z","repo":"jquense/yup","stars":23687}
+{"archived":false,"description":"An API documentation generator for JavaScript.","language":"JavaScript","pushed":"2026-04-10T09:01:07Z","repo":"jsdoc/jsdoc","stars":15427}
+{"archived":false,"description":"A JavaScript implementation of various web standards, for use with Node.js","language":"JavaScript","pushed":"2026-04-07T03:38:12Z","repo":"jsdom/jsdom","stars":21548}
+{"archived":false,"description":"Ansi charts for nodejs","language":"JavaScript","pushed":"2022-05-16T04:17:48Z","repo":"jstrace/chart","stars":238}
+{"archived":false,"description":"Extract a value from a buffer of json without parsing the whole thing","language":"JavaScript","pushed":"2018-02-10T07:44:07Z","repo":"juliangruber/binary-extract","stars":154}
+{"archived":false,"description":"Run code inside a browser from the command line","language":"JavaScript","pushed":"2024-10-30T02:14:45Z","repo":"juliangruber/browser-run","stars":464}
+{"archived":false,"description":"Streamline Your Node.js Debugging Workflow with Chromium (Chrome, Edge, More) DevTools.","language":"JavaScript","pushed":"2026-04-10T21:12:47Z","repo":"june07/nim","stars":204}
+{"archived":false,"description":"📜🔜🌲 Simple, fast, powerful parser toolkit for JavaScript.","language":"JavaScript","pushed":"2024-11-14T02:34:00Z","repo":"kach/nearley","stars":3737}
+{"archived":false,"description":"The socket manager","language":"TypeScript","pushed":"2026-03-27T19:54:36Z","repo":"kalm/kalm.js","stars":218}
+{"archived":false,"description":"A Reactive Programming library for JavaScript","language":"JavaScript","pushed":"2024-06-20T00:40:05Z","repo":"kefirjs/kefir","stars":1885}
+{"archived":true,"description":"🔀 Cross platform setting of environment scripts","language":"TypeScript","pushed":"2025-11-16T14:11:37Z","repo":"kentcdodds/cross-env","stars":6526}
+{"archived":true,"description":"DEPRECATED - please use https://github.com/Brooooooklyn/snappy. Nodejs bindings to Google's Snappy compression library","language":"JavaScript","pushed":"2021-07-16T05:13:44Z","repo":"kesla/node-snappy","stars":479}
+{"archived":false,"description":"A pipe to browser utility","language":"JavaScript","pushed":"2025-01-31T18:50:26Z","repo":"kessler/node-bcat","stars":347}
+{"archived":false,"description":"The superpowered headless CMS for Node.js — built with GraphQL and React","language":"TypeScript","pushed":"2026-04-10T02:23:24Z","repo":"keystonejs/keystone","stars":9858}
+{"archived":false,"description":"GraphQL query utility for serverside apps","language":"TypeScript","pushed":"2024-12-18T15:26:43Z","repo":"khaosdoctor/gotql","stars":410}
+{"archived":false,"description":"Tasks, boards \u0026 notes for the command-line habitat","language":"JavaScript","pushed":"2025-11-03T15:32:09Z","repo":"klaussinani/taskbook","stars":9299}
+{"archived":false,"description":"A query builder for PostgreSQL, MySQL, CockroachDB, SQL Server, SQLite3 and Oracle, designed to be flexible, portable, and fun to use.","language":"JavaScript","pushed":"2026-04-10T10:06:12Z","repo":"knex/knex","stars":20264}
+{"archived":false,"description":"Expressive middleware for node.js using ES2017 async functions","language":"JavaScript","pushed":"2026-04-08T15:33:08Z","repo":"koajs/koa","stars":35718}
+{"archived":false,"description":"Copy/paste detector for programming source code. ","language":"TypeScript","pushed":"2026-04-10T19:14:56Z","repo":"kucherenko/jscpd","stars":5514}
+{"archived":false,"description":"Hide secrets with invisible characters in plain text securely using passwords 🧙🏻‍♂️⭐","language":"JavaScript","pushed":"2024-10-01T20:19:13Z","repo":"kurolabs/stegcloak","stars":3778}
+{"archived":false,"description":"Node.js framework made by a former @expressjs TC and @koajs team member. Built for @forwardemail, @spamscanner, @breejs, @cabinjs, and @lassjs.","language":"JavaScript","pushed":"2025-11-29T09:38:14Z","repo":"ladjs/lad","stars":2289}
+{"archived":false,"description":"XML to JavaScript object converter.","language":"CoffeeScript","pushed":"2023-07-30T10:41:35Z","repo":"Leonidas-from-XIV/node-xml2js","stars":4967}
+{"archived":true,"description":"Superseded by abstract-level. A wrapper for abstract-leveldown compliant stores, for Node.js and browsers.","language":"JavaScript","pushed":"2024-12-01T21:28:29Z","repo":"Level/levelup","stars":4074}
+{"archived":false,"description":"NodeJS Task List derived from the best! Create beautiful CLI interfaces via easy and logical to implement task lists that feel alive and interactive.","language":"TypeScript","pushed":"2026-04-10T06:35:28Z","repo":"listr2/listr2","stars":655}
+{"archived":false,"description":"expose yourself","language":"JavaScript","pushed":"2025-08-29T16:17:30Z","repo":"localtunnel/localtunnel","stars":22221}
+{"archived":false,"description":"A modern JavaScript utility library delivering modularity, performance, \u0026 extras.","language":"JavaScript","pushed":"2026-04-01T20:43:12Z","repo":"lodash/lodash","stars":61326}
+{"archived":false,"description":"LoopBack makes it easy to build modern API applications that require complex integrations.","language":"TypeScript","pushed":"2026-04-11T02:02:29Z","repo":"loopbackio/loopback-next","stars":5096}
+{"archived":false,"description":"The JavaScript Database, for Node.js, nw.js, electron and the browser","language":"JavaScript","pushed":"2025-05-15T20:08:26Z","repo":"louischatriot/nedb","stars":13558}
+{"archived":false,"description":"High performance Node.js image processing, the fastest module to resize JPEG, PNG, WebP, AVIF and TIFF images. Uses the libvips library.","language":"JavaScript","pushed":"2026-04-10T21:43:21Z","repo":"lovell/sharp","stars":32119}
+{"archived":false,"description":"Limit the execution rate of a function","language":"JavaScript","pushed":"2023-11-29T21:00:44Z","repo":"lpinca/valvelet","stars":38}
+{"archived":false,"description":"🚀 A robust, performance-focused, and full-featured Redis client for Node.js.","language":"TypeScript","pushed":"2026-04-07T12:08:24Z","repo":"luin/ioredis","stars":15229}
+{"message":"Not Found","documentation_url":"https://docs.github.com/rest/repos/repos#get-a-repository","status":"404"}{"repo": "lukechilds/cacheable-request", "error": true}
+{"archived":false,"description":"Drawing in terminal with unicode braille characters","language":"JavaScript","pushed":"2022-10-16T21:40:07Z","repo":"madbence/node-drawille","stars":1026}
+{"archived":false,"description":"Streaming csv parser inspired by binary-csv that aims to be faster than everyone else","language":"JavaScript","pushed":"2026-04-07T23:45:58Z","repo":"mafintosh/csv-parser","stars":1494}
+{"archived":false,"description":"Turn a writable and readable stream into a streams2 duplex stream with support for async initialization and streams1/streams2 input","language":"JavaScript","pushed":"2024-06-14T07:49:56Z","repo":"mafintosh/duplexify","stars":194}
+{"archived":false,"description":"A JSONSchema validator that uses code generation to be extremely fast","language":"JavaScript","pushed":"2022-08-16T16:33:01Z","repo":"mafintosh/is-my-json-valid","stars":966}
+{"archived":false,"description":"Transform stream that lets you peek the first line before deciding how to parse it","language":"JavaScript","pushed":"2023-03-31T11:29:03Z","repo":"mafintosh/peek-stream","stars":58}
+{"archived":false,"description":"torrent-stream + chromecast","language":"JavaScript","pushed":"2018-05-07T23:15:03Z","repo":"mafintosh/peercast","stars":518}
+{"archived":false,"description":"Streaming torrent client for node.js","language":"JavaScript","pushed":"2022-06-19T23:29:59Z","repo":"mafintosh/peerflix","stars":6270}
+{"archived":false,"description":"all of wikipedia on bittorrent","language":"JavaScript","pushed":"2018-02-09T21:48:23Z","repo":"mafintosh/peerwiki","stars":320}
+{"archived":false,"description":"Combine an array of streams into a single duplex stream using pump and duplexify","language":"JavaScript","pushed":"2024-06-14T07:47:20Z","repo":"mafintosh/pumpify","stars":256}
+{"archived":false,"description":"fs bindings for tar-stream","language":"JavaScript","pushed":"2026-03-04T22:55:32Z","repo":"mafintosh/tar-fs","stars":382}
+{"archived":false,"description":"tar-stream is a streaming tar parser and generator.","language":"JavaScript","pushed":"2026-02-28T13:26:28Z","repo":"mafintosh/tar-stream","stars":437}
+{"archived":false,"description":"Mad science p2p pipe across the web using webrtc that uses your Github private/public key for authentication and a signalhub for discovery","language":"JavaScript","pushed":"2020-07-28T21:28:03Z","repo":"mafintosh/webcat","stars":452}
+{"archived":false,"description":"Node is running but you don't know why? why-is-node-running is here to help you.","language":"JavaScript","pushed":"2025-01-08T15:01:13Z","repo":"mafintosh/why-is-node-running","stars":1949}
+{"archived":false,"description":"☕️ TDD with Browserify, Mocha, Headless Chrome and WebDriver","language":"JavaScript","pushed":"2023-12-24T16:13:33Z","repo":"mantoni/mochify.js","stars":347}
+{"archived":false,"description":"Node.js tool for easy binary deployment of C++ addons","language":"JavaScript","pushed":"2026-04-06T18:33:16Z","repo":"mapbox/node-pre-gyp","stars":1147}
+{"archived":false,"description":"Marble.js - functional reactive Node.js framework for building server-side applications, based on TypeScript and RxJS.","language":"TypeScript","pushed":"2025-05-03T09:43:09Z","repo":"marblejs/marble","stars":2149}
+{"archived":false,"description":"Share terminal sessions via SVG and CSS","language":"JavaScript","pushed":"2024-05-01T23:04:21Z","repo":"marionebl/svg-term-cli","stars":4199}
+{"archived":false,"description":"Links recognition library with full unicode support","language":"JavaScript","pushed":"2026-03-26T14:27:31Z","repo":"markdown-it/linkify-it","stars":720}
+{"archived":false,"description":"Markdown parser, done right. 100% CommonMark support, extensions, syntax plugins \u0026 high speed","language":"JavaScript","pushed":"2026-03-26T17:26:45Z","repo":"markdown-it/markdown-it","stars":21278}
+{"archived":false,"description":"SSH tunnels – in any way you want it","language":"JavaScript","pushed":"2017-03-05T21:13:21Z","repo":"markelog/adit","stars":56}
+{"archived":false,"description":"A declarative, HTML-based language that makes building web apps fun","language":"JavaScript","pushed":"2026-04-03T17:29:54Z","repo":"marko-js/marko","stars":14356}
+{"archived":false,"description":"Lightweight simple translation module for node.js / express.js with dynamic json storage. Uses common __('...') syntax in app and templates.","language":"JavaScript","pushed":"2026-03-25T20:14:36Z","repo":"mashpie/i18n-node","stars":3103}
+{"archived":false,"description":"A robust HTML entity encoder/decoder written in JavaScript.","language":"JavaScript","pushed":"2021-12-29T22:20:03Z","repo":"mathiasbynens/he","stars":3628}
+{"archived":false,"description":"zero-dependency JavaScript image manipulation","language":"JavaScript","pushed":"2025-06-14T19:16:32Z","repo":"matmen/ImageScript","stars":673}
+{"archived":false,"description":":books: some best practices for JS modules","language":"JavaScript","pushed":"2018-03-30T15:58:34Z","repo":"mattdesl/module-best-practices","stars":1548}
+{"archived":false,"description":"The next web scraper. See through the \u003chtml\u003e noise.","language":"JavaScript","pushed":"2026-02-16T06:11:14Z","repo":"matthewmueller/x-ray","stars":5903}
+{"archived":false,"description":":snowflake: a short introduction to node.js","language":"JavaScript","pushed":"2020-08-03T14:56:30Z","repo":"maxogden/art-of-node","stars":9880}
+{"archived":false,"description":"a fast newline (or any delimiter) splitter stream - like require('split') but specific for binary data","language":"JavaScript","pushed":"2023-12-03T13:32:08Z","repo":"maxogden/binary-split","stars":79}
+{"archived":false,"description":"ᕙ༼ຈل͜ຈ༽ᕗ","language":"JavaScript","pushed":"2017-05-07T11:19:50Z","repo":"maxogden/cool-ascii-faces","stars":1781}
+{"archived":false,"description":"Embedded JavaScript templates -- http://ejs.co","language":"JavaScript","pushed":"2026-03-14T16:09:53Z","repo":"mde/ejs","stars":8102}
+{"archived":false,"description":"Javascript URL mutation library","language":"JavaScript","pushed":"2023-08-27T10:51:22Z","repo":"medialize/URI.js","stars":6236}
+{"archived":false,"description":"₍˄·͈༝·͈˄₎◞ ̑̑ෆ⃛ (=ↀωↀ=)✧ (^･o･^)ﾉ” cat faces!","language":"JavaScript","pushed":"2015-05-04T04:29:42Z","repo":"melaniecebula/cat-ascii-faces","stars":265}
+{"archived":false,"description":"Meteor, the JavaScript App Platform","language":"JavaScript","pushed":"2026-04-11T02:17:47Z","repo":"meteor/meteor","stars":44783}
+{"archived":false,"description":"Create GraphQL schema and resolvers with TypeScript, using classes and decorators!","language":"TypeScript","pushed":"2026-04-03T12:52:59Z","repo":"MichalLytek/type-graphql","stars":8088}
+{"archived":true,"description":"Build a fake backend by providing the content of JSON files or JavaScript objects through configurable routes.","language":"JavaScript","pushed":"2023-10-20T18:05:56Z","repo":"micromata/http-fake-backend","stars":312}
+{"archived":true,"description":"Tips, tricks, and resources for working with Node.js, and the start of an ongoing conversation on how we can improve the Node.js experience on Microsoft platforms.","language":null,"pushed":"2023-02-12T09:16:18Z","repo":"Microsoft/nodejs-guidelines","stars":2502}
+{"archived":false,"description":"Playwright is a framework for Web Testing and Automation. It allows testing Chromium, Firefox and WebKit with a single API. ","language":"TypeScript","pushed":"2026-04-11T03:07:35Z","repo":"microsoft/playwright","stars":86074}
+{"archived":false,"description":"Slick, declarative command line video editing \u0026 API","language":"TypeScript","pushed":"2025-05-12T07:03:44Z","repo":"mifi/editly","stars":5371}
+{"archived":false,"description":"TypeScript ORM for Node.js based on Data Mapper, Unit of Work and Identity Map patterns. Supports MongoDB, MySQL, MariaDB, MS SQL Server, PostgreSQL and SQLite/libSQL databases.","language":"TypeScript","pushed":"2026-04-10T17:39:33Z","repo":"mikro-orm/mikro-orm","stars":9001}
+{"archived":false,"description":" JavaScript parser / mangler / compressor / beautifier toolkit","language":"JavaScript","pushed":"2024-11-22T08:11:38Z","repo":"mishoo/UglifyJS","stars":13403}
+{"archived":false,"description":"🎨 Beautiful images of your code — from right inside your terminal.","language":"TypeScript","pushed":"2025-11-14T13:08:50Z","repo":"mixn/carbon-now-cli","stars":6003}
+{"archived":false,"description":"MJML: the only framework that makes responsive-email easy","language":"JavaScript","pushed":"2026-04-09T14:24:50Z","repo":"mjmlio/mjml","stars":17990}
+{"archived":false,"description":"Common Database Interface for Node","language":"JavaScript","pushed":"2024-07-07T01:30:00Z","repo":"mlaanderson/database-js","stars":78}
+{"archived":false,"description":"☕️ Classic, reliable, trusted test framework for Node.js and the browser","language":"JavaScript","pushed":"2026-04-08T18:50:51Z","repo":"mochajs/mocha","stars":22880}
+{"archived":false,"description":":rocket: Progressive microservices framework for Node.js","language":"JavaScript","pushed":"2026-03-28T17:03:29Z","repo":"moleculerjs/moleculer","stars":6368}
+{"archived":false,"description":"⏱ A library for working with dates and times in JS","language":"JavaScript","pushed":"2026-03-23T21:39:45Z","repo":"moment/luxon","stars":16382}
+{"archived":false,"description":"The official MongoDB Node.js driver","language":"TypeScript","pushed":"2026-04-10T13:59:48Z","repo":"mongodb/node-mongodb-native","stars":10181}
+{"archived":false,"description":"Barebone MQTT broker that can run on any stream server, the node way","language":"JavaScript","pushed":"2026-03-27T07:39:47Z","repo":"moscajs/aedes","stars":1938}
+{"archived":false,"description":"Loads environment variables from .env for nodejs projects.","language":"JavaScript","pushed":"2026-04-05T18:42:08Z","repo":"motdotla/dotenv","stars":20364}
+{"archived":false,"description":"Modular JavaScript Utilities","language":"JavaScript","pushed":"2023-10-24T22:18:07Z","repo":"mout/mout","stars":1288}
+{"archived":false,"description":"An inter-process and inter-machine lockfile utility that works on a local or network file system.","language":"JavaScript","pushed":"2023-10-25T15:55:02Z","repo":"moxystudio/node-proper-lockfile","stars":273}
+{"archived":false,"description":"A powerful templating engine with inheritance, asynchronous control, and more (jinja2 inspired)","language":"JavaScript","pushed":"2026-02-07T15:11:07Z","repo":"mozilla/nunjucks","stars":8930}
+{"archived":false,"description":"The MQTT client for Node.js and the browser","language":"TypeScript","pushed":"2026-03-27T19:46:28Z","repo":"mqttjs/MQTT.js","stars":9055}
+{"archived":false,"description":"Wow such top. So stats. More better than regular top.","language":"JavaScript","pushed":"2020-10-08T04:58:25Z","repo":"MrRio/vtop","stars":4167}
+{"archived":false,"description":"SSH2 client and server modules written in pure JavaScript for node.js","language":"JavaScript","pushed":"2025-08-20T17:44:38Z","repo":"mscdex/ssh2","stars":5763}
+{"archived":false,"description":"A pure node.js JavaScript Client implementing the MySQL protocol.","language":"JavaScript","pushed":"2024-06-25T12:03:39Z","repo":"mysqljs/mysql","stars":18685}
+{"archived":false,"description":"A framework for building compiled Node.js add-ons in Rust via Node-API","language":"Rust","pushed":"2026-04-11T01:42:11Z","repo":"napi-rs/napi-rs","stars":7664}
+{"archived":false,"description":"Validate XML, Parse XML and Build XML rapidly without C/C++ based libraries and no callback.","language":"JavaScript","pushed":"2026-04-10T08:51:09Z","repo":"NaturalIntelligence/fast-xml-parser","stars":3073}
+{"archived":false,"description":"general natural language facilities for node","language":"JavaScript","pushed":"2026-02-22T21:53:54Z","repo":"NaturalNode/natural","stars":10872}
+{"archived":false,"description":"Rust bindings for writing safe and fast native Node.js modules.","language":"Rust","pushed":"2026-04-07T16:13:37Z","repo":"neon-bindings/neon","stars":8402}
+{"archived":false,"description":"A progressive Node.js framework for building efficient, scalable, and enterprise-grade server-side applications with TypeScript/JavaScript 🚀","language":"TypeScript","pushed":"2026-04-11T00:55:06Z","repo":"nestjs/nest","stars":75147}
+{"archived":false,"description":":white_check_mark: Easy property validation for JavaScript, Node and Express.","language":"JavaScript","pushed":"2019-12-04T20:59:40Z","repo":"nettofarah/property-validator","stars":158}
+{"archived":false,"description":"Integrated end-to-end testing framework written in Node.js and using W3C Webdriver API. Developed at @browserstack","language":"JavaScript","pushed":"2026-04-05T19:49:09Z","repo":"nightwatchjs/nightwatch","stars":11943}
+{"archived":false,"description":"HTTP server mocking and expectations library for Node.js","language":"JavaScript","pushed":"2026-04-05T20:18:39Z","repo":"nock/nock","stars":13100}
+{"archived":false,"description":"Node.js based forum software built for the modern web","language":"JavaScript","pushed":"2026-04-11T09:33:35Z","repo":"NodeBB/NodeBB","stars":15042}
+{"archived":false,"description":"human friendly i18n for javascript (node.js + browser)","language":"JavaScript","pushed":"2023-06-19T03:44:03Z","repo":"nodeca/babelfish","stars":263}
+{"archived":false,"description":"Create HTML snippets/embeds from URLs using info from oEmbed, Open Graph, meta tags.","language":"JavaScript","pushed":"2023-06-19T02:48:28Z","repo":"nodeca/embedza","stars":67}
+{"archived":false,"description":"Redis-backed task queue engine with advanced task control and eventual consistency","language":"JavaScript","pushed":"2023-06-19T03:04:01Z","repo":"nodeca/idoit","stars":79}
+{"archived":false,"description":"JavaScript YAML parser and dumper. Very fast.","language":"JavaScript","pushed":"2026-03-26T16:59:20Z","repo":"nodeca/js-yaml","stars":6561}
+{"archived":false,"description":"WebAssembly wrapper to simplify fast math coding","language":"JavaScript","pushed":"2021-05-11T14:16:11Z","repo":"nodeca/multimath","stars":72}
+{"archived":false,"description":"Simple client testing from your scripts","language":"JavaScript","pushed":"2021-12-08T17:05:21Z","repo":"nodeca/navit","stars":48}
+{"archived":false,"description":"high speed zlib port to javascript, works in browser \u0026 node.js","language":"JavaScript","pushed":"2024-06-27T10:02:41Z","repo":"nodeca/pako","stars":6055}
+{"archived":false,"description":"Resize image in browser with high quality and high speed","language":"JavaScript","pushed":"2023-06-28T06:21:47Z","repo":"nodeca/pica","stars":4039}
+{"archived":false,"description":"Memoize promise-returning functions. Includes cache expire and prefetch.","language":"JavaScript","pushed":"2018-12-05T12:15:57Z","repo":"nodeca/promise-memoize","stars":62}
+{"archived":false,"description":"Replace all homoglyphs with base characters. Useful to detect similar strings.","language":"JavaScript","pushed":"2020-05-18T05:06:56Z","repo":"nodeca/unhomoglyph","stars":45}
+{"archived":false,"description":"Short links expander for node.js","language":"JavaScript","pushed":"2023-06-19T01:54:11Z","repo":"nodeca/url-unshort","stars":122}
+{"archived":false,"description":"A light-weight module that brings the Fetch API to Node.js","language":"JavaScript","pushed":"2026-03-21T22:04:39Z","repo":"node-fetch/node-fetch","stars":8860}
+{"archived":false,"description":"Native Node bindings to Git.","language":"JavaScript","pushed":"2026-04-01T03:16:17Z","repo":"nodegit/nodegit","stars":5749}
+{"archived":false,"description":"An lldb plugin for Node.js and V8, which enables inspection of JavaScript states for insights into Node.js processes and their core dumps.","language":"C++","pushed":"2024-12-21T09:35:20Z","repo":"nodejs/llnode","stars":1166}
+{"archived":false,"description":"Node.js JavaScript runtime ✨🐢🚀✨","language":"JavaScript","pushed":"2026-04-11T10:37:30Z","repo":"nodejs/node","stars":116674}
+{"archived":false,"description":"Node-core streams for userland","language":"JavaScript","pushed":"2025-01-07T10:06:21Z","repo":"nodejs/readable-stream","stars":1045}
+{"archived":false,"description":"An HTTP/1.1 client, written from scratch for Node.js","language":"JavaScript","pushed":"2026-04-11T00:08:56Z","repo":"nodejs/undici","stars":7503}
+{"archived":false,"description":"✉️ Send e-mails with Node.JS – easy as cake!","language":"JavaScript","pushed":"2026-04-07T15:20:27Z","repo":"nodemailer/nodemailer","stars":17534}
+{"archived":false,"description":"Manage your app's Node.js environment","language":"Shell","pushed":"2026-03-27T17:18:06Z","repo":"nodenv/nodenv","stars":2370}
+{"archived":false,"description":"Lightweight operating system using Node.js as userspace","language":"Shell","pushed":"2023-03-07T09:36:32Z","repo":"NodeOS/NodeOS","stars":7345}
+{"archived":false,"description":"Improved USB library for Node.js","language":"TypeScript","pushed":"2026-03-30T12:50:06Z","repo":"node-usb/node-usb","stars":1647}
+{"archived":true,"description":"Like `fs.createWriteStream(...)`, but atomic.","language":"JavaScript","pushed":"2022-02-14T17:03:34Z","repo":"npm/fs-write-stream-atomic","stars":50}
+{"archived":false,"description":"The semver parser for node (the one npm uses)","language":"JavaScript","pushed":"2026-03-26T16:53:13Z","repo":"npm/node-semver","stars":5416}
+{"archived":false,"description":"Flexible and fluent interface for searching the file system","language":"JavaScript","pushed":"2022-06-26T09:10:05Z","repo":"nspragg/filehound","stars":222}
+{"archived":false,"description":"Native UI testing / controlling with node","language":"TypeScript","pushed":"2024-05-01T19:50:22Z","repo":"nut-tree/nut.js","stars":2799}
+{"archived":false,"description":"The Full-Stack Vue Framework.","language":"TypeScript","pushed":"2026-04-11T10:07:44Z","repo":"nuxt/nuxt.js","stars":60000}
+{"archived":false,"description":"CLI for generating, building, and releasing oclif CLIs. Built by Salesforce.","language":"TypeScript","pushed":"2026-04-07T13:31:45Z","repo":"oclif/oclif","stars":9477}
+{"archived":false,"description":"Node.js Desktop Automation. ","language":"C","pushed":"2026-03-26T06:49:07Z","repo":"octalmage/robotjs","stars":12727}
+{"archived":false,"description":"An in memory postgres DB instance for your unit tests","language":"TypeScript","pushed":"2026-02-26T11:33:42Z","repo":"oguimbal/pg-mem","stars":2312}
+{"archived":false,"description":"An image processing library written entirely in JavaScript for Node, with zero external or native dependencies.","language":"TypeScript","pushed":"2026-04-07T17:55:29Z","repo":"oliver-moran/jimp","stars":14596}
+{"archived":false,"description":"Premium Queue package for handling distributed jobs and messages in NodeJS.","language":"JavaScript","pushed":"2026-04-07T06:05:50Z","repo":"OptimalBits/bull","stars":16243}
+{"archived":false,"description":"The zero configuration build tool for the web. 📦🚀","language":"JavaScript","pushed":"2026-04-05T18:11:35Z","repo":"parcel-bundler/parcel","stars":44041}
+{"archived":false,"description":"An extremely fast CSS parser, transformer, bundler, and minifier written in Rust.","language":"Rust","pushed":"2026-03-12T19:03:05Z","repo":"parcel-bundler/parcel-css","stars":7500}
+{"archived":false,"description":"FTP client for Node.js, supports FTPS over TLS, passive mode over IPv6, async/await, and Typescript.","language":"TypeScript","pushed":"2026-04-09T21:21:38Z","repo":"patrickjuchli/basic-ftp","stars":723}
+{"archived":false,"description":"Minimal and efficient cross-platform file watching library","language":"TypeScript","pushed":"2025-12-11T19:26:25Z","repo":"paulmillr/chokidar","stars":12064}
+{"archived":true,"description":"Translations with speech synthesis in your terminal as a node package","language":"JavaScript","pushed":"2017-03-20T15:13:48Z","repo":"pawurb/normit","stars":242}
+{"archived":false,"description":"PEG.js: Parser generator for JavaScript","language":"JavaScript","pushed":"2021-11-08T18:35:39Z","repo":"pegjs/pegjs","stars":4913}
+{"archived":false,"description":"OpenCV Bindings for node.js","language":"C++","pushed":"2024-07-09T08:27:12Z","repo":"peterbraden/node-opencv","stars":4393}
+{"archived":false,"description":null,"language":"JavaScript","pushed":"2019-09-13T10:28:56Z","repo":"petruisfan/node-supervisor","stars":3735}
+{"archived":true,"description":"Make ORMs great again!","language":"JavaScript","pushed":"2021-06-28T18:38:22Z","repo":"PhilWaldmann/openrecord","stars":485}
+{"archived":false,"description":"A fast and robust web server and application server for Ruby, Python and Node.js","language":"C++","pushed":"2026-04-07T19:41:15Z","repo":"phusion/passenger","stars":5075}
+{"archived":false,"description":"Generate a slug – transliteration with a lot of options","language":"JavaScript","pushed":"2024-03-15T00:57:14Z","repo":"pid/speakingurl","stars":1118}
+{"archived":false,"description":"Safely serialize a value to JSON without unintended loss of data or going into an infinite loop due to circular references.","language":"TypeScript","pushed":"2026-04-11T11:22:24Z","repo":"pigulla/json-strictify","stars":21}
+{"archived":false,"description":"🌲 super fast, all natural json logger","language":"JavaScript","pushed":"2026-04-02T14:00:16Z","repo":"pinojs/pino","stars":17645}
+{"archived":false,"description":"🌱 The ultimate solution for populating your MongoDB database.","language":"TypeScript","pushed":"2025-04-24T18:55:10Z","repo":"pkosiec/mongo-seeding","stars":563}
+{"archived":false,"description":"Power Assert in JavaScript. Provides descriptive assertion messages through standard assert interface. No API is the best API.","language":"JavaScript","pushed":"2023-01-07T03:57:23Z","repo":"power-assert-js/power-assert","stars":2811}
+{"archived":false,"description":":zap: Primus, the creator god of the transformers \u0026 an abstraction layer for real-time to prevent module lock-in.","language":"JavaScript","pushed":"2023-11-06T18:13:11Z","repo":"primus/primus","stars":4471}
+{"archived":false,"description":"Next-generation ORM for Node.js \u0026 TypeScript | PostgreSQL, MySQL, MariaDB, SQL Server, SQLite, MongoDB and CockroachDB","language":"TypeScript","pushed":"2026-04-10T09:39:09Z","repo":"prisma/prisma","stars":45740}
+{"archived":false,"description":"Protocol Buffers for JavaScript \u0026 TypeScript.","language":"JavaScript","pushed":"2026-04-08T19:04:47Z","repo":"protobufjs/protobuf.js","stars":10517}
+{"archived":false,"description":"Pug – robust, elegant, feature rich template engine for Node.js","language":"JavaScript","pushed":"2026-03-13T15:12:43Z","repo":"pugjs/pug","stars":21841}
+{"archived":false,"description":"JavaScript API for Chrome and Firefox","language":"TypeScript","pushed":"2026-04-10T16:51:09Z","repo":"puppeteer/puppeteer","stars":94080}
+{"archived":false,"description":":heavy_check_mark: Mock data for your prototypes and demos. Remote deployments to Zeit now.","language":"TypeScript","pushed":"2021-05-31T08:46:08Z","repo":"Raathigesh/Atmo","stars":811}
+{"archived":false,"description":":ram: Practical functional Javascript","language":"JavaScript","pushed":"2026-01-22T07:16:29Z","repo":"ramda/ramda","stars":24091}
+{"archived":false,"description":"A reactive programming library for JavaScript","language":"TypeScript","pushed":"2025-02-23T20:54:32Z","repo":"reactivex/rxjs","stars":31652}
+{"archived":false,"description":"A reactive programming library for JavaScript","language":"TypeScript","pushed":"2025-02-23T20:54:32Z","repo":"ReactiveX/RxJS","stars":31652}
+{"archived":false,"description":"markdown processor powered by plugins part of the @unifiedjs collective","language":"JavaScript","pushed":"2026-02-24T19:08:59Z","repo":"remarkjs/remark","stars":8824}
+{"archived":false,"description":"Monitor for any changes in your node.js application and automatically restart the server - perfect for development","language":"JavaScript","pushed":"2026-04-04T22:54:15Z","repo":"remy/nodemon","stars":26693}
+{"archived":false,"description":"The future of Node.js REST development","language":"JavaScript","pushed":"2024-09-19T11:43:29Z","repo":"restify/node-restify","stars":10700}
+{"archived":false,"description":"natural language processor powered by plugins part of the @unifiedjs collective","language":"JavaScript","pushed":"2025-02-04T14:37:32Z","repo":"retextjs/retext","stars":2431}
+{"archived":false,"description":":computer: Netcat client and server modules written in pure Javascript for Node.js.","language":"JavaScript","pushed":"2022-03-28T12:00:22Z","repo":"roccomuso/netcat","stars":436}
+{"archived":false,"description":"Next-generation ES module bundler","language":"JavaScript","pushed":"2026-04-11T05:37:09Z","repo":"rollup/rollup","stars":26266}
+{"archived":false,"description":"Pretty diff to html javascript cli (diff2html-cli)","language":"TypeScript","pushed":"2026-02-06T09:07:12Z","repo":"rtfpessoa/diff2html-cli","stars":590}
+{"archived":false,"description":"The up-to-date and reliable Google's libphonenumber package for node.js.","language":"JavaScript","pushed":"2026-04-09T09:41:00Z","repo":"ruimarinho/google-libphonenumber","stars":1479}
+{"archived":false,"description":"JavaScript Robotics and IoT programming framework, developed at Bocoup.","language":"JavaScript","pushed":"2023-10-24T22:18:06Z","repo":"rwaldron/johnny-five","stars":13408}
+{"archived":false,"description":"Mobile icon generator","language":"JavaScript","pushed":"2021-02-10T01:39:14Z","repo":"samverschueren/mobicon-cli","stars":119}
+{"archived":false,"description":"Mobile app splash screen generator","language":"JavaScript","pushed":"2017-03-30T19:09:19Z","repo":"samverschueren/mobisplash-cli","stars":72}
+{"archived":false,"description":"Format a date with timezone","language":"JavaScript","pushed":"2016-10-06T10:02:40Z","repo":"samverschueren/tz-format","stars":12}
+{"archived":false,"description":"A collection of common interactive command line user interfaces.","language":"TypeScript","pushed":"2026-04-09T19:03:16Z","repo":"SBoudrias/Inquirer.js","stars":21502}
+{"archived":false,"description":"Schema-Inspector is a simple JavaScript object sanitization and validation module.","language":"JavaScript","pushed":"2024-12-03T23:52:58Z","repo":"schema-inspector/schema-inspector","stars":503}
+{"archived":false,"description":"🚀 Fast and simple Node.js version manager, built in Rust","language":"Rust","pushed":"2026-04-11T01:07:20Z","repo":"Schniz/fnm","stars":25000}
+{"archived":false,"description":"📈 Multidimensional arrays for JavaScript","language":"JavaScript","pushed":"2022-01-29T18:00:01Z","repo":"scijs/ndarray","stars":1246}
+{"archived":false,"description":"A microservices toolkit for Node.js.","language":"JavaScript","pushed":"2026-03-07T12:08:51Z","repo":"senecajs/seneca","stars":3956}
+{"archived":false,"description":"Feature-rich ORM for modern Node.js and TypeScript, it supports PostgreSQL (with JSON and JSONB support), MySQL, MariaDB, SQLite, MS SQL Server, Snowflake, Oracle DB, DB2 and DB2 for IBM i.","language":"TypeScript","pushed":"2026-04-08T19:12:22Z","repo":"sequelize/sequelize","stars":30350}
+{"archived":false,"description":"Access serial ports with JavaScript. Linux, OSX and Windows. Welcome your robotic JavaScript overlords. Better yet, program them!","language":"TypeScript","pushed":"2026-01-17T04:34:43Z","repo":"serialport/node-serialport","stars":5989}
+{"archived":false,"description":"thetool is a CLI tool to capture different cpu, memory and other profiles for your node app in Chrome DevTools friendly format","language":"JavaScript","pushed":"2023-01-03T21:45:35Z","repo":"sfninja/thetool","stars":223}
+{"archived":false,"description":"Job scheduler and rate limiter, supports Clustering","language":"JavaScript","pushed":"2024-01-23T06:09:35Z","repo":"SGrondin/bottleneck","stars":1982}
+{"archived":false,"description":"Columnated lists for the CLI. Unicode and ANSI safe.","language":"JavaScript","pushed":"2021-11-03T05:40:01Z","repo":"shannonmoeller/cli-columns","stars":37}
+{"archived":false,"description":"All-in-one development toolkit for creating node modules with Jest, Prettier, ESLint, and Standard","language":"JavaScript","pushed":"2023-01-06T02:09:42Z","repo":"sheerun/modern-node","stars":242}
+{"archived":false,"description":"📗 SheetJS Spreadsheet Data Toolkit -- New home https://git.sheetjs.com/SheetJS/sheetjs","language":null,"pushed":"2024-04-18T08:06:46Z","repo":"SheetJS/sheetjs","stars":36238}
+{"archived":false,"description":":shell: Portable Unix shell commands for Node.js","language":"JavaScript","pushed":"2026-04-10T03:25:10Z","repo":"shelljs/shelljs","stars":14412}
+{"archived":false,"description":"Install dependencies as you code ⚡️","language":"JavaScript","pushed":"2021-05-17T11:55:23Z","repo":"siddharthkp/auto-install","stars":1203}
+{"archived":false,"description":"Find out which of your dependencies are slowing you down 🐢","language":"JavaScript","pushed":"2023-07-24T21:35:43Z","repo":"siddharthkp/cost-of-modules","stars":2862}
+{"archived":false,"description":"The most powerful data validation library for JS","language":"JavaScript","pushed":"2026-03-30T17:24:52Z","repo":"sideway/joi","stars":21198}
+{"archived":false,"description":"♻️ Get, set, or delete nested properties of process.env using a dot path","language":"JavaScript","pushed":"2021-07-19T04:16:09Z","repo":"simonepri/env-dot-prop","stars":32}
+{"archived":false,"description":"🔒Unified API for password hashing algorithms","language":"JavaScript","pushed":"2021-04-28T21:38:24Z","repo":"simonepri/upash","stars":540}
+{"archived":false,"description":"OAuth Proxy","language":"JavaScript","pushed":"2025-02-04T17:27:33Z","repo":"simov/grant","stars":4172}
+{"archived":false,"description":"REST API Client Library","language":"JavaScript","pushed":"2024-01-15T17:48:35Z","repo":"simov/purest","stars":563}
+{"archived":false,"description":"ANSI escape codes for manipulating the terminal","language":"JavaScript","pushed":"2026-02-04T16:21:10Z","repo":"sindresorhus/ansi-escapes","stars":544}
+{"archived":false,"description":"Awesome npm resources and tips","language":null,"pushed":"2025-11-12T18:12:48Z","repo":"sindresorhus/awesome-npm","stars":4681}
+{"archived":false,"description":"Awesome Observable related stuff - An Observable is a collection that arrives over time.","language":null,"pushed":"2021-10-13T14:23:18Z","repo":"sindresorhus/awesome-observables","stars":348}
+{"archived":false,"description":"Create boxes in the terminal","language":"JavaScript","pushed":"2025-09-19T03:55:38Z","repo":"sindresorhus/boxen","stars":1659}
+{"archived":false,"description":"Convert a dash/dot/underscore/space separated string to camelCase: foo-bar → fooBar","language":"JavaScript","pushed":"2025-11-10T20:38:46Z","repo":"sindresorhus/camelcase","stars":698}
+{"archived":false,"description":":cat2: Get popular cat names","language":"JavaScript","pushed":"2024-04-30T10:52:20Z","repo":"sindresorhus/cat-names","stars":275}
+{"archived":false,"description":"Toggle the CLI cursor","language":"JavaScript","pushed":"2024-07-26T14:02:28Z","repo":"sindresorhus/cli-cursor","stars":113}
+{"archived":false,"description":"Access the system clipboard (copy/paste)","language":"JavaScript","pushed":"2026-02-03T12:44:32Z","repo":"sindresorhus/clipboard-cli","stars":505}
+{"archived":false,"description":"Access the system clipboard (copy/paste)","language":"JavaScript","pushed":"2026-02-24T16:06:39Z","repo":"sindresorhus/clipboardy","stars":1964}
+{"archived":false,"description":"Truncate a string to a specific width in the terminal","language":"JavaScript","pushed":"2026-04-04T13:38:12Z","repo":"sindresorhus/cli-truncate","stars":88}
+{"archived":false,"description":"Simple config handling for your app or module","language":"TypeScript","pushed":"2026-03-11T17:59:43Z","repo":"sindresorhus/conf","stars":1336}
+{"archived":false,"description":":cow: ASCII cows","language":"JavaScript","pushed":"2024-07-26T23:52:36Z","repo":"sindresorhus/cows","stars":431}
+{"archived":false,"description":"Copy files","language":"JavaScript","pushed":"2026-02-12T13:47:48Z","repo":"sindresorhus/cpy","stars":435}
+{"archived":false,"description":"Tiny hashing module that uses the native crypto API in Node.js and the browser","language":"JavaScript","pushed":"2025-12-10T14:19:30Z","repo":"sindresorhus/crypto-hash","stars":645}
+{"archived":false,"description":"Control the macOS dark mode from the command-line","language":"Swift","pushed":"2025-09-11T10:20:06Z","repo":"sindresorhus/dark-mode","stars":681}
+{"archived":false,"description":"Delete files and directories","language":"JavaScript","pushed":"2025-09-18T14:47:10Z","repo":"sindresorhus/del","stars":1345}
+{"archived":false,"description":"Delay a promise a specified amount of time","language":"JavaScript","pushed":"2025-10-31T16:34:15Z","repo":"sindresorhus/delay","stars":627}
+{"archived":false,"description":"Detect the indentation of code","language":"JavaScript","pushed":"2026-02-02T19:22:11Z","repo":"sindresorhus/detect-indent","stars":199}
+{"archived":false,"description":":dog: Get popular dog names","language":"JavaScript","pushed":"2025-03-24T07:39:33Z","repo":"sindresorhus/dog-names","stars":126}
+{"archived":false,"description":"Get, set, or delete a property from a nested object using a dot path","language":"JavaScript","pushed":"2025-10-05T12:00:56Z","repo":"sindresorhus/dot-prop","stars":867}
+{"archived":false,"description":"Empty the trash","language":"JavaScript","pushed":"2021-10-14T12:11:26Z","repo":"sindresorhus/empty-trash","stars":135}
+{"archived":false,"description":"Escape RegExp special characters","language":"JavaScript","pushed":"2025-05-06T15:42:08Z","repo":"sindresorhus/escape-string-regexp","stars":598}
+{"archived":false,"description":"Process execution for humans","language":"JavaScript","pushed":"2026-01-29T03:54:57Z","repo":"sindresorhus/execa","stars":7482}
+{"archived":false,"description":"Unicode symbols with fallbacks for older terminals","language":"JavaScript","pushed":"2024-10-28T05:10:30Z","repo":"sindresorhus/figures","stars":623}
+{"archived":false,"description":"Convert a string to a valid safe filename","language":"JavaScript","pushed":"2025-11-05T15:54:05Z","repo":"sindresorhus/filenamify","stars":517}
+{"archived":false,"description":"Detect the file type of a file, stream, or data","language":"JavaScript","pushed":"2026-04-09T15:24:14Z","repo":"sindresorhus/file-type","stars":4264}
+{"archived":false,"description":"Find a file or directory by walking up parent directories","language":"JavaScript","pushed":"2025-09-16T01:16:42Z","repo":"sindresorhus/find-up","stars":638}
+{"archived":false,"description":"Transform the first chunk in a stream","language":"JavaScript","pushed":"2023-11-01T14:33:15Z","repo":"sindresorhus/first-chunk-stream","stars":28}
+{"archived":false,"description":"Fabulously kill processes. Cross-platform.","language":"JavaScript","pushed":"2025-11-09T09:58:29Z","repo":"sindresorhus/fkill-cli","stars":6982}
+{"archived":true,"description":"Scaffold out a node module","language":"JavaScript","pushed":"2024-05-02T14:34:36Z","repo":"sindresorhus/generator-nm","stars":739}
+{"archived":false,"description":"Get an available TCP port","language":"JavaScript","pushed":"2026-03-22T05:52:48Z","repo":"sindresorhus/get-port","stars":925}
+{"archived":false,"description":"Get stdin as a string or buffer","language":"JavaScript","pushed":"2026-02-05T09:11:21Z","repo":"sindresorhus/get-stdin","stars":347}
+{"archived":false,"description":"Get a stream as a string, Buffer, ArrayBuffer or array","language":"JavaScript","pushed":"2024-10-28T05:15:33Z","repo":"sindresorhus/get-stream","stars":359}
+{"archived":false,"description":"Open the GitHub page of the given or current directory repo","language":"JavaScript","pushed":"2024-07-21T11:57:59Z","repo":"sindresorhus/gh-home","stars":195}
+{"archived":false,"description":"User-friendly glob matching","language":"JavaScript","pushed":"2026-03-27T17:29:28Z","repo":"sindresorhus/globby","stars":2639}
+{"archived":false,"description":"🌐 Human-friendly and powerful HTTP request library for Node.js","language":"TypeScript","pushed":"2026-04-08T16:15:33Z","repo":"sindresorhus/got","stars":14897}
+{"archived":false,"description":"Hashing made simple. Get the hash of a buffer/string/stream/file.","language":"JavaScript","pushed":"2025-09-12T17:09:06Z","repo":"sindresorhus/hasha","stars":959}
+{"archived":false,"description":"Hook and modify stdout and stderr","language":"JavaScript","pushed":"2025-09-09T19:53:26Z","repo":"sindresorhus/hook-std","stars":57}
+{"archived":false,"description":"Humanize a URL: https://sindresorhus.com → sindresorhus.com","language":"JavaScript","pushed":"2022-07-09T03:59:43Z","repo":"sindresorhus/humanize-url","stars":252}
+{"archived":false,"description":"Get the dimensions of an image","language":"JavaScript","pushed":"2025-09-08T12:20:59Z","repo":"sindresorhus/image-dimensions","stars":580}
+{"archived":false,"description":"Detect the image type of a Buffer/Uint8Array","language":"JavaScript","pushed":"2026-03-24T12:21:04Z","repo":"sindresorhus/image-type","stars":422}
+{"archived":false,"description":"Indent each line in a string","language":"JavaScript","pushed":"2022-06-05T07:44:39Z","repo":"sindresorhus/indent-string","stars":116}
+{"archived":false,"description":"Convert a string/promise/array/iterable/asynciterable/buffer/typedarray/arraybuffer/object into a stream","language":"JavaScript","pushed":"2026-02-02T07:45:36Z","repo":"sindresorhus/into-stream","stars":214}
+{"archived":false,"description":"Get your public IP address","language":"JavaScript","pushed":"2025-09-15T00:10:09Z","repo":"sindresorhus/ipify","stars":286}
+{"archived":false,"description":"Type check values","language":"TypeScript","pushed":"2026-04-09T15:11:23Z","repo":"sindresorhus/is","stars":1774}
+{"archived":false,"description":"Check if the internet connection is up","language":"JavaScript","pushed":"2025-11-15T09:12:15Z","repo":"sindresorhus/is-online","stars":1363}
+{"archived":false,"description":"Check whether a website is up or down","language":"JavaScript","pushed":"2021-09-18T18:33:14Z","repo":"sindresorhus/is-up","stars":389}
+{"archived":true,"description":"Use Ky in both Node.js and browsers","language":"JavaScript","pushed":"2026-03-28T06:21:57Z","repo":"sindresorhus/ky-universal","stars":676}
+{"archived":false,"description":"Measure the difference between two strings with the fastest JS implementation of the Levenshtein distance algorithm","language":"JavaScript","pushed":"2025-09-11T12:27:54Z","repo":"sindresorhus/leven","stars":734}
+{"archived":false,"description":"Read and parse a JSON file","language":"JavaScript","pushed":"2023-05-17T10:53:06Z","repo":"sindresorhus/load-json-file","stars":248}
+{"archived":false,"description":"Colored symbols for various log levels","language":"JavaScript","pushed":"2025-05-21T13:47:41Z","repo":"sindresorhus/log-symbols","stars":769}
+{"archived":false,"description":"Log by overwriting the previous output in the terminal. Useful for rendering progress bars, animations, etc.","language":"JavaScript","pushed":"2026-04-05T07:47:52Z","repo":"sindresorhus/log-update","stars":1147}
+{"archived":false,"description":"Simple wildcard matching","language":"JavaScript","pushed":"2025-09-15T19:45:14Z","repo":"sindresorhus/matcher","stars":541}
+{"archived":false,"description":"Clamp a number","language":"JavaScript","pushed":"2025-07-12T14:43:45Z","repo":"sindresorhus/math-clamp","stars":17}
+{"archived":false,"description":"Memoize functions - an optimization technique used to speed up consecutive function calls by caching the result of calls with identical input","language":"TypeScript","pushed":"2026-03-19T08:21:06Z","repo":"sindresorhus/mem","stars":1152}
+{"archived":false,"description":"🐈 CLI app helper","language":"JavaScript","pushed":"2026-02-20T10:30:43Z","repo":"sindresorhus/meow","stars":3704}
+{"archived":false,"description":"Move a file, directory, or symlink - Even works across devices","language":"JavaScript","pushed":"2026-01-25T08:43:08Z","repo":"sindresorhus/move-file","stars":207}
+{"archived":false,"description":"Fast CSV parser","language":"JavaScript","pushed":"2023-06-21T00:27:07Z","repo":"sindresorhus/neat-csv","stars":327}
+{"archived":false,"description":"Boilerplate to kickstart creating a Node.js module","language":"JavaScript","pushed":"2024-08-24T11:39:49Z","repo":"sindresorhus/node-module-boilerplate","stars":744}
+{"archived":false,"description":"Normalize a URL","language":"JavaScript","pushed":"2026-02-19T21:06:38Z","repo":"sindresorhus/normalize-url","stars":871}
+{"archived":false,"description":"A better `npm publish`","language":"JavaScript","pushed":"2026-04-04T16:41:24Z","repo":"sindresorhus/np","stars":7683}
+{"archived":false,"description":"Open the npm page, Yarn page, or GitHub repo of a package","language":"JavaScript","pushed":"2024-07-25T18:28:26Z","repo":"sindresorhus/npm-home","stars":201}
+{"archived":false,"description":"Check whether a package or organization name is available on npm","language":"JavaScript","pushed":"2026-02-02T16:02:11Z","repo":"sindresorhus/npm-name","stars":173}
+{"archived":false,"description":"Convert an Observable to a Promise","language":"JavaScript","pushed":"2023-11-01T09:48:57Z","repo":"sindresorhus/observable-to-promise","stars":51}
+{"archived":false,"description":"Ensure a function is only called once","language":"JavaScript","pushed":"2026-02-02T07:42:23Z","repo":"sindresorhus/onetime","stars":165}
+{"archived":false,"description":"Open stuff like URLs, files, executables. Cross-platform.","language":"JavaScript","pushed":"2025-11-15T08:22:56Z","repo":"sindresorhus/open","stars":3466}
+{"archived":false,"description":"Elegant terminal spinner","language":"JavaScript","pushed":"2026-02-22T17:45:27Z","repo":"sindresorhus/ora","stars":9659}
+{"archived":false,"description":"Get the system locale","language":"JavaScript","pushed":"2026-02-04T17:06:08Z","repo":"sindresorhus/os-locale","stars":228}
+{"archived":false,"description":"Find the root directory of a Node.js project or npm package","language":"JavaScript","pushed":"2026-02-01T14:52:22Z","repo":"sindresorhus/package-directory","stars":252}
+{"archived":false,"description":"Pad each line in a stream","language":"JavaScript","pushed":"2023-08-31T15:49:03Z","repo":"sindresorhus/pad-stream","stars":12}
+{"archived":false,"description":"Capture website screenshots","language":"TypeScript","pushed":"2025-09-09T21:28:45Z","repo":"sindresorhus/pageres","stars":9741}
+{"archived":false,"description":"Parse JSON with more helpful errors","language":"JavaScript","pushed":"2025-04-09T09:02:05Z","repo":"sindresorhus/parse-json","stars":371}
+{"archived":false,"description":"Promisify a callback-style function","language":"JavaScript","pushed":"2022-09-12T10:11:33Z","repo":"sindresorhus/pify","stars":1510}
+{"archived":false,"description":"Map over promises concurrently","language":"JavaScript","pushed":"2026-03-22T08:22:12Z","repo":"sindresorhus/p-map","stars":1488}
+{"archived":false,"description":"Convert bytes to a human readable string: 1337 → 1.34 kB","language":"JavaScript","pushed":"2025-09-21T07:36:57Z","repo":"sindresorhus/pretty-bytes","stars":1294}
+{"archived":false,"description":"Convert milliseconds to a human readable string: `1337000000` → `15d 11h 23m 20s`","language":"JavaScript","pushed":"2025-11-02T05:48:43Z","repo":"sindresorhus/pretty-ms","stars":1210}
+{"archived":false,"description":"Need a JavaScript module or looking for ideas? Welcome ✨","language":null,"pushed":"2021-01-24T06:05:56Z","repo":"sindresorhus/project-ideas","stars":537}
+{"archived":false,"description":"Promise packages, patterns, chat, and tutorials","language":null,"pushed":"2024-04-25T09:36:15Z","repo":"sindresorhus/promise-fun","stars":5132}
+{"archived":false,"description":"Get your public IP address - very fast!","language":"JavaScript","pushed":"2025-09-21T13:22:20Z","repo":"sindresorhus/public-ip","stars":1061}
+{"archived":false,"description":"Generate a random float","language":"JavaScript","pushed":"2021-04-18T13:22:22Z","repo":"sindresorhus/random-float","stars":37}
+{"archived":false,"description":"Generate a random integer","language":"JavaScript","pushed":"2025-09-15T12:06:46Z","repo":"sindresorhus/random-int","stars":89}
+{"archived":false,"description":"Round a number to a specific number of decimal places: 1.234 → 1.2","language":"JavaScript","pushed":"2025-09-17T08:46:51Z","repo":"sindresorhus/round-to","stars":159}
+{"archived":false,"description":"Generate sparklines ▁▂▃▅▂▇","language":"JavaScript","pushed":"2025-09-10T08:35:43Z","repo":"sindresorhus/sparkly","stars":432}
+{"archived":false,"description":"Test your internet connection speed and ping using speedtest.net from the CLI","language":"JavaScript","pushed":"2021-12-03T20:17:58Z","repo":"sindresorhus/speed-test","stars":3948}
+{"archived":false,"description":"Remove or replace part of a string like Array#splice","language":"JavaScript","pushed":"2021-04-15T06:05:17Z","repo":"sindresorhus/splice-string","stars":24}
+{"archived":false,"description":"Get the real length of a string - by correctly counting astral symbols and ignoring ansi escape codes","language":"JavaScript","pushed":"2026-01-21T14:39:15Z","repo":"sindresorhus/string-length","stars":171}
+{"archived":false,"description":"Get the visual width of a string - the number of columns required to display it","language":"JavaScript","pushed":"2026-02-18T16:38:40Z","repo":"sindresorhus/string-width","stars":522}
+{"archived":false,"description":"Strip UTF-8 byte order mark (BOM) from a string","language":"JavaScript","pushed":"2021-04-16T18:54:24Z","repo":"sindresorhus/strip-bom","stars":112}
+{"archived":false,"description":"Strip comments from CSS","language":"CSS","pushed":"2023-05-29T13:56:57Z","repo":"sindresorhus/strip-css-comments","stars":125}
+{"archived":false,"description":"Strip leading whitespace from each line in a string","language":"JavaScript","pushed":"2025-10-12T14:55:56Z","repo":"sindresorhus/strip-indent","stars":146}
+{"archived":false,"description":"Strip comments from JSON. Lets you use comments in your JSON files!","language":"JavaScript","pushed":"2025-08-08T14:14:06Z","repo":"sindresorhus/strip-json-comments","stars":625}
+{"archived":false,"description":"Block users from running your app with root permissions","language":"JavaScript","pushed":"2023-08-31T16:06:10Z","repo":"sindresorhus/sudo-block","stars":98}
+{"archived":false,"description":"Get superb like words","language":"JavaScript","pushed":"2025-09-09T07:43:26Z","repo":"sindresorhus/superb","stars":397}
+{"archived":false,"description":"Get superhero names","language":"JavaScript","pushed":"2024-04-30T17:34:40Z","repo":"sindresorhus/superheroes","stars":234}
+{"archived":false,"description":"Get supervillain names","language":"JavaScript","pushed":"2024-04-30T17:47:08Z","repo":"sindresorhus/supervillains","stars":119}
+{"archived":false,"description":"Get a random temporary file or directory path","language":"JavaScript","pushed":"2026-02-02T16:12:55Z","repo":"sindresorhus/tempy","stars":443}
+{"archived":false,"description":"Display images in the terminal","language":"JavaScript","pushed":"2026-01-04T23:02:36Z","repo":"sindresorhus/terminal-image","stars":1078}
+{"archived":false,"description":"Create clickable links in the terminal","language":"JavaScript","pushed":"2025-09-08T11:27:07Z","repo":"sindresorhus/terminal-link","stars":659}
+{"archived":false,"description":"Reliably get the terminal window size","language":"JavaScript","pushed":"2026-02-02T05:23:25Z","repo":"sindresorhus/terminal-size","stars":147}
+{"archived":false,"description":"Add stdin support to any CLI app that accepts file input","language":"JavaScript","pushed":"2021-08-17T21:44:54Z","repo":"sindresorhus/tmpin","stars":127}
+{"archived":false,"description":"Move files and directories to the trash","language":"JavaScript","pushed":"2026-02-25T14:51:56Z","repo":"sindresorhus/trash","stars":2658}
+{"archived":false,"description":"Useful utilities for working with Uint8Array (and Buffer)","language":"JavaScript","pushed":"2025-11-19T19:07:43Z","repo":"sindresorhus/uint8array-extras","stars":274}
+{"archived":false,"description":"Generate random numbers that are consecutively unique","language":"JavaScript","pushed":"2024-04-08T04:11:38Z","repo":"sindresorhus/unique-random","stars":118}
+{"archived":false,"description":"Manage the desktop wallpaper","language":"JavaScript","pushed":"2026-03-11T16:56:40Z","repo":"sindresorhus/wallpaper","stars":1088}
+{"archived":false,"description":"Stringify and write JSON to a file atomically","language":"JavaScript","pushed":"2025-09-14T22:37:52Z","repo":"sindresorhus/write-json-file","stars":223}
+{"archived":false,"description":"Parse yes/no like values","language":"JavaScript","pushed":"2025-08-22T08:54:56Z","repo":"sindresorhus/yn","stars":275}
+{"archived":false,"description":":dash: Simple yet powerful file-based mock server with recording abilities","language":"JavaScript","pushed":"2026-02-02T15:09:33Z","repo":"sinedied/smoke","stars":206}
+{"archived":false,"description":"Test spies, stubs and mocks for JavaScript.","language":"JavaScript","pushed":"2026-04-11T06:04:21Z","repo":"sinonjs/sinon","stars":9758}
+{"archived":false,"description":"The API after every nerd's heart...","language":"JavaScript","pushed":"2024-06-10T07:50:55Z","repo":"SkyHacks/nerds","stars":109}
+{"archived":false,"description":"API Observability. Trace API calls and Monitor API performance, health and usage statistics in Node.js Microservices.","language":"JavaScript","pushed":"2024-04-22T07:54:50Z","repo":"slanatech/swagger-stats","stars":935}
+{"archived":false,"description":"Redis Simple Message Queue","language":"JavaScript","pushed":"2021-06-14T09:29:36Z","repo":"smrchy/rsmq","stars":1820}
+{"archived":false,"description":"easier than regex string matching patterns for urls and other strings. turn strings into data or data into strings.","language":"CoffeeScript","pushed":"2020-08-06T08:43:14Z","repo":"snd/url-pattern","stars":588}
+{"archived":false,"description":"Highly scalable realtime pub/sub and RPC framework","language":"JavaScript","pushed":"2026-04-02T04:33:23Z","repo":"SocketCluster/socketcluster","stars":6198}
+{"archived":false,"description":"Realtime application framework (Node.JS server)","language":"TypeScript","pushed":"2026-04-02T16:01:10Z","repo":"socketio/socket.io","stars":63016}
+{"archived":false,"description":"AdminJS is an admin panel for apps written in node.js","language":"TypeScript","pushed":"2025-07-15T07:29:47Z","repo":"SoftwareBrothers/adminjs","stars":8920}
+{"archived":false,"description":"qr code generator","language":"JavaScript","pushed":"2024-08-23T14:37:17Z","repo":"soldair/node-qrcode","stars":8082}
+{"message":"Not Found","documentation_url":"https://docs.github.com/rest/repos/repos#get-a-repository","status":"404"}{"repo": "sponsors/sindresorhus", "error": true}
+{"archived":false,"description":"CASL is an isomorphic authorization JavaScript library which restricts what resources a given user is allowed to access","language":"TypeScript","pushed":"2026-04-10T14:36:30Z","repo":"stalniy/casl","stars":6882}
+{"archived":false,"description":"Daemon for easy but powerful stats aggregation","language":"JavaScript","pushed":"2025-05-20T07:22:42Z","repo":"statsd/statsd","stars":18019}
+{"archived":false,"description":"Let's learn these things together","language":"JavaScript","pushed":"2015-09-27T20:11:20Z","repo":"stephenplusplus/stream-faqs","stars":194}
+{"archived":false,"description":"🚀 Strapi is the leading open-source headless CMS. It’s 100% JavaScript/TypeScript, fully customizable, and developer-first.","language":"TypeScript","pushed":"2026-04-10T16:36:21Z","repo":"strapi/strapi","stars":71844}
+{"archived":false,"description":"Modern CSS to all browsers","language":"JavaScript","pushed":"2020-02-28T19:39:28Z","repo":"stylecow/stylecow","stars":164}
+{"archived":false,"description":"tap-producing test harness for node and browsers","language":"JavaScript","pushed":"2025-03-07T16:55:49Z","repo":"substack/tape","stars":5794}
+{"archived":false,"description":"Minimize HTML","language":"JavaScript","pushed":"2020-05-23T12:18:05Z","repo":"Swaagie/minimize","stars":161}
+{"archived":false,"description":"Better file system API for Node.js","language":"TypeScript","pushed":"2024-01-18T15:08:43Z","repo":"szwacz/fs-jetpack","stars":785}
+{"archived":false,"description":"A simple development http server with live reload capability.","language":"JavaScript","pushed":"2024-04-28T23:27:22Z","repo":"tapio/live-server","stars":4561}
+{"archived":false,"description":"Test Anything Protocol tools for node","language":"JavaScript","pushed":"2026-04-05T20:54:36Z","repo":"tapjs/node-tap","stars":2417}
+{"archived":false,"description":"BullMQ - Message Queue and Batch processing for NodeJS, Python, Elixir and PHP based on Redis","language":"TypeScript","pushed":"2026-04-11T08:43:37Z","repo":"taskforcesh/bullmq","stars":8715}
+{"archived":false,"description":"AI-powered development workspaces with reusable components, architectural clarity and zero overhead.","language":"TypeScript","pushed":"2026-04-11T00:19:30Z","repo":"teambit/bit","stars":18376}
+{"archived":false,"description":"Testcontainers is a NodeJS library that supports tests, providing lightweight, throwaway instances of common databases, Selenium web browsers, or anything else that can run in a Docker container.","language":"TypeScript","pushed":"2026-04-08T09:10:45Z","repo":"testcontainers/testcontainers-node","stars":2514}
+{"archived":false,"description":"A next-generation code testing stack for JavaScript.","language":"TypeScript","pushed":"2023-03-14T16:33:27Z","repo":"theintern/intern","stars":4346}
+{"archived":false,"description":"yet another unzip library for node","language":"JavaScript","pushed":"2026-04-01T11:46:55Z","repo":"thejoshwolfe/yauzl","stars":801}
+{"archived":false,"description":"yet another zip library for node","language":"JavaScript","pushed":"2026-03-14T13:27:42Z","repo":"thejoshwolfe/yazl","stars":375}
+{"archived":false,"description":"🎨 themer takes a set of colors and outputs themes for your apps (editors, terminals, wallpapers, and more).","language":"TypeScript","pushed":"2025-04-15T00:22:18Z","repo":"themerdev/themer","stars":5802}
+{"archived":false,"description":"Use full ES2015+ features to develop Node.js applications, Support TypeScript.","language":"JavaScript","pushed":"2025-10-19T10:14:54Z","repo":"thinkjs/thinkjs","stars":5277}
+{"archived":false,"description":"⏱️ Notes and resources related to v8 and thus Node.js performance","language":"JavaScript","pushed":"2022-11-07T12:18:32Z","repo":"thlorenz/v8-perf","stars":2276}
+{"archived":false,"description":"🦄 0-legacy, tiny \u0026 fast web framework as a replacement of Express","language":"TypeScript","pushed":"2026-03-01T13:16:27Z","repo":"tinyhttp/tinyhttp","stars":2883}
+{"archived":false,"description":"Node version management","language":"Shell","pushed":"2025-11-27T21:17:20Z","repo":"tj/n","stars":19530}
+{"archived":false,"description":"Scrape/Crawl article from any site automatically. Make any web page readable, no matter Chinese or English.","language":"JavaScript","pushed":"2018-08-01T06:37:53Z","repo":"Tjatse/node-readability","stars":346}
+{"archived":false,"description":"Create flexible REST endpoints and controllers from Sequelize models in your Express app","language":"JavaScript","pushed":"2024-04-11T13:00:09Z","repo":"tommybananas/finale","stars":187}
+{"archived":false,"description":"Turn Buffer instances into \"pointers\"","language":"JavaScript","pushed":"2023-08-08T20:19:08Z","repo":"TooTallNate/ref","stars":457}
+{"archived":false,"description":"Independent technology for modern publishing, memberships, subscriptions and newsletters.","language":"JavaScript","pushed":"2026-04-11T12:06:53Z","repo":"TryGhost/Ghost","stars":52465}
+{"archived":false,"description":" :triangular_ruler:  Ts.ED is a Node.js and TypeScript framework on top of Express to write your application with TypeScript (or ES6). It provides a lot of decorators and guideline to make your code more readable and less error-prone. ⭐️ Star to support our work! ","language":"TypeScript","pushed":"2026-04-11T07:56:04Z","repo":"tsedio/tsed","stars":3075}
+{"archived":false,"description":"A modular geospatial engine written in JavaScript and TypeScript","language":"TypeScript","pushed":"2026-03-29T17:46:31Z","repo":"Turfjs/turf","stars":10315}
+{"archived":false,"description":"TypeScript \u0026 JavaScript ORM for Node.js — supports PostgreSQL, MySQL, MariaDB, SQLite, SQL Server, Oracle, and more.","language":"TypeScript","pushed":"2026-04-11T10:14:18Z","repo":"typeorm/typeorm","stars":36436}
+{"archived":false,"description":"Git hooks made easy 🐶 woof!","language":"JavaScript","pushed":"2026-03-19T23:03:16Z","repo":"typicode/husky","stars":34937}
+{"archived":false,"description":"Simple and fast JSON database","language":"JavaScript","pushed":"2026-03-27T22:36:45Z","repo":"typicode/lowdb","stars":22509}
+{"archived":false,"description":"Simple, secure \u0026 standards compliant web server for the most demanding of applications","language":"C++","pushed":"2026-04-04T02:24:39Z","repo":"uNetworking/uWebSockets","stars":18789}
+{"archived":false,"description":"Node.js Production Process Manager with a built-in Load Balancer.","language":"JavaScript","pushed":"2026-03-27T13:30:12Z","repo":"Unitech/pm2","stars":43037}
+{"archived":false,"description":"🐨 Elegant Console Logger for Node.js and Browser ","language":"TypeScript","pushed":"2026-04-09T07:54:34Z","repo":"unjs/consola","stars":7235}
+{"archived":false,"description":"A curated, community driven list of awesome Meteor packages, libraries, resources and shiny things","language":null,"pushed":"2022-03-31T06:03:05Z","repo":"Urigo/awesome-meteor","stars":1416}
+{"archived":false,"description":"🌈 React for interactive command-line apps","language":"TypeScript","pushed":"2026-04-08T07:48:27Z","repo":"vadimdemedes/ink","stars":37547}
+{"archived":false,"description":"🚦 Your own mini Travis CI to run tests locally","language":"JavaScript","pushed":"2019-11-23T20:08:15Z","repo":"vadimdemedes/trevor","stars":2103}
+{"archived":false,"description":"A Node.js tracing and instrumentation utility","language":"JavaScript","pushed":"2025-11-14T14:37:03Z","repo":"valyouw/njstrace","stars":380}
+{"archived":false,"description":"Asynchronous HTTP microservices","language":"TypeScript","pushed":"2024-06-19T16:57:01Z","repo":"vercel/micro","stars":10610}
+{"archived":false,"description":"Tiny millisecond conversion utility","language":"TypeScript","pushed":"2026-01-16T16:27:00Z","repo":"vercel/ms","stars":5516}
+{"archived":false,"description":"The React Framework","language":"JavaScript","pushed":"2026-04-11T12:24:03Z","repo":"vercel/next.js","stars":138852}
+{"archived":true,"description":"Package your Node.js project into an executable","language":"JavaScript","pushed":"2024-01-03T01:38:16Z","repo":"vercel/pkg","stars":24396}
+{"archived":false,"description":"➰ It's never been easier to try nodejs modules!","language":"JavaScript","pushed":"2017-04-03T21:24:45Z","repo":"victorb/trymodule","stars":1135}
+{"archived":false,"description":"An SQL-friendly ORM for Node.js","language":"JavaScript","pushed":"2025-10-02T17:01:53Z","repo":"Vincit/objection.js","stars":7344}
+{"archived":false,"description":"Flexible ascii progress bar for nodejs","language":"JavaScript","pushed":"2023-02-13T23:42:44Z","repo":"visionmedia/node-progress","stars":2993}
+{"archived":false,"description":"Ajax for Node.js and browsers (JS HTTP client). Maintained for @forwardemail, @ladjs, @spamscanner, @breejs, @cabinjs, and @lassjs.","language":"JavaScript","pushed":"2026-01-06T07:45:06Z","repo":"visionmedia/superagent","stars":16644}
+{"archived":false,"description":"PostgreSQL interface for Node.js","language":"JavaScript","pushed":"2026-03-06T00:53:58Z","repo":"vitaly-t/pg-promise","stars":3550}
+{"archived":false,"description":"Next generation frontend tooling. It's fast!","language":"TypeScript","pushed":"2026-04-09T11:39:27Z","repo":"vitejs/vite","stars":79833}
+{"archived":false,"description":"Next generation testing framework powered by Vite.","language":"TypeScript","pushed":"2026-04-10T21:54:27Z","repo":"vitest-dev/vitest","stars":16345}
+{"archived":false,"description":"List any node_modules 📦 dir in your system and how heavy they are. You can then select which ones you want to erase to free up space 🧹","language":"TypeScript","pushed":"2026-04-07T16:18:56Z","repo":"voidcosmos/npkill","stars":9137}
+{"archived":false,"description":"The most simple logger imaginable","language":"JavaScript","pushed":"2023-12-03T14:06:30Z","repo":"watson/console-log-level","stars":113}
+{"archived":false,"description":"He is like Batman, but for Node.js stack traces","language":"JavaScript","pushed":"2023-12-03T14:05:27Z","repo":"watson/stackman","stars":255}
+{"archived":false,"description":"Next-gen browser and mobile automation test framework for Node.js","language":"TypeScript","pushed":"2026-04-09T10:38:49Z","repo":"webdriverio/webdriverio","stars":9774}
+{"archived":false,"description":"A bundler for javascript and friends. Packs many modules into a few bundled assets. Code Splitting allows for loading parts of the application on demand. Through \"loaders\", modules can be CommonJs, AMD, ES6 modules, CSS, Images, JSON, Coffeescript, LESS, ... and your custom stuff.","language":"JavaScript","pushed":"2026-04-11T10:52:06Z","repo":"webpack/webpack","stars":65840}
+{"archived":false,"description":"⚡️ Streaming torrent client for the web","language":"JavaScript","pushed":"2026-04-09T18:06:40Z","repo":"webtorrent/webtorrent","stars":30865}
+{"archived":false,"description":"A simple high-performance Redis message queue for Node.js.","language":"TypeScript","pushed":"2026-04-11T10:59:14Z","repo":"weyoss/redis-smq","stars":659}
+{"archived":false,"description":"A logger for just about everything.","language":"JavaScript","pushed":"2025-12-08T19:02:16Z","repo":"winstonjs/winston","stars":24420}
+{"archived":false,"description":"Natural language detection","language":"JavaScript","pushed":"2024-06-12T22:48:23Z","repo":"wooorm/franc","stars":4386}
+{"archived":false,"description":"❤️ JavaScript/TypeScript linter (ESLint wrapper) with great defaults","language":"TypeScript","pushed":"2026-04-02T14:08:37Z","repo":"xojs/xo","stars":7969}
+{"archived":false,"description":"💰💰 Convert currency rates directly from your terminal!","language":"JavaScript","pushed":"2026-03-31T17:57:34Z","repo":"xxczaki/cash-cli","stars":264}
+{"archived":false,"description":"💸  Lightweight currency conversion library, successor of money.js","language":"TypeScript","pushed":"2026-04-11T00:35:16Z","repo":"xxczaki/cashify","stars":406}
+{"archived":false,"description":"A pure JavaScript implemetation of MODBUS-RTU (and TCP) for NodeJS","language":"JavaScript","pushed":"2026-04-10T05:39:45Z","repo":"yaacov/node-modbus-serial","stars":718}
+{"archived":false,"description":" yargs the modern, pirate-themed successor to optimist.","language":"JavaScript","pushed":"2026-03-23T17:59:33Z","repo":"yargs/yargs","stars":11466}
+{"archived":false,"description":"Node.js module to help you understand how your tool is being used by anonymously reporting usage metrics to Google Analytics","language":"JavaScript","pushed":"2025-01-26T06:30:49Z","repo":"yeoman/insight","stars":556}
+{"archived":false,"description":"Yet another Linux distribution for voice-enabled IoT and embrace Web standards","language":"C","pushed":"2019-12-04T12:28:46Z","repo":"yodaos-project/yodaos","stars":1216}
+{"archived":false,"description":"Bison in JavaScript.","language":"JavaScript","pushed":"2022-10-14T08:26:50Z","repo":"zaach/jison","stars":4386}
