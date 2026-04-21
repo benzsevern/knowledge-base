@@ -42,7 +42,7 @@ import { chat, gapAnalysis, literatureReview } from "./rag.js";
 import { generateTopicBrief } from "./briefings.js";
 import { importVault } from "./export.js";
 import { readJson, writeJson } from "./fs-utils.js";
-import { dbHealth, runMigrations, hasDatabase } from "./db.js";
+import { db, dbHealth, runMigrations, hasDatabase } from "./db.js";
 import {
   useDbReads,
   statusCounts,
@@ -176,6 +176,26 @@ app.get("/api/admin/entity/:id/note", async (req, res) => {
 // Dump all entity-level summary embeddings in one shot. Consumer: the
 // golden-showcase knowledge-map generator script. Not paginated — corpus is
 // ~1.5K entities so payload is ~6 MB gzipped. Token-gated via PROTECTED_PREFIXES.
+// Lightweight list of entities by type — id, slug, title, sourceUrl, kind only.
+// Used for planning migrations + inventory. Token-gated.
+app.get("/api/admin/entities", async (req, res) => {
+  try {
+    if (!(await useDbReads())) return res.status(503).json({ error: "postgres not ready" });
+    const type = req.query.type;
+    if (!type) return res.status(400).json({ error: "type query param required" });
+    const { rows } = await db().query(
+      `SELECT id, slug, title, meta->>'sourceUrl' AS source_url,
+              meta->>'kind' AS kind, meta->>'pageCount' AS page_count,
+              created_at
+         FROM entities WHERE type = $1 ORDER BY created_at`,
+      [type],
+    );
+    res.json({ count: rows.length, entities: rows });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 app.get("/api/admin/entity-embeddings", async (_req, res) => {
   try {
     if (!(await useDbReads())) return res.status(503).json({ error: "postgres not ready" });
