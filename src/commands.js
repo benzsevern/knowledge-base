@@ -441,7 +441,7 @@ export async function ingestPaper(pdfInputPath, options = {}) {
   if (options.skipRebuild) {
     return { record, index };
   }
-  index = await rebuildLinks(index);
+  await rebuildLinksIncremental([record.id], index);
 
   return record;
 }
@@ -491,7 +491,10 @@ export async function ingestPapersBatch(pdfInputPaths, { onProgress } = {}) {
   });
   await Promise.all(workers);
 
-  await rebuildLinks(index);
+  const newIds = results.filter((r) => r?.id).map((r) => r.id);
+  if (newIds.length) {
+    await rebuildLinksIncremental(newIds, index);
+  }
   return results;
 }
 
@@ -601,7 +604,7 @@ export async function ingestRepo(repoInput, options = {}) {
   if (options.skipRebuild) {
     return { record, index };
   }
-  index = await rebuildLinks(index);
+  await rebuildLinksIncremental([record.id], index);
 
   return record;
 }
@@ -811,6 +814,120 @@ export async function rebuildLinks(existingIndex = null) {
   return saveIndex(idx);
 }
 
+// Incremental version of rebuildLinks — only scores pairs involving the given
+// newIds, and preserves all existing relations. ~1000x cheaper than rebuildLinks
+// when adding a handful of entities to a large graph. Falls back to full rebuild
+// if PG isn't the read store (JSON mode has no cheap partial-update).
+export async function rebuildLinksIncremental(newIds, existingIndex = null) {
+  await ensureVaultLayout();
+  const usePg = await useDbReads();
+  if (!usePg) return rebuildLinks(existingIndex);
+  if (!newIds?.length) return { relations: 0, papers: 0, repos: 0 };
+
+  const idx = existingIndex ?? (await loadEntitiesOnlyPG());
+  const { papers, repos, docs = [] } = idx;
+  const newIdSet = new Set(newIds);
+  const newPapers = papers.filter((p) => newIdSet.has(p.id));
+  const newRepos = repos.filter((r) => newIdSet.has(r.id));
+  const existingPapers = papers.filter((p) => !newIdSet.has(p.id));
+
+  // Clear any stale relations involving these IDs (handles re-ingests).
+  await db().query(
+    "DELETE FROM relations WHERE from_id = ANY($1) OR to_id = ANY($1)",
+    [newIds],
+  );
+
+  const BATCH = 500;
+  let buffer = [];
+  let inserted = 0;
+  const paperToRepos = new Map();
+  const repoToPapers = new Map();
+  const repoToRepos = new Map();
+
+  const flushBuffer = async () => {
+    if (!buffer.length) return;
+    await insertRelationBatchPG(buffer);
+    inserted += buffer.length;
+    buffer = [];
+  };
+
+  // New papers × all repos
+  for (const paper of newPapers) {
+    for (const repo of repos) {
+      const rel = scoreRelation(paper, repo);
+      if (rel.score < 2) continue;
+      buffer.push({
+        fromId: paper.id, toId: repo.id, relationType: "informs",
+        score: rel.score,
+        evidence: rel.evidence.length ? rel.evidence : ["Token overlap between paper summary and repository metadata."],
+        notePath: path.join(vaultRoot, "links", `${paper.id}__${repo.id}.md`),
+      });
+      if (!paperToRepos.has(paper.id)) paperToRepos.set(paper.id, []);
+      paperToRepos.get(paper.id).push(repo.id);
+      if (buffer.length >= BATCH) await flushBuffer();
+    }
+  }
+
+  // New repos × existing papers (new-paper × new-repo already covered above)
+  // and new repos × all repos (related).
+  for (const repo of newRepos) {
+    for (const paper of existingPapers) {
+      const rel = scoreRelation(paper, repo);
+      if (rel.score < 2) continue;
+      buffer.push({
+        fromId: paper.id, toId: repo.id, relationType: "informs",
+        score: rel.score,
+        evidence: rel.evidence.length ? rel.evidence : ["Token overlap between paper summary and repository metadata."],
+        notePath: path.join(vaultRoot, "links", `${paper.id}__${repo.id}.md`),
+      });
+      if (!repoToPapers.has(repo.id)) repoToPapers.set(repo.id, []);
+      repoToPapers.get(repo.id).push(paper.id);
+      if (buffer.length >= BATCH) await flushBuffer();
+    }
+    for (const other of repos) {
+      if (other.id === repo.id) continue;
+      // Avoid double-counting when both endpoints are new — only the lex-smaller
+      // new-repo id iterates the pair.
+      if (newIdSet.has(other.id) && other.id < repo.id) continue;
+      const [a, b] = repo.id < other.id ? [repo, other] : [other, repo];
+      const rel = scoreRepoRelation(a, b);
+      if (rel.score < 3) continue;
+      buffer.push({
+        fromId: a.id, toId: b.id, relationType: "related",
+        score: rel.score,
+        evidence: rel.evidence,
+        notePath: path.join(vaultRoot, "links", `${a.id}__${b.id}.md`),
+      });
+      if (!repoToRepos.has(a.id)) repoToRepos.set(a.id, []);
+      repoToRepos.get(a.id).push(b.id);
+      if (!repoToRepos.has(b.id)) repoToRepos.set(b.id, []);
+      repoToRepos.get(b.id).push(a.id);
+      if (buffer.length >= BATCH) await flushBuffer();
+    }
+  }
+
+  await flushBuffer();
+
+  // Notes only for new entities — existing entities keep their notes as-is.
+  for (const paper of newPapers) {
+    const linkedRepos = (paperToRepos.get(paper.id) ?? [])
+      .map((id) => repos.find((r) => r.id === id)).filter(Boolean);
+    paper.updatedAt = now();
+    await fs.writeFile(paper.notePath, `${renderPaperNote(paper, linkedRepos)}\n`, "utf8");
+  }
+  for (const repo of newRepos) {
+    const linkedPapers = (repoToPapers.get(repo.id) ?? [])
+      .map((id) => papers.find((p) => p.id === id)).filter(Boolean);
+    const linkedRepos = (repoToRepos.get(repo.id) ?? [])
+      .map((id) => repos.find((r) => r.id === id)).filter(Boolean);
+    repo.updatedAt = now();
+    await fs.writeFile(repo.notePath, `${renderRepoNote(repo, linkedPapers, linkedRepos)}\n`, "utf8");
+  }
+
+  await saveIndex({ papers, repos, docs, relations: [] });
+  return { relations: inserted, papers: newPapers.length, repos: newRepos.length };
+}
+
 // YY = 07-29 (arXiv's new scheme started April 2007), MM = 01-12
 const ARXIV_ID_BODY = "(?:0[7-9]|[1-2]\\d)(?:0[1-9]|1[0-2])\\.\\d{4,5}";
 const ARXIV_ID_RE = new RegExp(`\\b(${ARXIV_ID_BODY})(v\\d+)?\\b`, "g");
@@ -969,7 +1086,8 @@ export async function ingestSitemap(sitemapUrl, options = {}) {
   );
 
   if (!options.skipRebuild) {
-    await rebuildLinks(index);
+    const newIds = results.filter((r) => r.id).map((r) => r.id);
+    if (newIds.length) await rebuildLinksIncremental(newIds, index);
   }
 
   const ingested = results.filter((r) => !r.error).length;
@@ -998,7 +1116,7 @@ export async function ingestDocsSite(url, options = {}) {
   if (options.skipRebuild) {
     return { record, index };
   }
-  index = await rebuildLinks(index);
+  await rebuildLinksIncremental([record.id], index);
   return record;
 }
 
@@ -1038,7 +1156,10 @@ export async function ingestReposBatch(repoInputs, { onProgress } = {}) {
     }
   }
 
-  await rebuildLinks(index);
+  const newIds = results.filter((r) => r?.id).map((r) => r.id);
+  if (newIds.length) {
+    await rebuildLinksIncremental(newIds, index);
+  }
   return results;
 }
 
