@@ -793,6 +793,44 @@ app.post("/api/patch-index", async (req, res) => {
 // Removes: index entry, relations involving it, embedding entries
 //   (summary + content chunks), optional vault directory.
 // ---------------------------------------------------------------------------
+// Batch delete — PG only, skips the kb_index.json rewrite that makes
+// single-delete O(n) per call. Use when deleting many entities at once.
+// Vault dirs are still removed.
+app.post("/api/admin/delete-batch", async (req, res) => {
+  try {
+    const { ids } = req.body ?? {};
+    if (!Array.isArray(ids) || !ids.length) {
+      return res.status(400).json({ error: "ids array required" });
+    }
+    if (!hasDatabase()) return res.status(503).json({ error: "postgres required" });
+    const fsp = await import("node:fs/promises");
+    const { vaultRoot } = await import("./config.js");
+    const results = [];
+    for (const id of ids) {
+      try {
+        const entity = await findEntityPG(id);
+        const pgDeleted = await deleteEntityPG(id);
+        let dirRemoved = null;
+        if (entity?.notePath) {
+          const entityDir = path.dirname(entity.notePath);
+          try {
+            await fsp.rm(entityDir, { recursive: true, force: true });
+            dirRemoved = entityDir;
+          } catch {
+            // best-effort; vault dir may already be gone
+          }
+        }
+        results.push({ id, pgDeleted, dirRemoved });
+      } catch (err) {
+        results.push({ id, error: err.message });
+      }
+    }
+    res.json({ deleted: results.filter((r) => r.pgDeleted).length, results });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 app.post("/api/delete-entity", async (req, res) => {
   try {
     const { id, removeFiles = true } = req.body ?? {};
